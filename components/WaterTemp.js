@@ -10,15 +10,15 @@ import {
 let jwtDecode = require('jwt-decode');
 
 
-export default class PumpDisp extends React.Component{
+export default class WaterTemp extends React.Component{
     state = {
-        running: false
+        temp: 0
     }
     render() {
         return (
-            <View style={styles.pmpContainer}>
-                <Text style={styles.pmpHeader}>
-                    Pump State: &nbsp; {this.state.running === 'false' ? 'on' : 'off'}
+            <View style={styles.tempContainer}>
+                <Text style={styles.tempHeader}>
+                    Water Temp: &nbsp; {this.state.temp} &deg;F
                 </Text>
             </View>
         );
@@ -26,7 +26,7 @@ export default class PumpDisp extends React.Component{
 }
 
 const styles = StyleSheet.create({
-    pmpHeader: {
+    tempHeader: {
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
