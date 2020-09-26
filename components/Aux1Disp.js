@@ -7,16 +7,16 @@ import {
 let jwtDecode = require('jwt-decode');
 
 
-export default class CleanDisp extends React.Component{
+export default class Aux1Disp extends React.Component{
     state = {
         running: this.props.running
     }
 
     render() {
         return (
-            <View style={styles.cleanContainer}>
-                <Text style={styles.cleanHeader}>
-                    Cleaner State: &nbsp; {this.props.running === 'false' ? 'off' : 'on'}
+            <View style={styles.aux1Container}>
+                <Text style={styles.aux1Header}>
+                    Aux1 State: &nbsp; {this.props.running === 'false' ? 'off' : 'on'}
                 </Text>
             </View>
         );
@@ -24,7 +24,7 @@ export default class CleanDisp extends React.Component{
 }
 
 const styles = StyleSheet.create({
-    cleanHeader: {
+    aux1Header: {
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',

@@ -26,7 +26,8 @@ export default class Dashboard extends React.Component{
     };
 
     state = {
-        username: ''
+        username: '',
+        running: this.props.running
     }
 
     componentDidMount(){

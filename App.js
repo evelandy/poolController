@@ -6,6 +6,11 @@ import Login from './components/auth/Login'
 import SignUp from './components/auth/SignUp';
 import Home from './components/Home';
 import ControlDisp from './components/controls/ControlDisp';
+import ManualPump from './components/controls/ManualPump';
+import ManualCleaner from './components/controls/ManualCleaner';
+import ManualLights from './components/controls/ManualLights';
+import ManualAux1 from './components/controls/ManualAux1';
+
 
 const RootStack = createStackNavigator({
   Home: {
@@ -26,7 +31,18 @@ const RootStack = createStackNavigator({
   ControlDisp: {
     screen: ControlDisp
   },
-  initialRouteName: 'Home',
+  ManualPump: {
+    screen: ManualPump
+  },
+  ManualCleaner: {
+    screen: ManualCleaner
+  },
+  ManualLights: {
+    screen: ManualLights
+  },
+  ManualAux1: {
+    screen: ManualAux1
+  },
 });
 
 const App = createAppContainer(RootStack);

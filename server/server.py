@@ -138,15 +138,23 @@ def logout():
 # pump controls from server to RPi
 @app.route('/api/v1/pump_on', methods=['GET'])
 def pump_on():
-    res = requests.get(url='http://192.168.1.116:5000/api/v1/pump_on')
-    return jsonify({'msg': 'pump on'}), 200
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/pump_on')
+    return jsonify({'msg': 'true'}), 200
 
 
 @app.route('/api/v1/pump_off', methods=['GET'])
 def pump_off():
-    res = requests.get(url='http://192.168.1.116:5000/api/v1/pump_off')
-    return jsonify({'msg': 'pump off'}), 200
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/pump_off')
+    return jsonify({'msg': 'false'}), 200
 
+
+@app.route('/api/v1/pump_disp', methods=['GET'])
+def pump_disp():
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/pump_disp')
+    if res.status_code == 201:
+        return jsonify({'msg': 'false'})
+    elif res.status_code == 200:
+        return jsonify({'msg': 'true'})
 
 # @app.route('/api/v1/clean', methods=['GET'])
 # def clean():
@@ -157,14 +165,14 @@ def pump_off():
 # cleaner controls from server to RPi
 @app.route('/api/v1/clean_on', methods=['GET'])
 def clean_on():
-    res = requests.get(url='http://192.168.1.116:5000/api/v1/clean_on')
-    return jsonify({'msg': 'cleaner on'}), 200
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/clean_on')
+    return jsonify({'msg': 'true'}), 200
 
 
 @app.route('/api/v1/clean_off', methods=['GET'])
 def clean_off():
-    res = requests.get(url='http://192.168.1.116:5000/api/v1/clean_off')
-    return jsonify({'msg': 'cleaner off'}), 200
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/clean_off')
+    return jsonify({'msg': 'false'}), 200
 
 
 # @app.route('/api/v1/light', methods=['GET'])
@@ -176,14 +184,27 @@ def clean_off():
 # light controls from server to RPi
 @app.route('/api/v1/light_on', methods=['GET'])
 def light_on():
-    res = requests.get(url='http://192.168.1.116:5000/api/v1/light_on')
-    return jsonify({'msg': 'lights on'}), 200
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/light_on')
+    return jsonify({'msg': 'true'}), 200
 
 
 @app.route('/api/v1/light_off', methods=['GET'])
 def light_off():
-    res = requests.get(url='http://192.168.1.116:5000/api/v1/light_off')
-    return jsonify({'msg': 'lights off'}), 200
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/light_off')
+    return jsonify({'msg': 'false'}), 200
+
+
+# Aux1 controls from server to RPi
+@app.route('/api/v1/aux_1_on', methods=['GET'])
+def aux_1_on():
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/aux_1_on')
+    return jsonify({'msg': 'true'}), 200
+
+
+@app.route('/api/v1/aux_1_off', methods=['GET'])
+def aux_1_off():
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/aux_1_off')
+    return jsonify({'msg': 'false'}), 200
 
 
 if __name__ == '__main__':

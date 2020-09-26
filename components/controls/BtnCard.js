@@ -20,7 +20,7 @@ export default class BtnCard extends React.Component{
                     {this.props.header}
                 </Text>
                 <View style={styles.pmpBtnContainer}>
-                    <TouchableOpacity style={styles.manPmpBtn}>
+                    <TouchableOpacity onPress={() => this.props.navigation(this.props.dest)} style={styles.manPmpBtn}>
                         <Text style={styles.manPmpBtnTxt}>
                             {this.props.manual}
                         </Text>

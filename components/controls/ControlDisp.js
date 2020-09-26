@@ -29,11 +29,16 @@ export default class ControlDisp extends React.Component{
                             Control Center
                         </Text>
                         <View style={styles.btnContainer}>
-                            <BtnCard header={' Pump'} manual={'Manual Pump'} schedule={'Schedule Pump'} />
-                            <BtnCard header={'Clean'} manual={'Manual Clean'} schedule={'Schedule Clean'} />
-                            <BtnCard header={'Lights'} manual={'Manual Light'} schedule={'Schedule Light'} />
-                            <BtnCard header={'   Aux'} manual={'Manual Aux'} schedule={'Schedule Aux'} />
+                            <BtnCard dest={'ManualPump'} navigation={this.props.navigation.navigate} header={' Pump'} manual={'Manual Pump'} schedule={'Schedule Pump'} />
+                            <BtnCard dest={'ManualCleaner'} navigation={this.props.navigation.navigate} header={'Clean'} manual={'Manual Clean'} schedule={'Schedule Clean'} />
+                            <BtnCard dest={'ManualLights'} navigation={this.props.navigation.navigate} header={'Lights'} manual={'Manual Light'} schedule={'Schedule Light'} />
+                            <BtnCard dest={'ManualAux1'} navigation={this.props.navigation.navigate} header={'  Aux1'} manual={'Manual Aux1'} schedule={'Schedule Aux1'} />
                             <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn} />
+                            <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.navigate('Dashboard')}>
+                                <Text style={styles.backBtnTxt}>
+                                    Back
+                                </Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </ImageBackground>
@@ -74,5 +79,22 @@ const styles = StyleSheet.create({
         borderColor: 'lightgray',
         width: 350,
         marginTop: 10
+    },
+    backBtn: {
+        top: 90,
+        padding: 15,
+        borderRadius: 10,
+        backgroundColor: 'navy',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderStyle: 'solid',
+        borderColor: 'lightgray',
+        width: 150,
+        left: 95
+    },
+    backBtnTxt: {
+        color: 'white',
+        fontSize: 15,
+        fontWeight: 'bold'
     },
 })

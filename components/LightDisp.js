@@ -1,24 +1,21 @@
 import React from 'react';
 import {
     StyleSheet,
-    TextInput,
     Text,
     View,
-    ImageBackground,
-    StatusBar
 } from 'react-native';
 let jwtDecode = require('jwt-decode');
 
 
 export default class LightDisp extends React.Component{
     state = {
-        running: false
+        running: this.props.running
     }
     render() {
         return (
             <View style={styles.lightContainer}>
                 <Text style={styles.lightHeader}>
-                    Light State: &nbsp; {this.state.running === 'false' ? 'on' : 'off'}
+                    Light State: &nbsp; {this.props.running === 'false' ? 'off' : 'on'}
                 </Text>
             </View>
         );
