@@ -9,13 +9,24 @@ import datetime
 import schedule
 import jwt
 
+import atexit
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+from apscheduler.schedulers.blocking import BlockingScheduler
+from threading import Timer, Event
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'SecretKey'
 
 db = SQLAlchemy(app)
 CORS(app)
+
+HOST = '192.168.1.109'
+PORT = '5000'
+DEBUG = True
 
 
 # login user info
@@ -135,7 +146,12 @@ def pump_on():
     GPIO.setup(18, GPIO.OUT)
     GPIO.output(18, GPIO.HIGH)
 
-    return jsonify({'msg': 'pump on'}), 200
+    ch_on = GPIO.input(18)
+
+    if ch_on:
+        return jsonify({'msg': 'pump on'}), 200
+    else:
+        return jsonify({'msg': 'pump off'}), 200
 
 
 @app.route('/api/v1/pump_off', methods=['GET'])
@@ -149,39 +165,74 @@ def pump_off():
     return jsonify({'msg': 'pump off'}), 200
 
 
-# schedule pump controls
-@app.route('/api/v1/sch_pump_on', methods=['GET'])
-def sch_pump_on():
-    pass
-
-
-
-#                                                  THURSDAY 09-10-20 LEFT OFF HERE to end of while loop
-"""
-def pmp_on():
+@app.route('/api/v1/pump_disp', methods=['GET'])
+def pump_disp():
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(18, GPIO.OUT)
+    ch_on = GPIO.input(18)
+    if ch_on:
+        GPIO.output(18, GPIO.LOW)
+        GPIO.cleanup()
+        return jsonify({'msg': 'pump off'}), 201
+    else:
+        GPIO.output(18, GPIO.HIGH)
+        return jsonify({'msg': 'pump on'}), 200
+
+
+# schedule pump controls
+def pmp_on():
+    GPIO.setmode(GPIO.BCM)
+
+    GPIO.setup(18, GPIO.OUT)
     GPIO.output(18, GPIO.HIGH)
-    sleep(5)
+    return jsonify({'msg': 'pump scheduled'}), 200
+
+
+def pmp_off():
+    GPIO.setmode(GPIO.BCM)
+
+    GPIO.setup(18, GPIO.OUT)
     GPIO.output(18, GPIO.LOW)
     GPIO.cleanup()
-    return None
+    return jsonify({'msg': 'pump sch off'}), 200
 
 
-schedule.every(5).seconds.do(pmp_on)
+"""
+# schedule pump controls
+@app.route('/api/v1/sch_p_on/<tm>', methods=['GET'])
+def sch_p_on(tm=4):
+    scheduler = BackgroundScheduler()
 
-count = 1
-
-while True:
-    schedule.run_pending()
-    sleep(5)
-    count -= 1
+    scheduler.add_job(
+        func=pmp_on,
+        trigger = IntervalTrigger(seconds=int(tm)),
+        id='scheduling pump',
+        name='schedule pump',
+        replace_existing=True)
+    scheduler.start()
+    scheduler.reschedule_job('scheduling pump')
+    return "OK", 200
 """
 
-# cleaner control
-#@app.route('/api/v1/clean', methods=['GET'])
-#def clean():
-#    pass
+
+@app.route('/api/v1/sch_p_on/<tm>', methods=['GET'])
+def sch_p_on(tm=4):
+    t = Event()
+    WAIT_TIME = int(tm)
+    while not t.wait(WAIT_TIME):
+        pmp_on()
+        break
+    return jsonify({'msg': 'true'}), 200
+
+
+@app.route('/api/v1/sch_p_off/<tm>', methods=['GET'])
+def sch_p_off(tm=4):
+    t = Event()
+    WAIT_TIME = int(tm)
+    while not t.wait(WAIT_TIME):
+        pmp_off()
+        break
+    return ({'msg': 'false'}), 200
 
 
 # manual cleaner controls
@@ -206,10 +257,42 @@ def clean_off():
     return jsonify({'msg': 'cleaner off'}), 200
 
 
-# light control
-#@app.route('/api/v1/light', methods=['GET'])
-#def light():
-#    pass
+# schedule cleaner controls
+def cln_on():
+    GPIO.setmode(GPIO.BCM)
+
+    GPIO.setup(18, GPIO.OUT)
+    GPIO.output(18, GPIO.HIGH)
+    return jsonify({'msg': 'cleaner scheduled'}), 200
+
+
+def cln_off():
+    GPIO.setmode(GPIO.BCM)
+
+    GPIO.setup(18, GPIO.OUT)
+    GPIO.output(18, GPIO.LOW)
+    GPIO.cleanup()
+    return jsonify({'msg': 'clean sch off'}), 200
+
+
+@app.route('/api/v1/sch_c_on/<tm>', methods=['GET'])
+def sch_c_on(tm=4):
+    t = Event()
+    WAIT_TIME = int(tm)
+    while not t.wait(WAIT_TIME):
+        cln_on()
+        break
+    return "OK", 200
+
+
+@app.route('/api/v1/sch_c_off/<tm>', methods=['GET'])
+def sch_c_off(tm=4):
+    t = Event()
+    WAIT_TIME = int(tm)
+    while not t.wait(WAIT_TIME):
+        cln_off()
+        break
+    return "OK", 200
 
 
 # manual light controls
@@ -234,6 +317,164 @@ def light_off():
     return jsonify({'msg': 'lights off'}), 200
 
 
+# schedule light controls
+def lgt_on():
+    GPIO.setmode(GPIO.BCM)
+
+    GPIO.setup(18, GPIO.OUT)
+    GPIO.output(18, GPIO.HIGH)
+    return jsonify({'msg': 'scheduled lights'}), 200
+
+
+def lgt_off():
+    GPIO.setmode(GPIO.BCM)
+
+    GPIO.setup(18, GPIO.OUT)
+    GPIO.output(18, GPIO.LOW)
+    GPIO.cleanup()
+    return jsonify({'msg': 'light sch off'}), 200
+
+
+@app.route('/api/v1/sch_l_on/<tm>', methods=['GET'])
+def sch_l_on(tm=4):
+    t = Event()
+    WAIT_TIME = int(tm)
+    while not t.wait(WAIT_TIME):
+        lgt_on()
+        break
+    return "OK", 200
+
+
+@app.route('/api/v1/sch_l_off/<tm>', methods=['GET'])
+def sch_l_off(tm=4):
+    t = Event()
+    WAIT_TIME = int(tm)
+    while not t.wait(WAIT_TIME):
+        lgt_off()
+        break
+    return "OK", 200
+
+
+# manual aux1 controls
+@app.route('/api/v1/aux_1_on', methods=['GET'])
+def aux_1_on():
+    GPIO.setmode(GPIO.BCM)
+
+    GPIO.setup(18, GPIO.OUT)
+    GPIO.output(18, GPIO.HIGH)
+
+    return jsonify({'msg': 'aux 1 on'}), 200
+
+
+@app.route('/api/v1/aux_1_off', methods=['GET'])
+def aux_1_off():
+    GPIO.setmode(GPIO.BCM)
+
+    GPIO.setup(18, GPIO.OUT)
+    GPIO.output(18, GPIO.LOW)
+    GPIO.cleanup()
+
+    return jsonify({'msg': 'aux 1 off'}), 200
+
+
+# schedule aux1 controls
+def aux1_on():
+    GPIO.setmode(GPIO.BCM)
+
+    GPIO.setup(18, GPIO.OUT)
+    GPIO.output(18, GPIO.HIGH)
+    return jsonify({'msg': 'aux 1 scheduled'}), 200
+
+
+def aux1_off():
+    GPIO.setmode(GPIO.BCM)
+
+    GPIO.setup(18, GPIO.OUT)
+    GPIO.output(18, GPIO.LOW)
+    GPIO.cleanup()
+    return jsonify({'msg': 'aux1 sch off'}), 200
+
+
+@app.route('/api/v1/sch_a1_on/<tm>', methods=['GET'])
+def sch_a1_on(tm=4):
+    t = Event()
+    WAIT_TIME = int(tm)
+    while not t.wait(WAIT_TIME):
+        aux1_on()
+        break
+    return "OK", 200
+
+
+@app.route('/api/v1/sch_a1_off/<tm>', methods=['GET'])
+def sch_a1_off(tm=4):
+    t = Event()
+    WAIT_TIME = int(tm)
+    while not t.wait(WAIT_TIME):
+        aux1_off()
+        break
+    return "OK", 200
+
+
+# manual aux2 controls
+@app.route('/api/v1/aux_2_on', methods=['GET'])
+def aux_2_on():
+    GPIO.setmode(GPIO.BCM)
+
+    GPIO.setup(18, GPIO.OUT)
+    GPIO.output(18, GPIO.HIGH)
+
+    return jsonify({'msg': 'aux 2 on'}), 200
+
+
+@app.route('/api/v1/aux_2_off', methods=['GET'])
+def aux_2_off():
+    GPIO.setmode(GPIO.BCM)
+
+    GPIO.setup(18, GPIO.OUT)
+    GPIO.output(18, GPIO.LOW)
+    GPIO.cleanup()
+
+    return jsonify({'msg': 'aux 2 off'}), 200
+
+
+# schedule aux2 controls
+def aux2_on():
+    GPIO.setmode(GPIO.BCM)
+
+    GPIO.setup(18, GPIO.OUT)
+    GPIO.output(18, GPIO.HIGH)
+    return jsonify({'msg': 'aux2 scheduled'}), 200
+
+
+def aux2_off():
+    GPIO.setmode(GPIO.BCM)
+
+    GPIO.setup(18, GPIO.OUT)
+    GPIO.output(18, GPIO.LOW)
+    GPIO.cleanup()
+    return jsonify({'msg': 'aux2 sch off'}), 200
+
+
+@app.route('/api/v1/sch_a2_on/<tm>', methods=['GET'])
+def sch_a2_on(tm=4):
+    t = Event()
+    WAIT_TIME = int(tm)
+    while not t.wait(WAIT_TIME):
+        aux2_on()
+        break
+    return "OK", 200
+
+
+@app.route('/api/v1/sch_a2_off/<tm>', methods=['GET'])
+def sch_a2_off(tm=4):
+    t = Event()
+    WAIT_TIME = int(tm)
+    while not t.wait(WAIT_TIME):
+        aux2_off()
+        break
+    return "OK", 200
+
+
 # logout
 @app.route('/api/v1/logout', methods=['POST'])
 def logout():
@@ -241,7 +482,7 @@ def logout():
 
 
 if __name__ == '__main__':
-    app.run(host='192.168.1.116')
+    app.run(HOST)
 
 
 """

@@ -152,9 +152,23 @@ def pump_off():
 def pump_disp():
     res = requests.get(url='http://192.168.1.109:5000/api/v1/pump_disp')
     if res.status_code == 201:
-        return jsonify({'msg': 'false'})
+        return jsonify({'msg': 'false'}), 200
     elif res.status_code == 200:
-        return jsonify({'msg': 'true'})
+        return jsonify({'msg': 'true'}), 200
+
+
+@app.route('/api/v1/sch_p_on/<tm>', methods=['GET'])
+def sch_p_on(tm=5):
+    tm = int(tm)
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_p_on/{}'.format(tm))
+    return jsonify({'msg': 'true'}), 200
+
+
+@app.route('/api/v1/sch_p_off/<tm>', methods=['GET'])
+def sch_p_off(tm=5):
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_p_off/{}'.format(tm))
+    return jsonify({'msg': 'false'}), 200
+
 
 # @app.route('/api/v1/clean', methods=['GET'])
 # def clean():
@@ -172,6 +186,19 @@ def clean_on():
 @app.route('/api/v1/clean_off', methods=['GET'])
 def clean_off():
     res = requests.get(url='http://192.168.1.109:5000/api/v1/clean_off')
+    return jsonify({'msg': 'false'}), 200
+
+
+@app.route('/api/v1/sch_c_on/<tm>', methods=['GET'])
+def sch_c_on(tm=5):
+    tm = int(tm)
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_c_on/{}'.format(tm))
+    return jsonify({'msg': 'true'}), 200
+
+
+@app.route('/api/v1/sch_c_off/<tm>', methods=['GET'])
+def sch_c_off(tm=5):
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_c_off/{}'.format(tm))
     return jsonify({'msg': 'false'}), 200
 
 
@@ -194,6 +221,19 @@ def light_off():
     return jsonify({'msg': 'false'}), 200
 
 
+@app.route('/api/v1/sch_l_on/<tm>', methods=['GET'])
+def sch_l_on(tm=5):
+    tm = int(tm)
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_l_on/{}'.format(tm))
+    return jsonify({'msg': 'true'}), 200
+
+
+@app.route('/api/v1/sch_l_off/<tm>', methods=['GET'])
+def sch_l_off(tm=5):
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_l_off/{}'.format(tm))
+    return jsonify({'msg': 'false'}), 200
+
+
 # Aux1 controls from server to RPi
 @app.route('/api/v1/aux_1_on', methods=['GET'])
 def aux_1_on():
@@ -204,6 +244,45 @@ def aux_1_on():
 @app.route('/api/v1/aux_1_off', methods=['GET'])
 def aux_1_off():
     res = requests.get(url='http://192.168.1.109:5000/api/v1/aux_1_off')
+    return jsonify({'msg': 'false'}), 200
+
+
+@app.route('/api/v1/sch_a1_on/<tm>', methods=['GET'])
+def sch_a1_on(tm=5):
+    tm = int(tm)
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_a1_on/{}'.format(tm))
+    return jsonify({'msg': 'true'}), 200
+
+
+@app.route('/api/v1/sch_a1_off/<tm>', methods=['GET'])
+def sch_a1_off(tm=5):
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_a1_off/{}'.format(tm))
+    return jsonify({'msg': 'false'}), 200
+
+
+# Aux2 controls from server to RPi
+@app.route('/api/v1/aux_2_on', methods=['GET'])
+def aux_2_on():
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/aux_2_on')
+    return jsonify({'msg': 'true'}), 200
+
+
+@app.route('/api/v1/aux_2_off', methods=['GET'])
+def aux_2_off():
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/aux_2_off')
+    return jsonify({'msg': 'false'}), 200
+
+
+@app.route('/api/v1/sch_a2_on/<tm>', methods=['GET'])
+def sch_a2_on(tm=5):
+    tm = int(tm)
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_a2_on/{}'.format(tm))
+    return jsonify({'msg': 'true'}), 200
+
+
+@app.route('/api/v1/sch_a2_off/<tm>', methods=['GET'])
+def sch_a2_off(tm=5):
+    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_a2_off/{}'.format(tm))
     return jsonify({'msg': 'false'}), 200
 
 
