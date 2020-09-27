@@ -1,14 +1,9 @@
 import React from 'react';
 import {
     StyleSheet,
-    TextInput,
     Text,
     View,
-    ImageBackground,
-    StatusBar
 } from 'react-native';
-let jwtDecode = require('jwt-decode');
-
 
 export default class WaterTemp extends React.Component{
     state = {

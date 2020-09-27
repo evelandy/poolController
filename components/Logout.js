@@ -3,7 +3,7 @@ import {
     StyleSheet, 
     View, 
     Text, 
-    TouchableOpacity, Button 
+    TouchableOpacity,
 } from 'react-native';
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 

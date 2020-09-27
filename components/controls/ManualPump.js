@@ -4,15 +4,12 @@ import {
     Text,
     View,
     ImageBackground,
-    StatusBar,
     TouchableOpacity
 } from 'react-native';
 import Logout from '../Logout';
 import PumpDisp from '../PumpDisp';
 import TempDisp from '../TempDisp';
 import WaterTemp from '../WaterTemp';
-let jwtDecode = require('jwt-decode');
-
 
 export default class ManualPump extends React.Component{
     static navigationOptions = {
@@ -26,19 +23,18 @@ export default class ManualPump extends React.Component{
         this.dispPmp
     }
 
-
-    dispPmp = () => {
-        fetch('http://127.0.0.1:5000/api/v1/pump_disp')
-        .then((response) => {
-            let data = response.json()
-            return data
-        })
-        .then((data) => {
-            this.setState({
-                running: data.msg
-            })
-        })
-    }
+    // dispPmp = () => {
+    //     fetch('http://127.0.0.1:5000/api/v1/pump_disp')
+    //     .then((response) => {
+    //         let data = response.json()
+    //         return data
+    //     })
+    //     .then((data) => {
+    //         this.setState({
+    //             running: data.msg
+    //         })
+    //     })
+    // }
     
     manPmpOn = () => {
         fetch('http://127.0.0.1:5000/api/v1/pump_on')
@@ -70,6 +66,9 @@ export default class ManualPump extends React.Component{
             console.warn(error)
         })
     }
+    backToCtrl = () => {
+        this.props.navigation.navigate('ControlDisp')
+    }
 
     render() {
         return (
@@ -82,12 +81,12 @@ export default class ManualPump extends React.Component{
                             Manual Pump Controls
                         </Text>
                         <View style={styles.btnContainer}>
-                            <TouchableOpacity style={styles.manPmpBtn} onPress={() => this.manPmpOn()}>
+                            <TouchableOpacity style={styles.manPmpBtn} onPress={this.manPmpOn}>
                                 <Text style={styles.manPmpBtnTxt}>
                                     on
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.manPmpBtn} onPress={() => this.manPmpOff()}>
+                            <TouchableOpacity style={styles.manPmpBtn} onPress={this.manPmpOff}>
                                 <Text style={styles.manPmpBtnTxt}>
                                     off
                                 </Text>
@@ -97,7 +96,7 @@ export default class ManualPump extends React.Component{
                         <WaterTemp />
                         <PumpDisp running={this.state.running} />
                         <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn} />
-                        <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.navigate('ControlDisp')}>
+                        <TouchableOpacity style={styles.backBtn} onPress={this.backToCtrl}>
                             <Text style={styles.backBtnTxt}>
                                 Back
                             </Text>

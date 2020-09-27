@@ -5,13 +5,17 @@ import {
     View,
     TouchableOpacity
 } from 'react-native';
-let jwtDecode = require('jwt-decode');
-
 
 export default class BtnCard extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
+    navManControl = () => {
+        this.props.navigation(this.props.dest)
+    }
+    navSchControl = () => {
+        this.props.navigation(this.props.destSch)
+    }
 
     render() {
         return (
@@ -20,12 +24,12 @@ export default class BtnCard extends React.Component{
                     {this.props.header}
                 </Text>
                 <View style={styles.pmpBtnContainer}>
-                    <TouchableOpacity onPress={() => this.props.navigation(this.props.dest)} style={styles.manPmpBtn}>
+                    <TouchableOpacity onPress={this.navManControl} style={styles.manPmpBtn}>
                         <Text style={styles.manPmpBtnTxt}>
                             {this.props.manual}
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.schPmpBtn}>
+                    <TouchableOpacity onPress={this.navSchControl} style={styles.schPmpBtn}>
                         <Text style={styles.schPmpBtnTxt}>
                             {this.props.schedule}
                         </Text>

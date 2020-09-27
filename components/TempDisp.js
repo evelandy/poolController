@@ -1,14 +1,10 @@
 import React from 'react';
 import {
     StyleSheet,
-    TextInput,
     Text,
     View,
-    ImageBackground,
-    StatusBar
 } from 'react-native';
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
-//import Logout from './Logout';
 let jwtDecode = require('jwt-decode');
 //await AsyncStorage.getItem('x-access-token').then(console.warn)
 

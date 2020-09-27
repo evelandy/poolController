@@ -162,7 +162,7 @@ def sch_p_on(tm=5):
     tm = int(tm)
     res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_p_on/{}'.format(tm))
     return jsonify({'msg': 'true'}), 200
-
+#http://127.0.0.1:5000/api/v1/sch_p_off/3
 
 @app.route('/api/v1/sch_p_off/<tm>', methods=['GET'])
 def sch_p_off(tm=5):

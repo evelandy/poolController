@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     StyleSheet,
-    TextInput,
     Text,
     View,
     ImageBackground,
@@ -9,7 +8,6 @@ import {
     TouchableOpacity
 } from 'react-native';
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
-//import Logout from './Logout';
 let jwtDecode = require('jwt-decode');
 console.disableYellowBox = true;
 import TempDisp from './TempDisp';

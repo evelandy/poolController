@@ -4,26 +4,30 @@ import {
     Text,
     View,
     ImageBackground,
-    StatusBar,
-    TouchableOpacity
+    TouchableOpacity,
+    TextInput
 } from 'react-native';
-import Logout from '../Logout';
-import PumpDisp from '../PumpDisp';
-import TempDisp from '../TempDisp';
-import WaterTemp from '../WaterTemp';
-let jwtDecode = require('jwt-decode');
+import Logout from '../../Logout';
+import PumpDisp from '../../PumpDisp';
+import TempDisp from '../../TempDisp';
+import WaterTemp from '../../WaterTemp';
 
-
-export default class ManualPump extends React.Component{
+export default class Pump extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
     state = {
-        running: 'false'
+        running: 'false',
+        hour: 10,
+        minute: 30,
+        mid: 'AM',
+        setSchHr: '12',
+        setSchMin: '00',
+        setSchMid: 'PM'
     }
     
-    manPmpOn = () => {
-        fetch('http://127.0.0.1:5000/api/v1/pump_on')
+    schPmpOn = (tm=4) => {
+        fetch(`http://127.0.0.1:5000/api/v1/sch_p_on/${tm}`)
         .then((response) => {
             let data = response.json()
             return data
@@ -37,8 +41,9 @@ export default class ManualPump extends React.Component{
             console.warn(error)
         })
     }
-    manPmpOff = () => {
-        fetch('http://127.0.0.1:5000/api/v1/pump_off')
+
+    schPmpOff = (tm=4) => {
+        fetch(`http://127.0.0.1:5000/api/v1/sch_p_off/${tm}`)
         .then((response) => {
             let data = response.json()
             return data
@@ -51,6 +56,26 @@ export default class ManualPump extends React.Component{
         .catch((error) => {
             console.warn(error)
         })
+    }
+
+    updateValue(text, field){
+        if (field == 'hour'){
+            this.setState({
+                hour: text
+            })
+        } else if (field == 'min'){
+            this.setState({
+                minute: text
+            })
+        } else if (field == 'mid'){
+            this.setState({
+                mid: text
+            })
+        }
+    }
+
+    navControl = () => {
+        this.props.navigation.navigate('ControlDisp')
     }
 
     render() {
@@ -58,28 +83,72 @@ export default class ManualPump extends React.Component{
             <View style={styles.container}>
                 <ImageBackground
                     style={styles.image}
-                    source={require('../img/landingPage.jpg')}>
+                    source={require('../../img/landingPage.jpg')}>
                     <View style={styles.subContainer}>
-                        <Text style={styles.manPmpHeader}>
-                            Manual Pump Controls
+                        <Text style={styles.schPmpHeader}>
+                            Schedule Pump Control
                         </Text>
                         <View style={styles.btnContainer}>
-                            <TouchableOpacity style={styles.manPmpBtn} onPress={() => this.manPmpOn()}>
-                                <Text style={styles.manPmpBtnTxt}>
-                                    on
+                            <TouchableOpacity style={styles.schPmpBtn} onPress={() => {this.schPmpOn(2)}}>
+                                <Text style={styles.schPmpBtnTxt}>
+                                    set
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.manPmpBtn} onPress={() => this.manPmpOff()}>
-                                <Text style={styles.manPmpBtnTxt}>
-                                    off
+                            <TouchableOpacity style={styles.schPmpBtn} onPress={() => {this.schPmpOff(2)}}>
+                                <Text style={styles.schPmpBtnTxt}>
+                                    run
                                 </Text>
                             </TouchableOpacity>
                         </View>
                         <TempDisp />
                         <WaterTemp />
                         <PumpDisp running={this.state.running} />
+                        <View style={styles.currSchContainer}>
+                            <Text style={styles.currSchHeader}>
+                                Current Schedule: &nbsp; {this.state.setSchHr}:{this.state.setSchMin} {this.state.setSchMid}
+                            </Text>
+                        </View>
+                        <View style={styles.inputContainer}>
+                            <TextInput 
+                                style={styles.schInput}
+                                autoCorrect={false}
+                                onChangeText={(text) => this.updateValue(text, 'hour')}
+                                // value={this.state.hour}
+                                keyboardType={'numeric'}
+                                maxLength={2}
+                                returnKeyType='next'
+                                onSubmitEditing={() => this.minuteuInput.focus()}>
+                                    {this.state.hour}
+                            </TextInput>
+                            <Text style={styles.colon}>
+                                :
+                            </Text>
+                            <TextInput 
+                                style={styles.schInput}
+                                autoCorrect={false}
+                                onChangeText={(text) => this.updateValue(text, 'min')}
+                                // value={this.state.minute}
+                                keyboardType={'numeric'}
+                                maxLength={2}
+                                returnKeyType='next'
+                                ref={(input) => this.minuteuInput = input}
+                                onSubmitEditing={() => this.midInput.focus()}>
+                                    {this.state.minute}
+                            </TextInput>
+                            <TextInput 
+                                style={styles.schInput}
+                                autoCapitalize='characters'
+                                autoCorrect={false}
+                                onChangeText={(text) => this.updateValue(text, 'mid')}
+                                value={this.state.mid}
+                                maxLength={2}
+                                returnKeyType='go'
+                                ref={(input) => this.midInput = input}
+                                onSubmitEditing={() => alert(`${this.state.hour}:${this.state.minute} ${this.state.mid}`)}
+                            />
+                        </View>
                         <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn} />
-                        <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.navigate('ControlDisp')}>
+                        <TouchableOpacity style={styles.backBtn} onPress={this.navControl}>
                             <Text style={styles.backBtnTxt}>
                                 Back
                             </Text>
@@ -105,7 +174,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         top: 240
     },
-    manPmpHeader: {
+    schPmpHeader: {
         fontSize: 30,
         fontWeight: 'bold',
         letterSpacing: 1,
@@ -115,8 +184,8 @@ const styles = StyleSheet.create({
         flex: 1,
         resizeMode: 'cover'
     },
-    manPmpBtn: {
-        top: 20,
+    schPmpBtn: {
+        top: 100,
         padding: 15,
         borderRadius: 10,
         backgroundColor: 'navy',
@@ -128,13 +197,13 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginRight: 12
     },
-    manPmpBtnTxt: {
+    schPmpBtnTxt: {
         color: 'white',
         fontSize: 15,
         fontWeight: 'bold'
     },
     logBtn: {
-        top: 300,
+        top: 200,
         padding: 15,
         borderRadius: 10,
         backgroundColor: 'navy',
@@ -146,7 +215,7 @@ const styles = StyleSheet.create({
         width: 340
     },
     backBtn: {
-        top: 320,
+        top: 220,
         padding: 15,
         borderRadius: 10,
         backgroundColor: 'navy',
@@ -160,5 +229,37 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 15,
         fontWeight: 'bold'
+    },
+    currSchHeader: {
+        borderWidth: 1,
+        borderColor: 'white',
+        borderStyle: 'solid',
+        paddingRight: 40,
+        paddingLeft: 40,
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 18,
+        marginTop: 20
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        marginTop: 30
+    },
+    schInput: {
+        width: 42,
+        height: 35,
+        backgroundColor: 'lightblue',
+        borderColor: 'lightgray',
+        borderWidth: 2,
+        borderRadius: 3,
+        fontSize: 25,
+        marginRight: 3,
+        textAlign: 'center'
+    },
+    colon: {
+        color: 'white',
+        fontSize: 25,
+        fontWeight: 'bold',
+        marginRight: 3
     },
 });

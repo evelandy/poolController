@@ -4,8 +4,6 @@ import {
     Text,
     View,
 } from 'react-native';
-let jwtDecode = require('jwt-decode');
-
 
 export default class LightDisp extends React.Component{
     state = {

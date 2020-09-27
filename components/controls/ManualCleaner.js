@@ -4,16 +4,12 @@ import {
     Text,
     View,
     ImageBackground,
-    StatusBar,
     TouchableOpacity
 } from 'react-native';
 import CleanDisp from '../CleanDisp';
 import Logout from '../Logout';
-import PumpDisp from '../PumpDisp';
 import TempDisp from '../TempDisp';
 import WaterTemp from '../WaterTemp';
-let jwtDecode = require('jwt-decode');
-
 
 export default class ManualCleaner extends React.Component{
     static navigationOptions = {
@@ -53,6 +49,9 @@ export default class ManualCleaner extends React.Component{
             console.warn(error)
         })
     }
+    backToCtrl = () => {
+        this.props.navigation.navigate('ControlDisp')
+    }
 
     render() {
         return (
@@ -65,12 +64,12 @@ export default class ManualCleaner extends React.Component{
                             Manual Clean Controls
                         </Text>
                         <View style={styles.btnContainer}>
-                            <TouchableOpacity style={styles.manClnBtn} onPress={() => this.manClnOn()}>
+                            <TouchableOpacity style={styles.manClnBtn} onPress={this.manClnOn}>
                                 <Text style={styles.manClnBtnTxt}>
                                     on
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.manClnBtn} onPress={() => this.manClnOff()}>
+                            <TouchableOpacity style={styles.manClnBtn} onPress={this.manClnOff}>
                                 <Text style={styles.manClnBtnTxt}>
                                     off
                                 </Text>
@@ -80,7 +79,7 @@ export default class ManualCleaner extends React.Component{
                         <WaterTemp />
                         <CleanDisp running={this.state.running} />
                         <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn} />
-                        <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.navigate('ControlDisp')}>
+                        <TouchableOpacity style={styles.backBtn} onPress={this.backToCtrl}>
                             <Text style={styles.backBtnTxt}>
                                 Back
                             </Text>

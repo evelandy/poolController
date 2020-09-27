@@ -7,12 +7,9 @@ import {
     TouchableOpacity
 } from 'react-native';
 import Aux1Disp from '../Aux1Disp';
-import CleanDisp from '../CleanDisp';
 import Logout from '../Logout';
 import TempDisp from '../TempDisp';
 import WaterTemp from '../WaterTemp';
-let jwtDecode = require('jwt-decode');
-
 
 export default class ManualAux1 extends React.Component{
     static navigationOptions = {
@@ -52,6 +49,9 @@ export default class ManualAux1 extends React.Component{
             console.warn(error)
         })
     }
+    backToCtrl = () => {
+        this.props.navigation.navigate('ControlDisp')
+    }
 
     render() {
         return (
@@ -64,12 +64,12 @@ export default class ManualAux1 extends React.Component{
                             Manual Aux-1 Controls
                         </Text>
                         <View style={styles.btnContainer}>
-                            <TouchableOpacity style={styles.manAux1Btn} onPress={() => this.manAux1On()}>
+                            <TouchableOpacity style={styles.manAux1Btn} onPress={this.manAux1On}>
                                 <Text style={styles.manAux1BtnTxt}>
                                     on
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.manAux1Btn} onPress={() => this.manAux1Off()}>
+                            <TouchableOpacity style={styles.manAux1Btn} onPress={this.manAux1Off}>
                                 <Text style={styles.manAux1BtnTxt}>
                                     off
                                 </Text>
@@ -79,7 +79,7 @@ export default class ManualAux1 extends React.Component{
                         <WaterTemp />
                         <Aux1Disp running={this.state.running} />
                         <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn} />
-                        <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.navigate('ControlDisp')}>
+                        <TouchableOpacity style={styles.backBtn} onPress={this.backToCtrl}>
                             <Text style={styles.backBtnTxt}>
                                 Back
                             </Text>

@@ -9,13 +9,14 @@ import {
 } from 'react-native';
 import Logout from '../Logout';
 import BtnCard from './BtnCard';
-let jwtDecode = require('jwt-decode');
-
 
 export default class ControlDisp extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
+    navControl = () => {
+        this.props.navigation.navigate('Dashboard')
+    }
 
     render() {
         return (
@@ -29,12 +30,12 @@ export default class ControlDisp extends React.Component{
                             Control Center
                         </Text>
                         <View style={styles.btnContainer}>
-                            <BtnCard dest={'ManualPump'} navigation={this.props.navigation.navigate} header={' Pump'} manual={'Manual Pump'} schedule={'Schedule Pump'} />
+                            <BtnCard dest={'ManualPump'} destSch={'Pump'} navigation={this.props.navigation.navigate} header={' Pump'} manual={'Manual Pump'} schedule={'Schedule Pump'} />
                             <BtnCard dest={'ManualCleaner'} navigation={this.props.navigation.navigate} header={'Clean'} manual={'Manual Clean'} schedule={'Schedule Clean'} />
                             <BtnCard dest={'ManualLights'} navigation={this.props.navigation.navigate} header={'Lights'} manual={'Manual Light'} schedule={'Schedule Light'} />
                             <BtnCard dest={'ManualAux1'} navigation={this.props.navigation.navigate} header={'  Aux1'} manual={'Manual Aux1'} schedule={'Schedule Aux1'} />
                             <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn} />
-                            <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.navigate('Dashboard')}>
+                            <TouchableOpacity style={styles.backBtn} onPress={this.navControl}>
                                 <Text style={styles.backBtnTxt}>
                                     Back
                                 </Text>
