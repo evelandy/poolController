@@ -31,9 +31,9 @@ export default class ControlDisp extends React.Component{
                         </Text>
                         <View style={styles.btnContainer}>
                             <BtnCard dest={'ManualPump'} destSch={'Pump'} navigation={this.props.navigation.navigate} header={' Pump'} manual={'Manual Pump'} schedule={'Schedule Pump'} />
-                            <BtnCard dest={'ManualCleaner'} navigation={this.props.navigation.navigate} header={'Clean'} manual={'Manual Clean'} schedule={'Schedule Clean'} />
-                            <BtnCard dest={'ManualLights'} navigation={this.props.navigation.navigate} header={'Lights'} manual={'Manual Light'} schedule={'Schedule Light'} />
-                            <BtnCard dest={'ManualAux1'} navigation={this.props.navigation.navigate} header={'  Aux1'} manual={'Manual Aux1'} schedule={'Schedule Aux1'} />
+                            <BtnCard dest={'ManualCleaner'} destSch={'Clean'} navigation={this.props.navigation.navigate} header={'Clean'} manual={'Manual Clean'} schedule={'Schedule Clean'} />
+                            <BtnCard dest={'ManualLights'} destSch={'Light'} navigation={this.props.navigation.navigate} header={'Lights'} manual={'Manual Light'} schedule={'Schedule Light'} />
+                            <BtnCard dest={'ManualAux1'} destSch={'Aux1'} navigation={this.props.navigation.navigate} header={'  Aux1'} manual={'Manual Aux1'} schedule={'Schedule Aux1'} />
                             <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn} />
                             <TouchableOpacity style={styles.backBtn} onPress={this.navControl}>
                                 <Text style={styles.backBtnTxt}>

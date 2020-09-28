@@ -11,6 +11,10 @@ import ManualCleaner from './components/controls/ManualCleaner';
 import ManualLights from './components/controls/ManualLights';
 import ManualAux1 from './components/controls/ManualAux1';
 import Pump from './components/controls/schedule/Pump';
+import Clean from './components/controls/schedule/Clean';
+import Light from './components/controls/schedule/Light';
+import Aux1 from './components/controls/schedule/Aux1';
+import Aux2 from './components/controls/schedule/Aux2';
 
 
 const RootStack = createStackNavigator({
@@ -46,6 +50,15 @@ const RootStack = createStackNavigator({
   },
   Pump: {
     screen: Pump
+  },
+  Clean: {
+    screen: Clean
+  },
+  Light: {
+    screen: Light
+  },
+  Aux1: {
+    screen: Aux1
   },
 });
 

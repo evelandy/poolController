@@ -58,6 +58,23 @@ export default class Pump extends React.Component{
         })
     }
 
+    // algorithm to calculate 24 hour format to check API
+    calcTime = (tm) => {
+        let today = new Date();
+        let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        let curr_hr = parseInt(time.slice(0, 2));
+        if(tm < curr_hr){
+            let add_both = parseInt(curr_hr) + parseInt(tm);
+            let fin_time = add_both - 22;
+            alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and pump will run in ${fin_time} seconds(but needs to be hours)`);
+            this.schPmpOn(fin_time);
+        } else {
+            let set_time = tm - curr_hr;
+            alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and pump will run in ${set_time} seconds(but needs to be hours)`);
+            this.schPmpOn(set_time);
+        }
+    }
+
     updateValue(text, field){
         if (field == 'hour'){
             this.setState({
@@ -89,7 +106,7 @@ export default class Pump extends React.Component{
                             Schedule Pump Control
                         </Text>
                         <View style={styles.btnContainer}>
-                            <TouchableOpacity style={styles.schPmpBtn} onPress={() => {this.schPmpOn(2)}}>
+                            <TouchableOpacity style={styles.schPmpBtn} onPress={() => {this.calcTime(this.state.hour)}}>
                                 <Text style={styles.schPmpBtnTxt}>
                                     set
                                 </Text>
