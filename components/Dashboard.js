@@ -5,11 +5,13 @@ import {
     View,
     ImageBackground,
     StatusBar,
-    TouchableOpacity
+    TouchableOpacity,
+    LogBox,
 } from 'react-native';
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 let jwtDecode = require('jwt-decode');
-console.disableYellowBox = true;
+// console.disableYellowBox = true;
+LogBox.ignoreAllLogs();
 import TempDisp from './TempDisp';
 import PumpDisp from './PumpDisp';
 import CleanDisp from './CleanDisp';

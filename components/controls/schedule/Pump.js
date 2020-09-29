@@ -64,12 +64,12 @@ export default class Pump extends React.Component{
         let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
         let curr_hr = parseInt(time.slice(0, 2));
         if(tm < curr_hr){
-            let add_both = parseInt(curr_hr) + parseInt(tm);
-            let fin_time = add_both - 22;
-            alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and pump will run in ${fin_time} seconds(but needs to be hours)`);
-            this.schPmpOn(fin_time);
+            let add_both = parseInt(curr_hr) - parseInt(tm);
+            let set_time = 24 - add_both;
+            alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and pump will run in ${set_time} seconds(but needs to be hours)`);
+            this.schPmpOn(set_time);
         } else {
-            let set_time = tm - curr_hr;
+            let set_time = parseInt(tm) - parseInt(curr_hr);
             alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and pump will run in ${set_time} seconds(but needs to be hours)`);
             this.schPmpOn(set_time);
         }
@@ -189,7 +189,8 @@ const styles = StyleSheet.create({
     },
     btnContainer: {
         flexDirection: 'row',
-        top: 240
+        top: 240,
+        zIndex: 1,
     },
     schPmpHeader: {
         fontSize: 30,
@@ -212,7 +213,7 @@ const styles = StyleSheet.create({
         borderColor: 'lightgray',
         width: 150,
         marginLeft: 10,
-        marginRight: 12
+        marginRight: 12,
     },
     schPmpBtnTxt: {
         color: 'white',

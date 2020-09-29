@@ -58,6 +58,23 @@ export default class Clean extends React.Component{
         })
     }
 
+    // algorithm to calculate 24 hour format to check API
+    calcTime = (tm) => {
+        let today = new Date();
+        let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        let curr_hr = parseInt(time.slice(0, 2));
+        if(tm < curr_hr){
+            let add_both = parseInt(curr_hr) - parseInt(tm);
+            let set_time = 24 - add_both;
+            alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and clean will run in ${set_time} seconds(but needs to be hours)`);
+            this.schClnOn(set_time);
+        } else {
+            let set_time = parseInt(tm) - parseInt(curr_hr);
+            alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and clean will run in ${set_time} seconds(but needs to be hours)`);
+            this.schClnOn(set_time);
+        }
+    }
+
     updateValue(text, field){
         if (field == 'hour'){
             this.setState({
@@ -89,7 +106,7 @@ export default class Clean extends React.Component{
                             Schedule Clean Control
                         </Text>
                         <View style={styles.btnContainer}>
-                            <TouchableOpacity style={styles.schClnBtn} onPress={() => {this.schClnOn(2)}}>
+                            <TouchableOpacity style={styles.schClnBtn} onPress={() => {this.calcTime(this.state.hour)}}>
                                 <Text style={styles.schClnBtnTxt}>
                                     set
                                 </Text>
@@ -172,7 +189,8 @@ const styles = StyleSheet.create({
     },
     btnContainer: {
         flexDirection: 'row',
-        top: 240
+        top: 240,
+        zIndex: 1
     },
     schClnHeader: {
         fontSize: 30,

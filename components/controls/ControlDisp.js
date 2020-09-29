@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
     subContainer: {
         top: 50,
         alignItems: 'center',
+        zIndex: 1,
     },
     image: {
         width: '100%',

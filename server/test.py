@@ -19,3 +19,36 @@ conn.close()
 #
 # tester = conn.execute('DESC data')
 # print(tester)
+
+"""
+
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+
+
+scheduler = BlockingScheduler()
+
+
+def show_txt():
+    print('hello from show text!')
+
+
+# scheduler.add_job(
+#     func=show_txt,
+#     trigger=IntervalTrigger(seconds=3)
+# )
+#
+# scheduler.start()
+
+
+f = 2
+@scheduler.scheduled_job('interval', seconds=f)
+def my_interval_job():
+    print('Hello World!')
+
+
+scheduler.start()
+
+
+"""

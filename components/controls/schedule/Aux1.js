@@ -58,6 +58,23 @@ export default class Aux1 extends React.Component{
         })
     }
 
+    // algorithm to calculate 24 hour format to check API
+    calcTime = (tm) => {
+        let today = new Date();
+        let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        let curr_hr = parseInt(time.slice(0, 2));
+        if(tm < curr_hr){
+            let add_both = parseInt(curr_hr) - parseInt(tm);
+            let set_time = 24 - add_both;
+            alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and pump will run in ${set_time} seconds(but needs to be hours)`);
+            this.schAux1On(set_time);
+        } else {
+            let set_time = parseInt(tm) - parseInt(curr_hr);
+            alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and pump will run in ${set_time} seconds(but needs to be hours)`);
+            this.schAux1On(set_time);
+        }
+    }
+
     updateValue(text, field){
         if (field == 'hour'){
             this.setState({
@@ -89,7 +106,7 @@ export default class Aux1 extends React.Component{
                             Schedule Aux1 Control
                         </Text>
                         <View style={styles.btnContainer}>
-                            <TouchableOpacity style={styles.schAux1Btn} onPress={() => {this.schAux1On(2)}}>
+                            <TouchableOpacity style={styles.schAux1Btn} onPress={() => {this.calcTime(this.state.hour)}}>
                                 <Text style={styles.schAux1BtnTxt}>
                                     set
                                 </Text>
@@ -172,7 +189,8 @@ const styles = StyleSheet.create({
     },
     btnContainer: {
         flexDirection: 'row',
-        top: 240
+        top: 240,
+        zIndex: 1,
     },
     schAux1Header: {
         fontSize: 30,
