@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-
 export default class Home extends React.Component{
     static navigationOptions = {
         headerShown: false

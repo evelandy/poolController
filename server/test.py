@@ -1,23 +1,32 @@
 import sqlite3
 
 
-conn = sqlite3.connect('data.db')
-print('db opened!')
-conn.execute("""CREATE TABLE user(
-             id INTEGER PRIMARY KEY AUTOINCREMENT,
-             username CHAR(80),
-             password CHAR(120),
-             admin BOOL);""")
-print('Table created!')
-conn.close()
+# conn = sqlite3.connect('data.db')
+# print('db opened!')
+# conn.execute("""CREATE TABLE user(
+#              id INTEGER PRIMARY KEY AUTOINCREMENT,
+#              fname CHAR(80),
+#              lname CHAR(80),
+#              username CHAR(80) UNIQUE,
+#              password CHAR(120),
+#              email CHAR(80) UNIQUE,
+#              address CHAR(80),
+#              add2 CHAR(10),
+#              city CHAR(40),
+#              sta CHAR(4),
+#              zipCode INTEGER,
+#              phone INTEGER UNIQUE,
+#              admin BOOL);""")
+# print('Table created!')
+# conn.close()
 
 
 # conn = sqlite3.connect('data.db')
-# cur = conn.execute('SELECT * FROM data')
+# cur = conn.execute('SELECT * FROM test')
 # for row in cur:
 #     print(row)
 #
-# tester = conn.execute('DESC data')
+# tester = conn.execute('DESC test')
 # print(tester)
 
 """

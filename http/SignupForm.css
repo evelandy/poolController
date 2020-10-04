@@ -1,0 +1,132 @@
+body {
+
+}
+.container {
+    display: flex;
+    flex-direction: column;
+}
+.signForm {
+    display: flex;
+    flex-direction: column;
+}
+.mainHead {
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: navy;
+}
+form > label {
+    text-align: center;
+}
+form > input {
+    border: 2px solid black;
+    border-radius: 3px;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+    form > input, 
+    form > button {
+        position: relative;
+        left: 7.5%;
+        width: 50rem;
+    }
+    .mainHead {
+        font-size: 55px;
+    }
+    form > input,
+    form > label,
+    form > button {
+        font-size: 36px;
+    }
+    form > input, 
+    form > button {
+        width: 50rem;
+    }
+    form > label {
+        margin-top: 1rem;
+    }
+    form > button {
+        margin-top: 2.5rem;
+        margin-bottom: 3rem;
+    }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+    .signForm {
+        border: 2px solid black;
+        border-radius: 5px;
+        max-width: 40rem;
+        position: relative;
+        left: 17%;
+        margin-bottom: 1rem;
+    }
+    .mainHead {
+        font-size: 30px;
+    }
+    form > input,
+    form > label,
+    form > button {
+        font-size: 20px;
+    }
+    form > input,
+    form > button {
+        width: 25rem;
+        left: 19%;
+    }
+    form > label {
+        margin-top: .5rem;
+    }
+    form > button {
+        margin-top: 2rem;
+        margin-bottom: 3rem;
+        width: 25.5rem;
+        height: 35px;
+    }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+    /* .container {
+        max-width: 35rem;
+        border: 2px solid black;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        left: 20%;
+    }
+    .signForm {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        width: 25rem;
+    } */
+    .mainHead {
+        position: relative;
+        right: 10px;
+    }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+    .signForm {
+        left: 27%;
+    }
+    form > input,
+    form > label,
+    form > button {
+        font-size: 18px;
+    }
+    form > button {
+        height: 30px;
+        margin-top: 1.5rem;
+    }
+}

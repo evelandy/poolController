@@ -14,6 +14,10 @@ import jwt
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SECRET_KEY'] = 'MainSecretKey'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+RPI_IP_ADDR = '192.168.1.142'
+RPI_PORT = '5000'
 
 db = SQLAlchemy(app)
 CORS(app)
@@ -22,8 +26,17 @@ CORS(app)
 # login user info
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    fname = db.Column(db.String(80))
+    lname = db.Column(db.String(80))
     username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(120))
+    email = db.Column(db.String(80), unique=True)
+    address = db.Column(db.String(80))
+    add2 = db.Column(db.String(10))
+    city = db.Column(db.String(40))
+    sta = db.Column(db.String(4))
+    zipCode = db.Column(db.Integer)
+    phone = db.Column(db.Integer, unique=True)
     admin = db.Column(db.Boolean)
 
 
@@ -61,7 +74,11 @@ def token_req(f):
 # check to see that server is running and connected properly
 @app.route('/api/v1/check', methods=['GET'])
 def server_check():
-    return jsonify({'message': 'Good'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/check'.format(RPI_IP_ADDR, RPI_PORT))
+    if res.json() == 'Good':
+        return jsonify({'message': 'Good'}), 200
+    else:
+        return jsonify({'message': 'RPi Server is down'}), 400
 
 
 # login
@@ -74,7 +91,9 @@ def login():
     if not user:
         return make_response("Could not verify username", 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})
     if check_password_hash(user.password, auth.password):
-        token = jwt.encode({'id': user.id, 'username': user.username, 'password': user.password,
+        token = jwt.encode({'id': user.id, 'fname': user.fname, 'lname': user.lname, 'username': user.username,
+                            'password': user.password, 'email': user.email, 'address': user.address, 'add2': user.add2,
+                            'city': user.city, 'sta': user.sta, 'zipCode': user.zipCode, 'phone': user.phone,
                             'admin': user.admin, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=120)},
                            app.config['SECRET_KEY'])
         return jsonify({"token": token.decode('UTF-8'), 'name': user.username, 'password': user.password, 'id': user.id,
@@ -87,7 +106,9 @@ def login():
 def add_user():
     data = request.get_json()
     hash_password = generate_password_hash(data['password'], method='sha256')
-    new_user = User(username=data['username'], password=hash_password, admin=False)
+    new_user = User(fname=data['fname'], lname=data['lname'], username=data['username'], password=hash_password,
+                    email=data['email'], address=data['address'], add2=data['add2'], city=data['city'],
+                    sta=data['sta'], zipCode=data['zipCode'], phone=data['phone'], admin=True)
     db.session.add(new_user)
     db.session.commit()
     return jsonify({"message": "new user added"}), 201
@@ -103,8 +124,17 @@ def user(user_id):
 
     user_data = {}
     user_data['id'] = user.id
+    user_data['fname'] = user.fname
+    user_data['lname'] = user.lname
     user_data['username'] = user.username
     user_data['password'] = user.password
+    user_data['email'] = user.email
+    user_data['address'] = user.address
+    user_data['add2'] = user.add2
+    user_data['city'] = user.city
+    user_data['sta'] = user.sta
+    user_data['zipCode'] = user.zipCode
+    user_data['phone'] = user.phone
     user_data['admin'] = user.admin
 
     return jsonify(user_data)
@@ -116,14 +146,22 @@ def logout():
     pass
 
 
+@app.route('/api/v1/temp', methods=['GET'])
+def temp():
+    res = requests.get(url='http://{}:{}/api/v1/temp'.format(RPI_IP_ADDR, RPI_PORT))
+    # with open('/tmp/movies.tmp.json', 'w') as f:
+    #     f.write(res.text)
+    return jsonify({'message': '{}'.format(res.json())})
+
+
 # @app.route('/api/v1/pump/<pool_id>', methods=['GET'])
 # def pump(pool_id):
-#     # res = requests.get(url='http://192.168.1.116:5000/api/led')
-#     # return jsonify({'msg': 'pump on'})
+#     # res = requests.get(url='http://192.168.1.116:{}/api/led'.format(RPI_IP_ADDR, RPI_PORT)
+#     # return jsonify({'message': 'pump on'})
 #     pool = Ctrl.query.filter_by(id=pool_id).first()
 #
 #     if not pool:
-#         return jsonify({'msg': 'pump not found'}), 404
+#         return jsonify({'message': 'pump not found'}), 404
 #
 #     if pool.pump == False:
 #         pool.pump = True
@@ -138,152 +176,152 @@ def logout():
 # pump controls from server to RPi
 @app.route('/api/v1/pump_on', methods=['GET'])
 def pump_on():
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/pump_on')
-    return jsonify({'msg': 'true'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/pump_on'.format(RPI_IP_ADDR, RPI_PORT))
+    return jsonify({'message': 'true'}), 200
 
 
 @app.route('/api/v1/pump_off', methods=['GET'])
 def pump_off():
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/pump_off')
-    return jsonify({'msg': 'false'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/pump_off'.format(RPI_IP_ADDR, RPI_PORT))
+    return jsonify({'message': 'false'}), 200
 
 
 @app.route('/api/v1/pump_disp', methods=['GET'])
 def pump_disp():
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/pump_disp')
+    res = requests.get(url='http://{}:{}/api/v1/pump_disp'.format(RPI_IP_ADDR, RPI_PORT))
     if res.status_code == 201:
-        return jsonify({'msg': 'false'}), 200
+        return jsonify({'message': 'false'}), 200
     elif res.status_code == 200:
-        return jsonify({'msg': 'true'}), 200
+        return jsonify({'message': 'true'}), 200
 
 
 @app.route('/api/v1/sch_p_on/<tm>', methods=['GET'])
 def sch_p_on(tm=5):
     tm = int(tm)
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_p_on/{}'.format(tm))
-    return jsonify({'msg': 'true'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/sch_p_on/{}'.format(RPI_IP_ADDR, RPI_PORT, tm))
+    return jsonify({'message': 'true'}), 200
 
 
 @app.route('/api/v1/sch_p_off/<tm>', methods=['GET'])
 def sch_p_off(tm=5):
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_p_off/{}'.format(tm))
-    return jsonify({'msg': 'false'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/sch_p_off/{}'.format(RPI_IP_ADDR, RPI_PORT, tm))
+    return jsonify({'message': 'false'}), 200
 
 
 # @app.route('/api/v1/clean', methods=['GET'])
 # def clean():
-#     res = requests.get(url='http://192.168.1.116:5000/api/led')
-#     return jsonify({'msg': 'cleaner on'})
+#     res = requests.get(url='http://192.168.1.116:{}/api/led'.format(RPI_IP_ADDR, RPI_PORT)
+#     return jsonify({'message': 'cleaner on'})
 
 
 # cleaner controls from server to RPi
 @app.route('/api/v1/clean_on', methods=['GET'])
 def clean_on():
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/clean_on')
-    return jsonify({'msg': 'true'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/clean_on'.format(RPI_IP_ADDR, RPI_PORT))
+    return jsonify({'message': 'true'}), 200
 
 
 @app.route('/api/v1/clean_off', methods=['GET'])
 def clean_off():
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/clean_off')
-    return jsonify({'msg': 'false'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/clean_off'.format(RPI_IP_ADDR, RPI_PORT))
+    return jsonify({'message': 'false'}), 200
 
 
 @app.route('/api/v1/sch_c_on/<tm>', methods=['GET'])
 def sch_c_on(tm=5):
     tm = int(tm)
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_c_on/{}'.format(tm))
-    return jsonify({'msg': 'true'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/sch_c_on/{}'.format(RPI_IP_ADDR, RPI_PORT, tm))
+    return jsonify({'message': 'true'}), 200
 
 
 @app.route('/api/v1/sch_c_off/<tm>', methods=['GET'])
 def sch_c_off(tm=5):
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_c_off/{}'.format(tm))
-    return jsonify({'msg': 'false'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/sch_c_off/{}'.format(RPI_IP_ADDR, RPI_PORT, tm))
+    return jsonify({'message': 'false'}), 200
 
 
 # @app.route('/api/v1/light', methods=['GET'])
 # def light():
-#     res = requests.get(url='http://192.168.1.116:5000/api/led')
-#     return jsonify({'msg': 'lights on'})
+#     res = requests.get(url='http://192.168.1.116:{}/api/led'.format(RPI_IP_ADDR, RPI_PORT)
+#     return jsonify({'message': 'lights on'})
 
 
 # light controls from server to RPi
 @app.route('/api/v1/light_on', methods=['GET'])
 def light_on():
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/light_on')
-    return jsonify({'msg': 'true'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/light_on'.format(RPI_IP_ADDR, RPI_PORT))
+    return jsonify({'message': 'true'}), 200
 
 
 @app.route('/api/v1/light_off', methods=['GET'])
 def light_off():
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/light_off')
-    return jsonify({'msg': 'false'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/light_off'.format(RPI_IP_ADDR, RPI_PORT))
+    return jsonify({'message': 'false'}), 200
 
 
 @app.route('/api/v1/sch_l_on/<tm>', methods=['GET'])
 def sch_l_on(tm=5):
     tm = int(tm)
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_l_on/{}'.format(tm))
-    return jsonify({'msg': 'true'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/sch_l_on/{}'.format(RPI_IP_ADDR, RPI_PORT, tm))
+    return jsonify({'message': 'true'}), 200
 
 
 @app.route('/api/v1/sch_l_off/<tm>', methods=['GET'])
 def sch_l_off(tm=5):
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_l_off/{}'.format(tm))
-    return jsonify({'msg': 'false'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/sch_l_off/{}'.format(RPI_IP_ADDR, RPI_PORT, tm))
+    return jsonify({'message': 'false'}), 200
 
 
 # Aux1 controls from server to RPi
 @app.route('/api/v1/aux_1_on', methods=['GET'])
 def aux_1_on():
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/aux_1_on')
-    return jsonify({'msg': 'true'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/aux_1_on'.format(RPI_IP_ADDR, RPI_PORT))
+    return jsonify({'message': 'true'}), 200
 
 
 @app.route('/api/v1/aux_1_off', methods=['GET'])
 def aux_1_off():
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/aux_1_off')
-    return jsonify({'msg': 'false'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/aux_1_off'.format(RPI_IP_ADDR, RPI_PORT))
+    return jsonify({'message': 'false'}), 200
 
 
 @app.route('/api/v1/sch_a1_on/<tm>', methods=['GET'])
 def sch_a1_on(tm=5):
     tm = int(tm)
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_a1_on/{}'.format(tm))
-    return jsonify({'msg': 'true'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/sch_a1_on/{}'.format(RPI_IP_ADDR, RPI_PORT, tm))
+    return jsonify({'message': 'true'}), 200
 
 
 @app.route('/api/v1/sch_a1_off/<tm>', methods=['GET'])
 def sch_a1_off(tm=5):
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_a1_off/{}'.format(tm))
-    return jsonify({'msg': 'false'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/sch_a1_off/{}'.format(RPI_IP_ADDR, RPI_PORT, tm))
+    return jsonify({'message': 'false'}), 200
 
 
 # Aux2 controls from server to RPi
 @app.route('/api/v1/aux_2_on', methods=['GET'])
 def aux_2_on():
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/aux_2_on')
-    return jsonify({'msg': 'true'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/aux_2_on'.format(RPI_IP_ADDR, RPI_PORT))
+    return jsonify({'message': 'true'}), 200
 
 
 @app.route('/api/v1/aux_2_off', methods=['GET'])
 def aux_2_off():
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/aux_2_off')
-    return jsonify({'msg': 'false'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/aux_2_off'.format(RPI_IP_ADDR, RPI_PORT))
+    return jsonify({'message': 'false'}), 200
 
 
 @app.route('/api/v1/sch_a2_on/<tm>', methods=['GET'])
 def sch_a2_on(tm=5):
     tm = int(tm)
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_a2_on/{}'.format(tm))
-    return jsonify({'msg': 'true'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/sch_a2_on/{}'.format(RPI_IP_ADDR, RPI_PORT, tm))
+    return jsonify({'message': 'true'}), 200
 
 
 @app.route('/api/v1/sch_a2_off/<tm>', methods=['GET'])
 def sch_a2_off(tm=5):
-    res = requests.get(url='http://192.168.1.109:5000/api/v1/sch_a2_off/{}'.format(tm))
-    return jsonify({'msg': 'false'}), 200
+    res = requests.get(url='http://{}:{}/api/v1/sch_a2_off/{}'.format(RPI_IP_ADDR, RPI_PORT, tm))
+    return jsonify({'message': 'false'}), 200
 
 
 if __name__ == '__main__':

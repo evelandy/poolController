@@ -5,10 +5,28 @@ import {
     View,
 } from 'react-native';
 
+
 export default class WaterTemp extends React.Component{
     state = {
         temp: 0
     }
+    tempCheck = () => {
+        fetch('http://127.0.0.1:5000/api/v1/temp')
+        .then((res) => {
+            let data = res.json();
+            return data;
+        })
+        .then((data) => {
+            this.setState({
+                temp: data.message
+            })
+        })
+    }
+    
+    componentDidMount(){
+        this.tempCheck()
+    }
+
     render() {
         return (
             <View style={styles.tempContainer}>

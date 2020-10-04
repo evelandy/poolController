@@ -103,7 +103,8 @@ const styles = StyleSheet.create({
     },
     btnContainer: {
         flexDirection: 'row',
-        top: 240
+        top: 240,
+        zIndex: 1,
     },
     manLgtHeader: {
         fontSize: 30,

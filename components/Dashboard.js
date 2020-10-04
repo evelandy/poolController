@@ -26,20 +26,81 @@ export default class Dashboard extends React.Component{
     };
 
     state = {
+        greet: 'Hey',
+        fname: '',
         username: '',
         running: this.props.running
     }
 
+    greet_lst = [
+        'Welcome',
+        'Hello',
+        'Hi',
+        'Greetings',
+        'Hey',
+    ];
+
     componentDidMount(){
-        this.displayUsername()
+        this.displayFname()
+        this.disp_greet_lst()
+    }
+
+    disp_greet_lst = () => {
+        let today = new Date();
+        let curHr = today.getHours();
+        if (curHr < 12) {
+            this.greet_lst.push('Morning')
+            let randomGreet = this.greet_lst[Math.floor(Math.random()*this.greet_lst.length)];
+            return (
+                this.setState({
+                    greet: randomGreet
+                })
+            )
+        } else if (curHr < 18) {
+            this.greet_lst.push('Afternoon')
+            let randomGreet = this.greet_lst[Math.floor(Math.random()*this.greet_lst.length)];
+            return (
+                this.setState({
+                    greet: randomGreet
+                })
+            )
+        } else {
+            this.greet_lst.push('Evening')
+            let randomGreet = this.greet_lst[Math.floor(Math.random()*this.greet_lst.length)];
+            return (
+                this.setState({
+                    greet: randomGreet
+                })
+            )
+        }
+    }
+
+    async displayFname(){
+        let token = await AsyncStorage.getItem('x-access-token');
+        let decoded = jwtDecode(token);
+        if(decoded.fname[0] === decoded.fname[0].toUpperCase()){
+            this.setState({
+                fname: decoded.fname
+            })
+        } else if(decoded.fname[0] !== decoded.fname[0].toUpperCase()){
+            this.setState({
+                fname: decoded.fname.charAt(0).toUpperCase() + decoded.fname.slice(1)
+            });
+        }
     }
 
     async displayUsername(){
         let token = await AsyncStorage.getItem('x-access-token');
         let decoded = jwtDecode(token);
-        this.setState({
-            username: decoded.username
-        });
+        if(decoded.username[0] === decoded.username[0].toUpperCase()){
+            this.setState({
+                username: decoded.username
+            })
+        } else if(decoded.username[0] !== decoded.username[0].toUpperCase()){
+            this.setState({
+                username: decoded.username.charAt(0).toUpperCase() + decoded.username.slice(1)
+            });
+        }
     }
 
     render() {        
@@ -51,7 +112,7 @@ export default class Dashboard extends React.Component{
                         source={require('./img/landingPage.jpg')}>
                         <View style={styles.subContainer}>
                             <Text style={styles.dashHeader}>
-                                welcome, {this.state.username}
+                                {this.state.greet}, {this.state.fname}
                             </Text>
                             <View style={styles.dispContainer}>
                                 <TempDisp/>
@@ -85,6 +146,9 @@ const styles = StyleSheet.create({
         top: 50,
         alignItems: 'center',
     },
+    ctrlContainer: {
+        zIndex: 1
+    },
     image: {
         width: '100%',
         flex: 1,
@@ -95,6 +159,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         letterSpacing: 1,
         paddingBottom: 20,
+        color: 'lightblue'
     },
     ctrlBtn: {
         top: 225,

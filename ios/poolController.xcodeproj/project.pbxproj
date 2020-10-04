@@ -14,12 +14,12 @@
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		2D73AB4E9599AD636AFDBD75 /* libPods-poolController-poolControllerTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4F5402425403F01393F6BD7 /* libPods-poolController-poolControllerTests.a */; };
 		2DCD954D1E0B4F2C00145EB5 /* poolControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* poolControllerTests.m */; };
-		64CA3C9CB140242B8DB46E65 /* libPods-poolController-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7D4718414CFE6C7946FECC6 /* libPods-poolController-tvOSTests.a */; };
-		74DA8B17E818063836269550 /* libPods-poolController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B9EEE194C36CEE7A2A1C5AD /* libPods-poolController.a */; };
+		316251606CEBE139C4E435F3 /* libPods-poolController-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83466E10A82A42EDD49C748E /* libPods-poolController-tvOSTests.a */; };
+		75DE6EBCFBCCC3CA382E575B /* libPods-poolController-poolControllerTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE1BA57DB556024B6806B23 /* libPods-poolController-poolControllerTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		DDF2F0F7436BA796A4FCEAFD /* libPods-poolController-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB07A7D05AD68F712C96FC78 /* libPods-poolController-tvOS.a */; };
+		C9599CD2546CA89B790641E1 /* libPods-poolController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C17E8CC79B23C27DFDAB9D1 /* libPods-poolController.a */; };
+		CB75FE03686EC0121DEBCD2D /* libPods-poolController-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8541FEDF0E64E52B1374E03B /* libPods-poolController-tvOS.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,33 +40,33 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		002B00AA295B63F6CFF1BCB0 /* Pods-poolController.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController.debug.xcconfig"; path = "Target Support Files/Pods-poolController/Pods-poolController.debug.xcconfig"; sourceTree = "<group>"; };
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		00E356EE1AD99517003FC87E /* poolControllerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = poolControllerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* poolControllerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = poolControllerTests.m; sourceTree = "<group>"; };
-		0E92E51DDFD54D6F092D29EB /* Pods-poolController-poolControllerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController-poolControllerTests.debug.xcconfig"; path = "Target Support Files/Pods-poolController-poolControllerTests/Pods-poolController-poolControllerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		02A599217F7BD8AB63C070D3 /* Pods-poolController-poolControllerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController-poolControllerTests.release.xcconfig"; path = "Target Support Files/Pods-poolController-poolControllerTests/Pods-poolController-poolControllerTests.release.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* poolController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = poolController.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = poolController/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = poolController/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = poolController/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = poolController/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = poolController/main.m; sourceTree = "<group>"; };
-		1BCFB3839E8A28C62085B351 /* Pods-poolController-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-poolController-tvOS/Pods-poolController-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		1C17E8CC79B23C27DFDAB9D1 /* libPods-poolController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-poolController.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E47B1E0B4A5D006451C7 /* poolController-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "poolController-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* poolController-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "poolController-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2F11814A14E3473ED2AAF67B /* Pods-poolController.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController.release.xcconfig"; path = "Target Support Files/Pods-poolController/Pods-poolController.release.xcconfig"; sourceTree = "<group>"; };
-		40575FD79A96B2B9A19DE995 /* Pods-poolController-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController-tvOS.release.xcconfig"; path = "Target Support Files/Pods-poolController-tvOS/Pods-poolController-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		7F6F9F9B6B3CCB63B1C52FCF /* Pods-poolController-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-poolController-tvOSTests/Pods-poolController-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = poolController/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		82E7F378827B1772EFF9F31B /* Pods-poolController.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController.debug.xcconfig"; path = "Target Support Files/Pods-poolController/Pods-poolController.debug.xcconfig"; sourceTree = "<group>"; };
-		8810BFB0F5392ABF138005C4 /* Pods-poolController-poolControllerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController-poolControllerTests.release.xcconfig"; path = "Target Support Files/Pods-poolController-poolControllerTests/Pods-poolController-poolControllerTests.release.xcconfig"; sourceTree = "<group>"; };
-		9B9EEE194C36CEE7A2A1C5AD /* libPods-poolController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-poolController.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A4F5402425403F01393F6BD7 /* libPods-poolController-poolControllerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-poolController-poolControllerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E7D4718414CFE6C7946FECC6 /* libPods-poolController-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-poolController-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E934992C11FCEC44B1A53855 /* Pods-poolController-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-poolController-tvOSTests/Pods-poolController-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
-		EB07A7D05AD68F712C96FC78 /* libPods-poolController-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-poolController-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		83466E10A82A42EDD49C748E /* libPods-poolController-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-poolController-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8541FEDF0E64E52B1374E03B /* libPods-poolController-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-poolController-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1553B2A4FFA6D37F4DC97E0 /* Pods-poolController-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController-tvOS.release.xcconfig"; path = "Target Support Files/Pods-poolController-tvOS/Pods-poolController-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		AF032823164579253915CCB6 /* Pods-poolController-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-poolController-tvOS/Pods-poolController-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		BD3B46D2F0D15154D8762446 /* Pods-poolController-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-poolController-tvOSTests/Pods-poolController-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
+		C919E22A9C33D8419F707F7E /* Pods-poolController-poolControllerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController-poolControllerTests.debug.xcconfig"; path = "Target Support Files/Pods-poolController-poolControllerTests/Pods-poolController-poolControllerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		D9681B6E738AB422161F3F60 /* Pods-poolController.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController.release.xcconfig"; path = "Target Support Files/Pods-poolController/Pods-poolController.release.xcconfig"; sourceTree = "<group>"; };
+		DCE1BA57DB556024B6806B23 /* libPods-poolController-poolControllerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-poolController-poolControllerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
-		F58C5A65864BADC6088B2751 /* Pods-poolController-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poolController-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-poolController-tvOSTests/Pods-poolController-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,7 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2D73AB4E9599AD636AFDBD75 /* libPods-poolController-poolControllerTests.a in Frameworks */,
+				75DE6EBCFBCCC3CA382E575B /* libPods-poolController-poolControllerTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,7 +82,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				74DA8B17E818063836269550 /* libPods-poolController.a in Frameworks */,
+				C9599CD2546CA89B790641E1 /* libPods-poolController.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,7 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DDF2F0F7436BA796A4FCEAFD /* libPods-poolController-tvOS.a in Frameworks */,
+				CB75FE03686EC0121DEBCD2D /* libPods-poolController-tvOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,7 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				64CA3C9CB140242B8DB46E65 /* libPods-poolController-tvOSTests.a in Frameworks */,
+				316251606CEBE139C4E435F3 /* libPods-poolController-tvOSTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,10 +141,10 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
-				9B9EEE194C36CEE7A2A1C5AD /* libPods-poolController.a */,
-				A4F5402425403F01393F6BD7 /* libPods-poolController-poolControllerTests.a */,
-				EB07A7D05AD68F712C96FC78 /* libPods-poolController-tvOS.a */,
-				E7D4718414CFE6C7946FECC6 /* libPods-poolController-tvOSTests.a */,
+				1C17E8CC79B23C27DFDAB9D1 /* libPods-poolController.a */,
+				DCE1BA57DB556024B6806B23 /* libPods-poolController-poolControllerTests.a */,
+				8541FEDF0E64E52B1374E03B /* libPods-poolController-tvOS.a */,
+				83466E10A82A42EDD49C748E /* libPods-poolController-tvOSTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -193,14 +193,14 @@
 		EA8E86A45C8FAB5635BCBA4C /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				82E7F378827B1772EFF9F31B /* Pods-poolController.debug.xcconfig */,
-				2F11814A14E3473ED2AAF67B /* Pods-poolController.release.xcconfig */,
-				0E92E51DDFD54D6F092D29EB /* Pods-poolController-poolControllerTests.debug.xcconfig */,
-				8810BFB0F5392ABF138005C4 /* Pods-poolController-poolControllerTests.release.xcconfig */,
-				1BCFB3839E8A28C62085B351 /* Pods-poolController-tvOS.debug.xcconfig */,
-				40575FD79A96B2B9A19DE995 /* Pods-poolController-tvOS.release.xcconfig */,
-				F58C5A65864BADC6088B2751 /* Pods-poolController-tvOSTests.debug.xcconfig */,
-				E934992C11FCEC44B1A53855 /* Pods-poolController-tvOSTests.release.xcconfig */,
+				002B00AA295B63F6CFF1BCB0 /* Pods-poolController.debug.xcconfig */,
+				D9681B6E738AB422161F3F60 /* Pods-poolController.release.xcconfig */,
+				C919E22A9C33D8419F707F7E /* Pods-poolController-poolControllerTests.debug.xcconfig */,
+				02A599217F7BD8AB63C070D3 /* Pods-poolController-poolControllerTests.release.xcconfig */,
+				AF032823164579253915CCB6 /* Pods-poolController-tvOS.debug.xcconfig */,
+				A1553B2A4FFA6D37F4DC97E0 /* Pods-poolController-tvOS.release.xcconfig */,
+				7F6F9F9B6B3CCB63B1C52FCF /* Pods-poolController-tvOSTests.debug.xcconfig */,
+				BD3B46D2F0D15154D8762446 /* Pods-poolController-tvOSTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -212,11 +212,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "poolControllerTests" */;
 			buildPhases = (
-				9E15E2467F5FF0E63260E679 /* [CP] Check Pods Manifest.lock */,
+				72962D6A7909A7EB3954E581 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				E6B89897604FE5F38E05AD5C /* [CP] Copy Pods Resources */,
+				2A23D5CAEDC0E24D39295BF3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -232,13 +232,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "poolController" */;
 			buildPhases = (
-				45472F6981F4A4D87F488E7F /* [CP] Check Pods Manifest.lock */,
+				0D4B813C1029E03C6A520EFC /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				2818AFD51691AFABD41D4E4A /* [CP] Copy Pods Resources */,
+				5560D47188FE8ADA88D4D0AE /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -253,7 +253,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D02E4BA1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "poolController-tvOS" */;
 			buildPhases = (
-				3A0C80B1E4E266C6F35AA28F /* [CP] Check Pods Manifest.lock */,
+				16DEA39E8D75BC85F1377B25 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F122414F3F0027D42C /* Start Packager */,
 				2D02E4771E0B4A5D006451C7 /* Sources */,
 				2D02E4781E0B4A5D006451C7 /* Frameworks */,
@@ -273,7 +273,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D02E4BB1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "poolController-tvOSTests" */;
 			buildPhases = (
-				150395178E3062D0467D8253 /* [CP] Check Pods Manifest.lock */,
+				3C3EF7F1965FAAC24D620554 /* [CP] Check Pods Manifest.lock */,
 				2D02E48C1E0B4A5D006451C7 /* Sources */,
 				2D02E48D1E0B4A5D006451C7 /* Frameworks */,
 				2D02E48E1E0B4A5D006451C7 /* Resources */,
@@ -384,83 +384,7 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
-		150395178E3062D0467D8253 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-poolController-tvOSTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		2818AFD51691AFABD41D4E4A /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-poolController/Pods-poolController-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-poolController/Pods-poolController-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		2D02E4CB1E0B4B27006451C7 /* Bundle React Native Code And Images */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Bundle React Native Code And Images";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
-		};
-		3A0C80B1E4E266C6F35AA28F /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-poolController-tvOS-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		45472F6981F4A4D87F488E7F /* [CP] Check Pods Manifest.lock */ = {
+		0D4B813C1029E03C6A520EFC /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -482,7 +406,101 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		9E15E2467F5FF0E63260E679 /* [CP] Check Pods Manifest.lock */ = {
+		16DEA39E8D75BC85F1377B25 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-poolController-tvOS-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		2A23D5CAEDC0E24D39295BF3 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-poolController-poolControllerTests/Pods-poolController-poolControllerTests-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-poolController-poolControllerTests/Pods-poolController-poolControllerTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		2D02E4CB1E0B4B27006451C7 /* Bundle React Native Code And Images */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Bundle React Native Code And Images";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+		};
+		3C3EF7F1965FAAC24D620554 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-poolController-tvOSTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5560D47188FE8ADA88D4D0AE /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-poolController/Pods-poolController-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-poolController/Pods-poolController-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		72962D6A7909A7EB3954E581 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -502,24 +520,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E6B89897604FE5F38E05AD5C /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-poolController-poolControllerTests/Pods-poolController-poolControllerTests-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-poolController-poolControllerTests/Pods-poolController-poolControllerTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -615,7 +615,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0E92E51DDFD54D6F092D29EB /* Pods-poolController-poolControllerTests.debug.xcconfig */;
+			baseConfigurationReference = C919E22A9C33D8419F707F7E /* Pods-poolController-poolControllerTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -646,7 +646,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8810BFB0F5392ABF138005C4 /* Pods-poolController-poolControllerTests.release.xcconfig */;
+			baseConfigurationReference = 02A599217F7BD8AB63C070D3 /* Pods-poolController-poolControllerTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -674,7 +674,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 82E7F378827B1772EFF9F31B /* Pods-poolController.debug.xcconfig */;
+			baseConfigurationReference = 002B00AA295B63F6CFF1BCB0 /* Pods-poolController.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -701,7 +701,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2F11814A14E3473ED2AAF67B /* Pods-poolController.release.xcconfig */;
+			baseConfigurationReference = D9681B6E738AB422161F3F60 /* Pods-poolController.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -726,7 +726,7 @@
 		};
 		2D02E4971E0B4A5E006451C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1BCFB3839E8A28C62085B351 /* Pods-poolController-tvOS.debug.xcconfig */;
+			baseConfigurationReference = AF032823164579253915CCB6 /* Pods-poolController-tvOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -762,7 +762,7 @@
 		};
 		2D02E4981E0B4A5E006451C7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 40575FD79A96B2B9A19DE995 /* Pods-poolController-tvOS.release.xcconfig */;
+			baseConfigurationReference = A1553B2A4FFA6D37F4DC97E0 /* Pods-poolController-tvOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -798,7 +798,7 @@
 		};
 		2D02E4991E0B4A5E006451C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F58C5A65864BADC6088B2751 /* Pods-poolController-tvOSTests.debug.xcconfig */;
+			baseConfigurationReference = 7F6F9F9B6B3CCB63B1C52FCF /* Pods-poolController-tvOSTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -833,7 +833,7 @@
 		};
 		2D02E49A1E0B4A5E006451C7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E934992C11FCEC44B1A53855 /* Pods-poolController-tvOSTests.release.xcconfig */;
+			baseConfigurationReference = BD3B46D2F0D15154D8762446 /* Pods-poolController-tvOSTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;

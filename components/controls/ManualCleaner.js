@@ -99,11 +99,12 @@ const styles = StyleSheet.create({
     },
     subContainer: {
         top: 75,
-        alignItems: 'center'
+        alignItems: 'center',
     },
     btnContainer: {
         flexDirection: 'row',
-        top: 240
+        top: 240,
+        zIndex: 1,
     },
     manClnHeader: {
         fontSize: 30,

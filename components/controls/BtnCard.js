@@ -42,7 +42,8 @@ export default class BtnCard extends React.Component{
 
 const styles = StyleSheet.create({
     pmpContainer: {
-        flexDirection: 'column'
+        flexDirection: 'column',
+        zIndex: 1
     },
     pmpHeader: {
         marginTop: 25,
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
     manPmpBtnTxt: {
         color: 'white',
         fontSize: 15,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     schPmpBtn: {
         top: 20,
@@ -81,7 +82,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderStyle: 'solid',
         borderColor: 'lightgray',
-        width: 150
+        width: 150,
     },
     schPmpBtnTxt: {
         color: 'white',
