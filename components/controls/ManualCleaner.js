@@ -15,10 +15,31 @@ export default class ManualCleaner extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
+
     state = {
-        running: 'false'
+        running: false
     }
-    
+
+    componentDidMount() {
+        this.cleanDisplay()
+    }
+
+    async cleanDisplay() {
+        await fetch('http://127.0.0.1:5000/api/v1/clean_status')
+        .then((res) => {
+            let data = res.json();
+            return data;
+        })
+        .then((data) => {
+            this.setState({
+                running: data.cswitch
+            })
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
     manClnOn = () => {
         fetch('http://127.0.0.1:5000/api/v1/clean_on')
         .then((response) => {
@@ -27,13 +48,14 @@ export default class ManualCleaner extends React.Component{
         })
         .then((data) => {
             this.setState({
-                running: data.msg
+                running: data.cswitch
             })
         })
         .catch((error) => {
-            console.warn(error)
+            console.log(error)
         })
     }
+
     manClnOff = () => {
         fetch('http://127.0.0.1:5000/api/v1/clean_off')
         .then((response) => {
@@ -42,13 +64,14 @@ export default class ManualCleaner extends React.Component{
         })
         .then((data) => {
             this.setState({
-                running: data.msg
+                running: data.cswitch
             })
         })
         .catch((error) => {
-            console.warn(error)
+            console.log(error)
         })
     }
+
     backToCtrl = () => {
         this.props.navigation.navigate('ControlDisp')
     }

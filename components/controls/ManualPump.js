@@ -15,27 +15,31 @@ export default class ManualPump extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
+
     state = {
-        running: 'false'
+        running: false
     }
 
-    componentDidMount = () => {
-        this.dispPmp
+    componentDidMount() {
+        this.pumpDisplay()
     }
 
-    // dispPmp = () => {
-    //     fetch('http://127.0.0.1:5000/api/v1/pump_disp')
-    //     .then((response) => {
-    //         let data = response.json()
-    //         return data
-    //     })
-    //     .then((data) => {
-    //         this.setState({
-    //             running: data.msg
-    //         })
-    //     })
-    // }
-    
+    async pumpDisplay() {
+        await fetch('http://127.0.0.1:5000/api/v1/pump_status')
+        .then((res) => {
+            let data = res.json();
+            return data;
+        })
+        .then((data) => {
+            this.setState({
+                running: data.pswitch
+            })
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
     manPmpOn = () => {
         fetch('http://127.0.0.1:5000/api/v1/pump_on')
         .then((response) => {
@@ -44,13 +48,14 @@ export default class ManualPump extends React.Component{
         })
         .then((data) => {
             this.setState({
-                running: data.msg
+                running: data.pswitch
             })
         })
         .catch((error) => {
-            console.warn(error)
+            console.log(error)
         })
     }
+
     manPmpOff = () => {
         fetch('http://127.0.0.1:5000/api/v1/pump_off')
         .then((response) => {
@@ -59,13 +64,14 @@ export default class ManualPump extends React.Component{
         })
         .then((data) => {
             this.setState({
-                running: data.msg
+                running: data.pswitch
             })
         })
         .catch((error) => {
-            console.warn(error)
+            console.log(error)
         })
     }
+
     backToCtrl = () => {
         this.props.navigation.navigate('ControlDisp')
     }
@@ -132,6 +138,17 @@ const styles = StyleSheet.create({
         width: '100%',
         flex: 1,
         resizeMode: 'cover'
+    },
+    pmpHeader: {
+        borderWidth: 1,
+        borderColor: 'white',
+        borderStyle: 'solid',
+        paddingRight: 40,
+        paddingLeft: 40,
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 18,
+        marginTop: 20
     },
     manPmpBtn: {
         top: 20,

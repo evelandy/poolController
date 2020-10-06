@@ -14,8 +14,28 @@ export default class ControlDisp extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
+    state = {
+        running: false
+    }
+
+    pumpState = () => {
+        fetch('http://127.0.0.1:5000/api/v1/pump_status')
+        .then((response) => {
+            let data = response.json()
+            return data
+        })
+        .then((data) => {
+            this.setState({
+                running: data.pswitch
+            });
+        })
+        .catch((err) => {
+            console.log(err)
+        });
+    }
+
     navControl = () => {
-        this.props.navigation.navigate('Dashboard')
+        this.props.navigation.navigate('Dashboard');
     }
 
     render() {

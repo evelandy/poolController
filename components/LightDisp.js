@@ -9,11 +9,12 @@ export default class LightDisp extends React.Component{
     state = {
         running: this.props.running
     }
+    
     render() {
         return (
             <View style={styles.lightContainer}>
                 <Text style={styles.lightHeader}>
-                    Light State: &nbsp; {this.props.running === 'false' ? 'off' : 'on'}
+                    Light State: &nbsp; {this.props.running === false ? 'off' : 'on'}
                 </Text>
             </View>
         );
@@ -32,4 +33,4 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginTop: 20
     },
-})
+});

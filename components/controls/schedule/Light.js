@@ -17,7 +17,7 @@ export default class Light extends React.Component{
         headerShown: false
     };
     state = {
-        running: 'false',
+        running: false,
         hour: 10,
         minute: 30,
         mid: 'AM',
@@ -25,21 +25,37 @@ export default class Light extends React.Component{
         setSchMin: '00',
         setSchMid: 'PM'
     }
-    
-    schLgtOn = (tm=4) => {
-        fetch(`http://127.0.0.1:5000/api/v1/sch_l_on/${tm}`)
+
+    lightState = () => {
+        fetch('http://127.0.0.1:5000/api/v1/light_status')
         .then((response) => {
             let data = response.json()
             return data
         })
         .then((data) => {
             this.setState({
-                running: data.msg
-            })
+                running: data.lswitch
+            });
         })
-        .catch((error) => {
-            console.warn(error)
-        })
+        .catch((err) => {
+            console.log(err)
+        });
+    }
+    
+    schLgtOn = (tm=4) => {
+        // fetch(`http://127.0.0.1:5000/api/v1/sch_l_on/${tm}`)
+        // .then((response) => {
+        //     let data = response.json()
+        //     return data
+        // })
+        // .then((data) => {
+        //     this.setState({
+        //         running: data.msg
+        //     })
+        // })
+        // .catch((error) => {
+        //     console.warn(error)
+        // })
     }
 
     schLgtOff = (tm=4) => {
@@ -58,37 +74,53 @@ export default class Light extends React.Component{
         })
     }
 
-    // algorithm to calculate 24 hour format to check API
-    calcTime = (tm) => {
-        let today = new Date();
-        let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-        let curr_hr = parseInt(time.slice(0, 2));
-        if(tm < curr_hr){
-            let add_both = parseInt(curr_hr) - parseInt(tm);
-            let set_time = 24 - add_both;
-            alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and pump will run in ${set_time} seconds(but needs to be hours)`);
-            this.schLgtOn(set_time);
-        } else {
-            let set_time = parseInt(tm) - parseInt(curr_hr);
-            alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and pump will run in ${set_time} seconds(but needs to be hours)`);
-            this.schLgtOn(set_time);
-        }
+    onChangeText = (key, val) => {
+        this.setState({
+            [key]: val
+        });
     }
 
-    updateValue(text, field){
-        if (field == 'hour'){
+    setSchTime = () => {
+        let collectTime = {}
+        collectTime.lHr = this.state.hour
+        collectTime.lMin = this.state.minute
+        collectTime.lMid = this.state.mid
+        this.setState({
+            setSchHr: this.state.hour,
+            setSchMin: this.state.minute,
+            setSchMid: this.state.mid
+        })
+        fetch('http://127.0.0.1:5000/api/v1/add_l_time', {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(collectTime)
+        })
+    }
+
+    showSchTime = () => {
+        fetch('http://127.0.0.1:5000/api/v1/show_l_time')
+        .then((res) => {
+            let data = res.json()
+            return data
+        })
+        .then((data) => {
             this.setState({
-                hour: text
+                setSchHr: data.message.lHr,
+                setSchMin: data.message.lMin,
+                setSchMid: data.message.lMid
             })
-        } else if (field == 'min'){
-            this.setState({
-                minute: text
-            })
-        } else if (field == 'mid'){
-            this.setState({
-                mid: text
-            })
-        }
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
+    componentDidMount(){
+        this.showSchTime()
+        this.lightState()
     }
 
     navControl = () => {
@@ -106,7 +138,7 @@ export default class Light extends React.Component{
                             Schedule Light Control
                         </Text>
                         <View style={styles.btnContainer}>
-                            <TouchableOpacity style={styles.schLgtBtn} onPress={() => {this.calcTime(this.state.hour)}}>
+                            <TouchableOpacity style={styles.schLgtBtn} onPress={() => this.setSchTime()}>
                                 <Text style={styles.schLgtBtnTxt}>
                                     set
                                 </Text>
@@ -129,7 +161,7 @@ export default class Light extends React.Component{
                             <TextInput 
                                 style={styles.schInput}
                                 autoCorrect={false}
-                                onChangeText={(text) => this.updateValue(text, 'hour')}
+                                onChangeText={val => this.onChangeText('hour', val)}
                                 // value={this.state.hour}
                                 keyboardType={'numeric'}
                                 maxLength={2}
@@ -143,7 +175,7 @@ export default class Light extends React.Component{
                             <TextInput 
                                 style={styles.schInput}
                                 autoCorrect={false}
-                                onChangeText={(text) => this.updateValue(text, 'min')}
+                                onChangeText={val => this.onChangeText('minute', val)}
                                 // value={this.state.minute}
                                 keyboardType={'numeric'}
                                 maxLength={2}
@@ -156,12 +188,12 @@ export default class Light extends React.Component{
                                 style={styles.schInput}
                                 autoCapitalize='characters'
                                 autoCorrect={false}
-                                onChangeText={(text) => this.updateValue(text, 'mid')}
+                                onChangeText={val => this.onChangeText('mid', val)}
                                 value={this.state.mid}
                                 maxLength={2}
                                 returnKeyType='go'
                                 ref={(input) => this.midInput = input}
-                                onSubmitEditing={() => alert(`${this.state.hour}:${this.state.minute} ${this.state.mid}`)}
+                                onSubmitEditing={() => this.setSchTime()}
                             />
                         </View>
                         <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn} />

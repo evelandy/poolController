@@ -9,12 +9,12 @@ export default class CleanDisp extends React.Component{
     state = {
         running: this.props.running
     }
-
+    
     render() {
         return (
             <View style={styles.cleanContainer}>
                 <Text style={styles.cleanHeader}>
-                    Cleaner State: &nbsp; {this.props.running === 'false' ? 'off' : 'on'}
+                    Clean State: &nbsp; {this.props.running === false ? 'off' : 'on'}
                 </Text>
             </View>
         );

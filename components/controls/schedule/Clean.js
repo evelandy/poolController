@@ -17,7 +17,7 @@ export default class Clean extends React.Component{
         headerShown: false
     };
     state = {
-        running: 'false',
+        running: false,
         hour: 10,
         minute: 30,
         mid: 'AM',
@@ -25,21 +25,37 @@ export default class Clean extends React.Component{
         setSchMin: '00',
         setSchMid: 'PM'
     }
-    
-    schClnOn = (tm=4) => {
-        fetch(`http://127.0.0.1:5000/api/v1/sch_c_on/${tm}`)
+
+    cleanState = () => {
+        fetch('http://127.0.0.1:5000/api/v1/clean_status')
         .then((response) => {
             let data = response.json()
             return data
         })
         .then((data) => {
             this.setState({
-                running: data.msg
-            })
+                running: data.cswitch
+            });
         })
-        .catch((error) => {
-            console.warn(error)
-        })
+        .catch((err) => {
+            console.log(err)
+        });
+    }
+    
+    schClnOn = (tm=4) => {
+        // fetch(`http://127.0.0.1:5000/api/v1/sch_c_on/${tm}`)
+        // .then((response) => {
+        //     let data = response.json()
+        //     return data
+        // })
+        // .then((data) => {
+        //     this.setState({
+        //         running: data.msg
+        //     })
+        // })
+        // .catch((error) => {
+        //     console.warn(error)
+        // })
     }
 
     schClnOff = (tm=4) => {
@@ -58,37 +74,53 @@ export default class Clean extends React.Component{
         })
     }
 
-    // algorithm to calculate 24 hour format to check API
-    calcTime = (tm) => {
-        let today = new Date();
-        let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-        let curr_hr = parseInt(time.slice(0, 2));
-        if(tm < curr_hr){
-            let add_both = parseInt(curr_hr) - parseInt(tm);
-            let set_time = 24 - add_both;
-            alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and clean will run in ${set_time} seconds(but needs to be hours)`);
-            this.schClnOn(set_time);
-        } else {
-            let set_time = parseInt(tm) - parseInt(curr_hr);
-            alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and clean will run in ${set_time} seconds(but needs to be hours)`);
-            this.schClnOn(set_time);
-        }
+    onChangeText = (key, val) => {
+        this.setState({
+            [key]: val
+        });
     }
 
-    updateValue(text, field){
-        if (field == 'hour'){
+    setSchTime = () => {
+        let collectTime = {}
+        collectTime.cHr = this.state.hour
+        collectTime.cMin = this.state.minute
+        collectTime.cMid = this.state.mid
+        this.setState({
+            setSchHr: this.state.hour,
+            setSchMin: this.state.minute,
+            setSchMid: this.state.mid
+        })
+        fetch('http://127.0.0.1:5000/api/v1/add_c_time', {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(collectTime)
+        })
+    }
+
+    showSchTime = () => {
+        fetch('http://127.0.0.1:5000/api/v1/show_c_time')
+        .then((res) => {
+            let data = res.json()
+            return data
+        })
+        .then((data) => {
             this.setState({
-                hour: text
+                setSchHr: data.message.cHr,
+                setSchMin: data.message.cMin,
+                setSchMid: data.message.cMid
             })
-        } else if (field == 'min'){
-            this.setState({
-                minute: text
-            })
-        } else if (field == 'mid'){
-            this.setState({
-                mid: text
-            })
-        }
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
+    componentDidMount(){
+        this.showSchTime()
+        this.cleanState()
     }
 
     navControl = () => {
@@ -106,7 +138,7 @@ export default class Clean extends React.Component{
                             Schedule Clean Control
                         </Text>
                         <View style={styles.btnContainer}>
-                            <TouchableOpacity style={styles.schClnBtn} onPress={() => {this.calcTime(this.state.hour)}}>
+                            <TouchableOpacity style={styles.schClnBtn} onPress={() => this.setSchTime()}>
                                 <Text style={styles.schClnBtnTxt}>
                                     set
                                 </Text>
@@ -129,7 +161,7 @@ export default class Clean extends React.Component{
                             <TextInput 
                                 style={styles.schInput}
                                 autoCorrect={false}
-                                onChangeText={(text) => this.updateValue(text, 'hour')}
+                                onChangeText={val => this.onChangeText('hour', val)}
                                 // value={this.state.hour}
                                 keyboardType={'numeric'}
                                 maxLength={2}
@@ -143,7 +175,7 @@ export default class Clean extends React.Component{
                             <TextInput 
                                 style={styles.schInput}
                                 autoCorrect={false}
-                                onChangeText={(text) => this.updateValue(text, 'min')}
+                                onChangeText={val => this.onChangeText('minute', val)}
                                 // value={this.state.minute}
                                 keyboardType={'numeric'}
                                 maxLength={2}
@@ -156,12 +188,12 @@ export default class Clean extends React.Component{
                                 style={styles.schInput}
                                 autoCapitalize='characters'
                                 autoCorrect={false}
-                                onChangeText={(text) => this.updateValue(text, 'mid')}
+                                onChangeText={val => this.onChangeText('mid', val)}
                                 value={this.state.mid}
                                 maxLength={2}
                                 returnKeyType='go'
                                 ref={(input) => this.midInput = input}
-                                onSubmitEditing={() => alert(`${this.state.hour}:${this.state.minute} ${this.state.mid}`)}
+                                onSubmitEditing={() => this.setSchTime()}
                             />
                         </View>
                         <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn} />

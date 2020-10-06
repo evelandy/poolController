@@ -3,7 +3,7 @@ import sqlite3
 
 # conn = sqlite3.connect('data.db')
 # print('db opened!')
-# conn.execute("""CREATE TABLE user(
+# conn.execute("""CREATE TABLE IF NOT EXISTS user(
 #              id INTEGER PRIMARY KEY AUTOINCREMENT,
 #              fname CHAR(80),
 #              lname CHAR(80),
@@ -17,6 +17,49 @@ import sqlite3
 #              zipCode INTEGER,
 #              phone INTEGER UNIQUE,
 #              admin BOOL);""")
+# print('Table created!')
+# conn.close()
+
+
+# conn = sqlite3.connect('data.db')
+# print('db opened!')
+# conn.execute("""CREATE TABLE ctrl(
+#             id INTEGER PRIMARY KEY AUTOINCREMENT,
+#             pHr INTEGER,
+#             pMin INTEGER,
+#             pMid CHAR(2),
+#             cHr INTEGER,
+#             cMin INTEGER,
+#             cMid CHAR(2),
+#             lHr INTEGER,
+#             lMin INTEGER,
+#             lMid CHAR(2),
+#             a1Hr INTEGER,
+#             a1Min INTEGER,
+#             a1Mid CHAR(2),
+#             a2Hr INTEGER,
+#             a2Min INTEGER,
+#             a2Mid CHAR(2));""")
+# print('Table created!')
+# conn.close()
+
+
+# conn = sqlite3.connect('data.db')
+# print('db opened!')
+# conn.execute("""CREATE TABLE IF NOT EXISTS p_ctrl(
+#             id INTEGER PRIMARY KEY AUTOINCREMENT,
+#             pHr INTEGER,
+#             pMin INTEGER,
+#             pMid CHAR(2));""")
+# print('Table created!')
+# conn.close()
+
+
+# conn = sqlite3.connect('data.db')
+# print('db opened!')
+# conn.execute("""CREATE TABLE IF NOT EXISTS p_status(
+#             id INTEGER PRIMARY KEY AUTOINCREMENT,
+#             pswitch BOOLEAN);""")
 # print('Table created!')
 # conn.close()
 
@@ -61,3 +104,16 @@ scheduler.start()
 
 
 """
+
+null = ['[', ']']
+y = []
+x = ["[3, 18, 'PM']"]
+for item in x:
+    for thing in item:
+        if thing in null:
+            pass
+        else:
+            y.append(thing)
+print(''.join(y))
+
+numLst = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']

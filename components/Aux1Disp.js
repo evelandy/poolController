@@ -9,17 +9,18 @@ export default class Aux1Disp extends React.Component{
     state = {
         running: this.props.running
     }
-
+    
     render() {
         return (
             <View style={styles.aux1Container}>
                 <Text style={styles.aux1Header}>
-                    Aux1 State: &nbsp; {this.props.running === 'false' ? 'off' : 'on'}
+                    Aux1 State: &nbsp; {this.props.running === false ? 'off' : 'on'}
                 </Text>
             </View>
         );
     }
 }
+
 
 const styles = StyleSheet.create({
     aux1Header: {

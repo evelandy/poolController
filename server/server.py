@@ -8,8 +8,8 @@ from time import sleep
 import datetime
 import requests
 import schedule
+import sqlite3
 import jwt
-
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
@@ -40,17 +40,52 @@ class User(db.Model):
     admin = db.Column(db.Boolean)
 
 
-# settings and controls
-class Ctrl(db.Model):
+class p_ctrl(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    pump = db.Column(db.Boolean)
-    cleaner = db.Column(db.Boolean)
-    lights = db.Column(db.Boolean)
-    heat = db.Column(db.Boolean)
-    jets = db.Column(db.Boolean)
-    music = db.Column(db.Boolean)
-    spare_1 = db.Column(db.Boolean)
-    spare_2 = db.Column(db.Boolean)
+    pHr = db.Column(db.Integer)
+    pMin = db.Column(db.Integer)
+    pMid = db.Column(db.String(2))
+
+
+class p_status(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pswitch = db.Column(db.Boolean)
+
+
+class c_ctrl(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    cHr = db.Column(db.Integer)
+    cMin = db.Column(db.Integer)
+    cMid = db.Column(db.String(2))
+
+
+class c_status(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    cswitch = db.Column(db.Boolean)
+
+
+class l_ctrl(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    lHr = db.Column(db.Integer)
+    lMin = db.Column(db.Integer)
+    lMid = db.Column(db.String(2))
+
+
+class l_status(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    lswitch = db.Column(db.Boolean)
+
+
+class a1_ctrl(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    a1Hr = db.Column(db.Integer)
+    a1Min = db.Column(db.Integer)
+    a1Mid = db.Column(db.String(2))
+
+
+class a1_status(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    a1switch = db.Column(db.Boolean)
 
 
 # create token and check creds
@@ -108,7 +143,7 @@ def add_user():
     hash_password = generate_password_hash(data['password'], method='sha256')
     new_user = User(fname=data['fname'], lname=data['lname'], username=data['username'], password=hash_password,
                     email=data['email'], address=data['address'], add2=data['add2'], city=data['city'],
-                    sta=data['sta'], zipCode=data['zipCode'], phone=data['phone'], admin=True)
+                    sta=data['sta'], zipCode=data['zipCode'], phone=data['phone'], admin=False)
     db.session.add(new_user)
     db.session.commit()
     return jsonify({"message": "new user added"}), 201
@@ -173,26 +208,90 @@ def temp():
 #         return jsonify({'pump': False}), 201
 
 
+# add time for schedule pump
+@app.route('/api/v1/add_p_time', methods=['PUT'])
+def add_p_time():
+    # ptime = p_ctrl.query.filter_by(id=1).first()
+    ptime = p_ctrl.query.all()
+    if ptime:
+        conn = sqlite3.connect('data.db')
+        sql = "DELETE FROM p_ctrl"
+        cur = conn.cursor()
+        cur.execute(sql)
+        conn.commit()
+
+        data = request.get_json()
+        new_p_time = p_ctrl(pHr=data['pHr'], pMin=data['pMin'], pMid=data['pMid'])
+        db.session.add(new_p_time)
+        db.session.commit()
+        return jsonify({'message': 'pump time schedule saved'}), 201
+    else:
+        data = request.get_json()
+        new_p_time = p_ctrl(pHr=data['pHr'], pMin=data['pMin'], pMid=data['pMid'])
+        db.session.add(new_p_time)
+        db.session.commit()
+        return jsonify({'message': 'pump time schedule saved'}), 201
+
+
+# show saved pump time
+@app.route('/api/v1/show_p_time', methods=['GET'])
+def show_p_time():
+    ptime = p_ctrl.query.all()
+
+    pdata = {}
+    pdata['pHr'] = ptime[0].pHr
+    pdata['pMin'] = ptime[0].pMin
+    pdata['pMid'] = ptime[0].pMid
+
+    return jsonify({'message': pdata}), 200
+
+
+@app.route('/api/v1/pump_status', methods=['GET'])
+def pump_status():
+    pstatus = p_status.query.filter_by(id=1).first()
+    if pstatus:
+        pdata = {}
+        pdata['pswitch'] = pstatus.pswitch
+        return jsonify(pdata), 200
+    else:
+        pdata = {}
+        init_p_status = p_status(pswitch=False)
+        db.session.add(init_p_status)
+        db.session.commit()
+        pdata['pswitch'] = pstatus.pswitch
+        return jsonify(pdata), 200
+
+# @app.route('/api/v1/pump_switch', methods=['GET'])
+# def pump_switch():
+#     status = p_status.query.all()
+#     if status.pswitch == False:
+#         status.pswitch = True
+#         db.session.commit()
+
+
 # pump controls from server to RPi
 @app.route('/api/v1/pump_on', methods=['GET'])
 def pump_on():
     res = requests.get(url='http://{}:{}/api/v1/pump_on'.format(RPI_IP_ADDR, RPI_PORT))
-    return jsonify({'message': 'true'}), 200
+    pstatus = p_status.query.all()
+    pdata = {}
+    if pstatus[0].pswitch == False:
+        pstatus[0].pswitch = True
+        db.session.commit()
+        pdata['pswitch'] = pstatus[0].pswitch
+    return jsonify(pdata), 200
 
 
 @app.route('/api/v1/pump_off', methods=['GET'])
 def pump_off():
     res = requests.get(url='http://{}:{}/api/v1/pump_off'.format(RPI_IP_ADDR, RPI_PORT))
-    return jsonify({'message': 'false'}), 200
-
-
-@app.route('/api/v1/pump_disp', methods=['GET'])
-def pump_disp():
-    res = requests.get(url='http://{}:{}/api/v1/pump_disp'.format(RPI_IP_ADDR, RPI_PORT))
-    if res.status_code == 201:
-        return jsonify({'message': 'false'}), 200
-    elif res.status_code == 200:
-        return jsonify({'message': 'true'}), 200
+    pstatus = p_status.query.all()
+    pdata = {}
+    if pstatus[0].pswitch == True:
+        pstatus[0].pswitch = False
+        db.session.commit()
+        pdata['pswitch'] = pstatus[0].pswitch
+    return jsonify(pdata), 200
 
 
 @app.route('/api/v1/sch_p_on/<tm>', methods=['GET'])
@@ -218,13 +317,79 @@ def sch_p_off(tm=5):
 @app.route('/api/v1/clean_on', methods=['GET'])
 def clean_on():
     res = requests.get(url='http://{}:{}/api/v1/clean_on'.format(RPI_IP_ADDR, RPI_PORT))
-    return jsonify({'message': 'true'}), 200
+    cstatus = c_status.query.all()
+    cdata = {}
+    if cstatus[0].cswitch == False:
+        cstatus[0].cswitch = True
+        db.session.commit()
+        cdata['cswitch'] = cstatus[0].cswitch
+    return jsonify(cdata), 200
 
 
 @app.route('/api/v1/clean_off', methods=['GET'])
 def clean_off():
     res = requests.get(url='http://{}:{}/api/v1/clean_off'.format(RPI_IP_ADDR, RPI_PORT))
-    return jsonify({'message': 'false'}), 200
+    cstatus = c_status.query.all()
+    cdata = {}
+    if cstatus[0].cswitch == True:
+        cstatus[0].cswitch = False
+        db.session.commit()
+        cdata['cswitch'] = cstatus[0].cswitch
+    return jsonify(cdata), 200
+
+
+# add time for schedule cleaner
+@app.route('/api/v1/add_c_time', methods=['PUT'])
+def add_c_time():
+    # ctime = c_ctrl.query.filter_by(id=1).first()
+    ctime = c_ctrl.query.all()
+    if ctime:
+        conn = sqlite3.connect('data.db')
+        sql = "DELETE FROM c_ctrl"
+        cur = conn.cursor()
+        cur.execute(sql)
+        conn.commit()
+
+        data = request.get_json()
+        new_c_time = c_ctrl(cHr=data['cHr'], cMin=data['cMin'], cMid=data['cMid'])
+        db.session.add(new_c_time)
+        db.session.commit()
+        return jsonify({'message': 'cleaner time schedule saved'}), 201
+    else:
+        data = request.get_json()
+        new_c_time = c_ctrl(cHr=data['cHr'], cMin=data['cMin'], cMid=data['cMid'])
+        db.session.add(new_c_time)
+        db.session.commit()
+        return jsonify({'message': 'cleaner time schedule saved'}), 201
+
+
+# show saved cleaner time
+@app.route('/api/v1/show_c_time', methods=['GET'])
+def show_c_time():
+    ctime = c_ctrl.query.all()
+
+    cdata = {}
+    cdata['cHr'] = ctime[0].cHr
+    cdata['cMin'] = ctime[0].cMin
+    cdata['cMid'] = ctime[0].cMid
+
+    return jsonify({'message': cdata}), 200
+
+
+@app.route('/api/v1/clean_status', methods=['GET'])
+def clean_status():
+    cstatus = c_status.query.filter_by(id=1).first()
+    if cstatus:
+        cdata = {}
+        cdata['cswitch'] = cstatus.cswitch
+        return jsonify(cdata), 200
+    else:
+        cdata = {}
+        init_c_status = c_status(cswitch=False)
+        db.session.add(init_c_status)
+        db.session.commit()
+        cdata['cswitch'] = cstatus.cswitch
+        return jsonify(cdata), 200
 
 
 @app.route('/api/v1/sch_c_on/<tm>', methods=['GET'])
@@ -250,13 +415,79 @@ def sch_c_off(tm=5):
 @app.route('/api/v1/light_on', methods=['GET'])
 def light_on():
     res = requests.get(url='http://{}:{}/api/v1/light_on'.format(RPI_IP_ADDR, RPI_PORT))
-    return jsonify({'message': 'true'}), 200
+    lstatus = l_status.query.all()
+    ldata = {}
+    if lstatus[0].lswitch == False:
+        lstatus[0].lswitch = True
+        db.session.commit()
+        ldata['lswitch'] = lstatus[0].lswitch
+    return jsonify(ldata), 200
 
 
 @app.route('/api/v1/light_off', methods=['GET'])
 def light_off():
     res = requests.get(url='http://{}:{}/api/v1/light_off'.format(RPI_IP_ADDR, RPI_PORT))
-    return jsonify({'message': 'false'}), 200
+    lstatus = l_status.query.all()
+    ldata = {}
+    if lstatus[0].lswitch == True:
+        lstatus[0].lswitch = False
+        db.session.commit()
+        ldata['lswitch'] = lstatus[0].lswitch
+    return jsonify(ldata), 200
+
+
+# add time for schedule lights
+@app.route('/api/v1/add_l_time', methods=['PUT'])
+def add_l_time():
+    # ltime = l_ctrl.query.filter_by(id=1).first()
+    ltime = l_ctrl.query.all()
+    if ltime:
+        conn = sqlite3.connect('data.db')
+        sql = "DELETE FROM l_ctrl"
+        cur = conn.cursor()
+        cur.execute(sql)
+        conn.commit()
+
+        data = request.get_json()
+        new_l_time = l_ctrl(lHr=data['lHr'], lMin=data['lMin'], lMid=data['lMid'])
+        db.session.add(new_l_time)
+        db.session.commit()
+        return jsonify({'message': 'light time schedule saved'}), 201
+    else:
+        data = request.get_json()
+        new_l_time = l_ctrl(lHr=data['lHr'], lMin=data['lMin'], lMid=data['lMid'])
+        db.session.add(new_l_time)
+        db.session.commit()
+        return jsonify({'message': 'light time schedule saved'}), 201
+
+
+# show saved light time
+@app.route('/api/v1/show_l_time', methods=['GET'])
+def show_l_time():
+    ltime = l_ctrl.query.all()
+
+    ldata = {}
+    ldata['lHr'] = ltime[0].lHr
+    ldata['lMin'] = ltime[0].lMin
+    ldata['lMid'] = ltime[0].lMid
+
+    return jsonify({'message': ldata}), 200
+
+
+@app.route('/api/v1/light_status', methods=['GET'])
+def light_status():
+    lstatus = l_status.query.filter_by(id=1).first()
+    if lstatus:
+        ldata = {}
+        ldata['lswitch'] = lstatus.lswitch
+        return jsonify(ldata), 200
+    else:
+        ldata = {}
+        init_l_status = l_status(lswitch=False)
+        db.session.add(init_l_status)
+        db.session.commit()
+        ldata['lswitch'] = lstatus.lswitch
+        return jsonify(ldata), 200
 
 
 @app.route('/api/v1/sch_l_on/<tm>', methods=['GET'])
@@ -276,13 +507,95 @@ def sch_l_off(tm=5):
 @app.route('/api/v1/aux_1_on', methods=['GET'])
 def aux_1_on():
     res = requests.get(url='http://{}:{}/api/v1/aux_1_on'.format(RPI_IP_ADDR, RPI_PORT))
-    return jsonify({'message': 'true'}), 200
+    a1status = a1_status.query.all()
+    a1data = {}
+    if a1status[0].a1switch == False:
+        a1status[0].a1switch = True
+        db.session.commit()
+        a1data['a1switch'] = a1status[0].a1switch
+    return jsonify(a1data), 200
 
 
 @app.route('/api/v1/aux_1_off', methods=['GET'])
 def aux_1_off():
     res = requests.get(url='http://{}:{}/api/v1/aux_1_off'.format(RPI_IP_ADDR, RPI_PORT))
-    return jsonify({'message': 'false'}), 200
+    a1status = a1_status.query.all()
+    a1data = {}
+    if a1status[0].a1switch == True:
+        a1status[0].a1switch = False
+        db.session.commit()
+        a1data['a1switch'] = a1status[0].a1switch
+    return jsonify(a1data), 200
+
+
+# add time for schedule aux1
+@app.route('/api/v1/add_a1_time', methods=['PUT'])
+def add_a1_time():
+    # a1time = a1_ctrl.query.filter_by(id=1).first()
+    a1time = a1_ctrl.query.all()
+    if a1time:
+        conn = sqlite3.connect('data.db')
+        sql = "DELETE FROM a1_ctrl"
+        cur = conn.cursor()
+        cur.execute(sql)
+        conn.commit()
+
+        data = request.get_json()
+        new_a1_time = a1_ctrl(a1Hr=data['a1Hr'], a1Min=data['a1Min'], a1Mid=data['a1Mid'])
+        db.session.add(new_a1_time)
+        db.session.commit()
+        return jsonify({'message': 'aux1 time schedule saved'}), 201
+    else:
+        data = request.get_json()
+        new_a1_time = a1_ctrl(a1Hr=data['a1Hr'], a1Min=data['a1Min'], a1Mid=data['a1Mid'])
+        db.session.add(new_a1_time)
+        db.session.commit()
+        return jsonify({'message': 'aux1 time schedule saved'}), 201
+
+
+# show saved aux1 time
+@app.route('/api/v1/show_a1_time', methods=['GET'])
+def show_a1_time():
+    a1time = a1_ctrl.query.all()
+
+    a1data = {}
+    a1data['a1Hr'] = a1time[0].a1Hr
+    a1data['a1Min'] = a1time[0].a1Min
+    a1data['a1Mid'] = a1time[0].a1Mid
+
+    return jsonify({'message': a1data}), 200
+
+
+@app.route('/api/v1/aux1_status', methods=['GET'])
+def aux1_status():
+    a1status = a1_status.query.filter_by(id=1).first()
+    if a1status:
+        a1data = {}
+        a1data['a1switch'] = a1status.a1switch
+        return jsonify(a1data), 200
+    else:
+        a1data = {}
+        init_a1_status = a1_status(a1switch=False)
+        db.session.add(init_a1_status)
+        db.session.commit()
+        a1data['a1switch'] = a1status.a1switch
+        return jsonify(a1data), 200
+
+
+@app.route('/api/v1/run_a1_time', methods=['POST'])
+def run_a1_time():
+    a1time = a1_ctrl.query.all()
+
+    # a1data = {}
+    # a1data['a1Hr'] = a1time[0].a1Hr
+    # a1data['a1Min'] = a1time[0].a1Min
+    # a1data['a1Mid'] = a1time[0].a1Mid
+    a1data = []
+    a1data.append(a1time[0].a1Hr)
+    a1data.append(a1time[0].a1Min)
+    a1data.append(a1time[0].a1Mid)
+    res = requests.post(url='http://{}:{}/api/v1/run_a1_time/{}'.format(RPI_IP_ADDR, RPI_PORT, a1data))
+    return jsonify({'message': 'true'}), 200
 
 
 @app.route('/api/v1/sch_a1_on/<tm>', methods=['GET'])
@@ -326,13 +639,3 @@ def sch_a2_off(tm=5):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-"""
-
-PUMP, LIGHTS, CLEANER: 
-- need to add short timer on the manual buttons *(might only need to implement this part on the front end)
-- need to implement daily schedule on all modules for on AND off
-- need to add auto on for pump if temp is at limit
-
-"""

@@ -17,7 +17,7 @@ export default class Aux1 extends React.Component{
         headerShown: false
     };
     state = {
-        running: 'false',
+        running: false,
         hour: 10,
         minute: 30,
         mid: 'AM',
@@ -25,21 +25,37 @@ export default class Aux1 extends React.Component{
         setSchMin: '00',
         setSchMid: 'PM'
     }
-    
-    schAux1On = (tm=4) => {
-        fetch(`http://127.0.0.1:5000/api/v1/sch_a1_on/${tm}`)
+
+    aux1State = () => {
+        fetch('http://127.0.0.1:5000/api/v1/aux1_status')
         .then((response) => {
             let data = response.json()
             return data
         })
         .then((data) => {
             this.setState({
-                running: data.msg
-            })
+                running: data.a1switch
+            });
         })
-        .catch((error) => {
-            console.warn(error)
-        })
+        .catch((err) => {
+            console.log(err)
+        });
+    }
+    
+    schAux1On = (tm=4) => {
+        // fetch(`http://127.0.0.1:5000/api/v1/sch_a1_on/${tm}`)
+        // .then((response) => {
+        //     let data = response.json()
+        //     return data
+        // })
+        // .then((data) => {
+        //     this.setState({
+        //         running: data.msg
+        //     })
+        // })
+        // .catch((error) => {
+        //     console.warn(error)
+        // })
     }
 
     schAux1Off = (tm=4) => {
@@ -58,37 +74,73 @@ export default class Aux1 extends React.Component{
         })
     }
 
-    // algorithm to calculate 24 hour format to check API
-    calcTime = (tm) => {
-        let today = new Date();
-        let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-        let curr_hr = parseInt(time.slice(0, 2));
-        if(tm < curr_hr){
-            let add_both = parseInt(curr_hr) - parseInt(tm);
-            let set_time = 24 - add_both;
-            alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and pump will run in ${set_time} seconds(but needs to be hours)`);
-            this.schAux1On(set_time);
-        } else {
-            let set_time = parseInt(tm) - parseInt(curr_hr);
-            alert(`you set the time for ${tm} o'clock, the current hour is ${curr_hr} and pump will run in ${set_time} seconds(but needs to be hours)`);
-            this.schAux1On(set_time);
-        }
+    onChangeText = (key, val) => {
+        this.setState({
+            [key]: val
+        });
     }
 
-    updateValue(text, field){
-        if (field == 'hour'){
+    setSchTime = () => {
+        let collectTime = {}
+        collectTime.a1Hr = this.state.hour
+        collectTime.a1Min = this.state.minute
+        collectTime.a1Mid = this.state.mid
+        this.setState({
+            setSchHr: this.state.hour,
+            setSchMin: this.state.minute,
+            setSchMid: this.state.mid
+        })
+        fetch('http://127.0.0.1:5000/api/v1/add_a1_time', {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(collectTime)
+        })
+    }
+
+    showSchTime = () => {
+        fetch('http://127.0.0.1:5000/api/v1/show_a1_time')
+        .then((res) => {
+            let data = res.json()
+            return data
+        })
+        .then((data) => {
             this.setState({
-                hour: text
+                setSchHr: data.message.a1Hr,
+                setSchMin: data.message.a1Min,
+                setSchMid: data.message.a1Mid
             })
-        } else if (field == 'min'){
-            this.setState({
-                minute: text
-            })
-        } else if (field == 'mid'){
-            this.setState({
-                mid: text
-            })
-        }
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
+    runSchTime = () => {
+        fetch('http://127.0.0.1:5000/api/v1/run_a1_time', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then((res) => {
+            let data = res.json()
+            return data
+        })
+        .then((data) => {
+            console.log(data)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
+    componentDidMount(){
+        this.showSchTime()
+        this.aux1State()
     }
 
     navControl = () => {
@@ -106,12 +158,12 @@ export default class Aux1 extends React.Component{
                             Schedule Aux1 Control
                         </Text>
                         <View style={styles.btnContainer}>
-                            <TouchableOpacity style={styles.schAux1Btn} onPress={() => {this.calcTime(this.state.hour)}}>
+                            <TouchableOpacity style={styles.schAux1Btn} onPress={() => this.setSchTime()}>
                                 <Text style={styles.schAux1BtnTxt}>
                                     set
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.schAux1Btn} onPress={() => {this.schAux1Off(2)}}>
+                            <TouchableOpacity style={styles.schAux1Btn} onPress={() => this.runSchTime()}>
                                 <Text style={styles.schAux1BtnTxt}>
                                     run
                                 </Text>
@@ -129,7 +181,7 @@ export default class Aux1 extends React.Component{
                             <TextInput 
                                 style={styles.schInput}
                                 autoCorrect={false}
-                                onChangeText={(text) => this.updateValue(text, 'hour')}
+                                onChangeText={val => this.onChangeText('hour', val)}
                                 // value={this.state.hour}
                                 keyboardType={'numeric'}
                                 maxLength={2}
@@ -143,7 +195,7 @@ export default class Aux1 extends React.Component{
                             <TextInput 
                                 style={styles.schInput}
                                 autoCorrect={false}
-                                onChangeText={(text) => this.updateValue(text, 'min')}
+                                onChangeText={val => this.onChangeText('minute', val)}
                                 // value={this.state.minute}
                                 keyboardType={'numeric'}
                                 maxLength={2}
@@ -156,12 +208,12 @@ export default class Aux1 extends React.Component{
                                 style={styles.schInput}
                                 autoCapitalize='characters'
                                 autoCorrect={false}
-                                onChangeText={(text) => this.updateValue(text, 'mid')}
+                                onChangeText={val => this.onChangeText('mid', val)}
                                 value={this.state.mid}
                                 maxLength={2}
                                 returnKeyType='go'
                                 ref={(input) => this.midInput = input}
-                                onSubmitEditing={() => alert(`${this.state.hour}:${this.state.minute} ${this.state.mid}`)}
+                                onSubmitEditing={() => this.setSchTime()}
                             />
                         </View>
                         <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn} />

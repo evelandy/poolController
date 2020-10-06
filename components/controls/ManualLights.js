@@ -15,8 +15,29 @@ export default class ManualLights extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
+
     state = {
-        running: 'false'
+        running: false
+    }
+
+    componentDidMount() {
+        this.lightDisplay()
+    }
+
+    async lightDisplay() {
+        await fetch('http://127.0.0.1:5000/api/v1/light_status')
+        .then((res) => {
+            let data = res.json();
+            return data;
+        })
+        .then((data) => {
+            this.setState({
+                running: data.lswitch
+            })
+        })
+        .catch((err) => {
+            console.log(err)
+        })
     }
     
     manLgtOn = () => {
@@ -27,13 +48,14 @@ export default class ManualLights extends React.Component{
         })
         .then((data) => {
             this.setState({
-                running: data.msg
+                running: data.lswitch
             })
         })
         .catch((error) => {
-            console.warn(error)
+            console.log(error)
         })
     }
+
     manLgtOff = () => {
         fetch('http://127.0.0.1:5000/api/v1/light_off')
         .then((response) => {
@@ -42,13 +64,14 @@ export default class ManualLights extends React.Component{
         })
         .then((data) => {
             this.setState({
-                running: data.msg
+                running: data.lswitch
             })
         })
         .catch((error) => {
-            console.warn(error)
+            console.log(error)
         })
     }
+    
     backToCtrl = () => {
         this.props.navigation.navigate('ControlDisp')
     }

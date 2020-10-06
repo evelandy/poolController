@@ -15,10 +15,31 @@ export default class ManualAux1 extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
+
     state = {
-        running: 'false'
+        running: false
     }
-    
+
+    componentDidMount() {
+        this.aux1Display()
+    }
+
+    async aux1Display() {
+        await fetch('http://127.0.0.1:5000/api/v1/aux1_status')
+        .then((res) => {
+            let data = res.json();
+            return data;
+        })
+        .then((data) => {
+            this.setState({
+                running: data.a1switch
+            })
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
     manAux1On = () => {
         fetch('http://127.0.0.1:5000/api/v1/aux_1_on')
         .then((response) => {
@@ -27,13 +48,14 @@ export default class ManualAux1 extends React.Component{
         })
         .then((data) => {
             this.setState({
-                running: data.msg
+                running: data.a1switch
             })
         })
         .catch((error) => {
-            console.warn(error)
+            console.log(error)
         })
     }
+
     manAux1Off = () => {
         fetch('http://127.0.0.1:5000/api/v1/aux_1_off')
         .then((response) => {
@@ -42,13 +64,14 @@ export default class ManualAux1 extends React.Component{
         })
         .then((data) => {
             this.setState({
-                running: data.msg
+                running: data.a1switch
             })
         })
         .catch((error) => {
-            console.warn(error)
+            console.log(error)
         })
     }
+    
     backToCtrl = () => {
         this.props.navigation.navigate('ControlDisp')
     }

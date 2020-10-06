@@ -29,7 +29,9 @@ export default class Dashboard extends React.Component{
         greet: 'Hey',
         fname: '',
         username: '',
-        running: this.props.running
+        prunning: false,
+        crunning: false,
+        lrunning: false,
     }
 
     greet_lst = [
@@ -43,6 +45,57 @@ export default class Dashboard extends React.Component{
     componentDidMount(){
         this.displayFname()
         this.disp_greet_lst()
+        this.pumpState()
+        this.cleanState()
+        this.lightState()
+    }
+
+    pumpState = () => {
+        fetch('http://127.0.0.1:5000/api/v1/pump_status')
+        .then((response) => {
+            let data = response.json()
+            return data
+        })
+        .then((data) => {
+            this.setState({
+                prunning: data.pswitch
+            });
+        })
+        .catch((err) => {
+            console.log(err)
+        });
+    }
+
+    cleanState = () => {
+        fetch('http://127.0.0.1:5000/api/v1/clean_status')
+        .then((response) => {
+            let data = response.json()
+            return data
+        })
+        .then((data) => {
+            this.setState({
+                crunning: data.cswitch
+            });
+        })
+        .catch((err) => {
+            console.log(err)
+        });
+    }
+
+    lightState = () => {
+        fetch('http://127.0.0.1:5000/api/v1/light_status')
+        .then((response) => {
+            let data = response.json()
+            return data
+        })
+        .then((data) => {
+            this.setState({
+                running: data.lswitch
+            });
+        })
+        .catch((err) => {
+            console.log(err)
+        });
     }
 
     disp_greet_lst = () => {
@@ -117,9 +170,9 @@ export default class Dashboard extends React.Component{
                             <View style={styles.dispContainer}>
                                 <TempDisp/>
                                 <WaterTemp />
-                                <CleanDisp />
-                                <PumpDisp />
-                                <LightDisp />
+                                <CleanDisp running={this.state.crunning} />
+                                <PumpDisp running={this.state.prunning} />
+                                <LightDisp running={this.state.lrunning} />
                             </View>
                             <View style={styles.ctrlContainer}>
                                 <TouchableOpacity style={styles.ctrlBtn} onPress={() => this.props.navigation.navigate('ControlDisp')}>
@@ -193,5 +246,16 @@ const styles = StyleSheet.create({
         borderStyle: 'solid',
         borderColor: 'lightgray',
         width: 340
+    },
+    pmpHeader: {
+        borderWidth: 1,
+        borderColor: 'white',
+        borderStyle: 'solid',
+        paddingRight: 40,
+        paddingLeft: 40,
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 18,
+        marginTop: 20
     },
 })
