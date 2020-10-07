@@ -69,6 +69,7 @@ export default class SignUp extends React.Component{
                 this.clearState();
         })
     }
+    
     clearState = () => {
         this.setState({
             fname: '',

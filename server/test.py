@@ -1,24 +1,24 @@
 import sqlite3
 
 
-# conn = sqlite3.connect('data.db')
-# print('db opened!')
-# conn.execute("""CREATE TABLE IF NOT EXISTS user(
-#              id INTEGER PRIMARY KEY AUTOINCREMENT,
-#              fname CHAR(80),
-#              lname CHAR(80),
-#              username CHAR(80) UNIQUE,
-#              password CHAR(120),
-#              email CHAR(80) UNIQUE,
-#              address CHAR(80),
-#              add2 CHAR(10),
-#              city CHAR(40),
-#              sta CHAR(4),
-#              zipCode INTEGER,
-#              phone INTEGER UNIQUE,
-#              admin BOOL);""")
-# print('Table created!')
-# conn.close()
+conn = sqlite3.connect('data.db')
+print('db opened!')
+conn.execute("""CREATE TABLE IF NOT EXISTS user(
+             id INTEGER PRIMARY KEY AUTOINCREMENT,
+             fname CHAR(80),
+             lname CHAR(80),
+             username CHAR(80) UNIQUE,
+             password CHAR(120),
+             email CHAR(80) UNIQUE,
+             address CHAR(80),
+             add2 CHAR(10),
+             city CHAR(40),
+             sta CHAR(4),
+             zipCode INTEGER,
+             phone INTEGER UNIQUE,
+             admin BOOL);""")
+print('Table created!')
+conn.close()
 
 
 # conn = sqlite3.connect('data.db')
@@ -57,9 +57,12 @@ import sqlite3
 
 # conn = sqlite3.connect('data.db')
 # print('db opened!')
-# conn.execute("""CREATE TABLE IF NOT EXISTS p_status(
+# conn.execute("""CREATE TABLE IF NOT EXISTS p_ctrl(
 #             id INTEGER PRIMARY KEY AUTOINCREMENT,
-#             pswitch BOOLEAN);""")
+#             pHr INTEGER,
+#             pMin INTEGER,
+#             pMid CHAR(2),
+#             user_id INTEGER);""")
 # print('Table created!')
 # conn.close()
 

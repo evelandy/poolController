@@ -45,11 +45,13 @@ class p_ctrl(db.Model):
     pHr = db.Column(db.Integer)
     pMin = db.Column(db.Integer)
     pMid = db.Column(db.String(2))
+    user_id = db.Column(db.Integer)
 
 
 class p_status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     pswitch = db.Column(db.Boolean)
+    # user_id = db.Column(db.Integer)
 
 
 class c_ctrl(db.Model):
@@ -57,11 +59,13 @@ class c_ctrl(db.Model):
     cHr = db.Column(db.Integer)
     cMin = db.Column(db.Integer)
     cMid = db.Column(db.String(2))
+    # user_id = db.Column(db.Integer)
 
 
 class c_status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cswitch = db.Column(db.Boolean)
+    # user_id = db.Column(db.Integer)
 
 
 class l_ctrl(db.Model):
@@ -69,11 +73,13 @@ class l_ctrl(db.Model):
     lHr = db.Column(db.Integer)
     lMin = db.Column(db.Integer)
     lMid = db.Column(db.String(2))
+    # user_id = db.Column(db.Integer)
 
 
 class l_status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     lswitch = db.Column(db.Boolean)
+    # user_id = db.Column(db.Integer)
 
 
 class a1_ctrl(db.Model):
@@ -81,11 +87,20 @@ class a1_ctrl(db.Model):
     a1Hr = db.Column(db.Integer)
     a1Min = db.Column(db.Integer)
     a1Mid = db.Column(db.String(2))
+    # user_id = db.Column(db.Integer)
 
 
 class a1_status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     a1switch = db.Column(db.Boolean)
+    # user_id = db.Column(db.Integer)
+
+
+class temp_trigger(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    triggerTemp = db.Column(db.Integer)
+    triggerSwitch = db.Column(db.Boolean)
+    # user_id = db.Column(db.Integer)
 
 
 # create token and check creds
@@ -96,12 +111,12 @@ def token_req(f):
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
         if not token:
-            return jsonify({'message': 'Missing Token'}), 404
+            return jsonify({'message': 'Token missing!'}), 404
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'])
             current_user = User.query.filter_by(id=data['id']).first()
         except:
-            return jsonify({"message": "Invalid Token"}), 401
+            return jsonify({'message': 'Token invalid!'}), 401
         return f(current_user, *args, **kwargs)
     return decorate
 
@@ -143,13 +158,13 @@ def add_user():
     hash_password = generate_password_hash(data['password'], method='sha256')
     new_user = User(fname=data['fname'], lname=data['lname'], username=data['username'], password=hash_password,
                     email=data['email'], address=data['address'], add2=data['add2'], city=data['city'],
-                    sta=data['sta'], zipCode=data['zipCode'], phone=data['phone'], admin=False)
+                    sta=data['sta'], zipCode=data['zipCode'], phone=data['phone'], admin=True)
     db.session.add(new_user)
     db.session.commit()
     return jsonify({"message": "new user added"}), 201
 
 
-# view user
+# view user might not even use this
 @app.route('/api/v1/user/<user_id>', methods=['GET'])
 def user(user_id):
     user = User.query.filter_by(id=user_id).first()
@@ -173,6 +188,16 @@ def user(user_id):
     user_data['admin'] = user.admin
 
     return jsonify(user_data)
+
+
+@app.route('/api/v1/<username>/<user_id>', methods=['PUT'])
+def edit_username(username, user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'user does not exist'}), 404
+    user.username = username
+    db.session.commit()
+    return jsonify({'message': 'username updated!'}), 202
 
 
 # logout
@@ -209,7 +234,7 @@ def temp():
 
 
 # add time for schedule pump
-@app.route('/api/v1/add_p_time', methods=['PUT'])
+@app.route('/api/v1/add_p_time', methods=['POST'])
 def add_p_time():
     # ptime = p_ctrl.query.filter_by(id=1).first()
     ptime = p_ctrl.query.all()
@@ -311,6 +336,46 @@ def sch_p_off(tm=5):
 # def clean():
 #     res = requests.get(url='http://192.168.1.116:{}/api/led'.format(RPI_IP_ADDR, RPI_PORT)
 #     return jsonify({'message': 'cleaner on'})
+
+
+# set trigger time
+@app.route('/api/v1/temp/trigger_temp', methods=['PUT'])
+def trigger_temp():
+    ttemp = temp_trigger.query.all()
+    if ttemp:
+        conn = sqlite3.connect('data.db')
+        sql = "DELETE FROM temp_trigger"
+        cur = conn.cursor()
+        cur.execute(sql)
+        conn.commit()
+
+        data = request.get_json()
+        new_trigger_temp = temp_trigger(triggerTemp=data['triggerTemp'])
+        db.session.add(new_trigger_temp)
+        db.session.commit()
+        ttemp = temp_trigger.query.all()
+        tmp = ttemp[0].triggerTemp
+        res = requests.get(url='http://{}:{}/api/v1/trigger_temp/{}'.format(RPI_IP_ADDR, RPI_PORT, tmp))
+        return jsonify({'message': 'temperature saved'}), 201
+    else:
+        data = request.get_json()
+        new_trigger_temp = temp_trigger(triggerTemp=data['triggerTemp'])
+        db.session.add(new_trigger_temp)
+        db.session.commit()
+        ttemp = temp_trigger.query.all()
+        tmp = ttemp[0].triggerTemp
+        res = requests.get(url='http://{}:{}/api/v1/trigger_temp/{}'.format(RPI_IP_ADDR, RPI_PORT, tmp))
+        return jsonify({'message': 'temperature saved'}), 201
+
+
+# show saved trigger time
+@app.route('/api/v1/show_trigger_temp', methods=['GET'])
+def show_trigger_temp():
+    ttemp = temp_trigger.query.all()
+    tdata = {}
+    tdata['triggerTemp'] = ttemp[0].triggerTemp
+
+    return jsonify(tdata), 200
 
 
 # cleaner controls from server to RPi

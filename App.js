@@ -15,6 +15,7 @@ import Clean from './components/controls/schedule/Clean';
 import Light from './components/controls/schedule/Light';
 import Aux1 from './components/controls/schedule/Aux1';
 import Aux2 from './components/controls/schedule/Aux2';
+import UserSettings from './components/UserSettings';
 
 
 const RootStack = createStackNavigator({
@@ -60,6 +61,9 @@ const RootStack = createStackNavigator({
   Aux1: {
     screen: Aux1
   },
+  UserSettings: {
+    screen: UserSettings
+  }
 });
 
 const App = createAppContainer(RootStack);

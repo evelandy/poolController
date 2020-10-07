@@ -180,6 +180,11 @@ export default class Dashboard extends React.Component{
                                         Controls
                                     </Text>
                                 </TouchableOpacity>
+                                <TouchableOpacity style={styles.settingBtn} onPress={() => this.props.navigation.navigate('UserSettings')}>
+                                    <Text style={styles.settingBtnTxt}>
+                                        Settings
+                                    </Text>
+                                </TouchableOpacity>
                             </View>
                             <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn}/>
                         </View>
@@ -215,7 +220,7 @@ const styles = StyleSheet.create({
         color: 'lightblue'
     },
     ctrlBtn: {
-        top: 225,
+        top: 200,
         padding: 15,
         borderRadius: 10,
         backgroundColor: 'navy',
@@ -233,8 +238,27 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold'
     },
+    settingBtn: {
+        top: 205,
+        padding: 15,
+        borderRadius: 10,
+        backgroundColor: 'navy',
+        alignItems: 'center',
+        margin: 10,
+        paddingRight: 100,
+        paddingLeft: 100,
+        borderWidth: 2,
+        borderStyle: 'solid',
+        borderColor: 'lightgray',
+        width: 340
+    },
+    settingBtnTxt: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold'
+    },
     logBtn: {
-        top: 250,
+        top: 210,
         padding: 15,
         borderRadius: 10,
         backgroundColor: 'navy',

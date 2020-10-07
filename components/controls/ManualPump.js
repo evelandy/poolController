@@ -4,7 +4,8 @@ import {
     Text,
     View,
     ImageBackground,
-    TouchableOpacity
+    TouchableOpacity,
+    TextInput
 } from 'react-native';
 import Logout from '../Logout';
 import PumpDisp from '../PumpDisp';
@@ -17,11 +18,14 @@ export default class ManualPump extends React.Component{
     };
 
     state = {
-        running: false
+        running: false,
+        triggerTemp: 0,
+        setTriggerTemp: '0'
     }
 
     componentDidMount() {
         this.pumpDisplay()
+        this.showTriggerTemp()
     }
 
     async pumpDisplay() {
@@ -72,8 +76,60 @@ export default class ManualPump extends React.Component{
         })
     }
 
+    setTriggerTemp = () => {
+        let collectTemp = {}
+        collectTemp.triggerTemp = this.state.triggerTemp
+        if(collectTemp.triggerTemp == 0){
+            alert('please make sure you enter a value in the temperature input box')
+        } else {
+            this.setState({
+                setTriggerTemp: this.state.triggerTemp
+            })
+            fetch('http://127.0.0.1:5000/api/v1/temp/trigger_temp', {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(collectTemp)
+            })
+            .then((res) => {
+                let data = res.json()
+                return data
+            })
+            .then((data) => {
+                console.log(data)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        }
+    }
+
+    showTriggerTemp = () => {
+        fetch('http://127.0.0.1:5000/api/v1/show_trigger_temp')
+        .then((res) => {
+            let data = res.json()
+            return data
+        })
+        .then((data) => {
+            this.setState({
+                setTriggerTemp: data.triggerTemp
+            })
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
     backToCtrl = () => {
         this.props.navigation.navigate('ControlDisp')
+    }
+
+    onChangeText = (key, val) => {
+        this.setState({
+            [key]: val
+        });
     }
 
     render() {
@@ -98,6 +154,27 @@ export default class ManualPump extends React.Component{
                                 </Text>
                             </TouchableOpacity>
                         </View>
+
+                        <View style={styles.triggerContainer}>
+                            <Text style={styles.triggerHeader}>Set Temperature Trigger</Text>
+                            <Text style={styles.tempHeader}>current temperature:  {this.state.setTriggerTemp} &deg;F</Text>
+                            <TextInput 
+                                style={styles.triggerInput}
+                                autoCorrect={false}
+                                onChangeText={val => this.onChangeText('triggerTemp', val)}
+                                keyboardType='numbers-and-punctuation'
+                                maxLength={3}
+                                placeholder={'75'}
+                                returnKeyType='send'
+                                onSubmitEditing={() => this.setTriggerTemp()}
+                            /> 
+                            <TouchableOpacity style={styles.triggerBtn} onPress={() => this.setTriggerTemp()}>
+                                <Text style={styles.triggerBtnTxt}>
+                                    Set
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+
                         <TempDisp />
                         <WaterTemp />
                         <PumpDisp running={this.state.running} />
@@ -124,6 +201,12 @@ const styles = StyleSheet.create({
         top: 75,
         alignItems: 'center'
     },
+    triggerContainer: {
+        position: "absolute",
+        top: 360,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     btnContainer: {
         flexDirection: 'row',
         top: 240,
@@ -138,17 +221,6 @@ const styles = StyleSheet.create({
         width: '100%',
         flex: 1,
         resizeMode: 'cover'
-    },
-    pmpHeader: {
-        borderWidth: 1,
-        borderColor: 'white',
-        borderStyle: 'solid',
-        paddingRight: 40,
-        paddingLeft: 40,
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 18,
-        marginTop: 20
     },
     manPmpBtn: {
         top: 20,
@@ -195,5 +267,49 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 15,
         fontWeight: 'bold'
+    },
+    tempHeader: {
+        borderWidth: 1,
+        borderColor: 'white',
+        borderStyle: 'solid',
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingTop: 3,
+        paddingBottom: 3,
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 18,
+        marginTop: 10,
+        marginBottom: 5
+    },
+    triggerHeader: {
+        fontSize: 23,
+        fontWeight: 'bold',
+    },
+    triggerBtn: {
+        padding: 15,
+        borderRadius: 10,
+        backgroundColor: 'navy',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderStyle: 'solid',
+        borderColor: 'lightgray',
+        width: 150,
+    },
+    triggerBtnTxt: {
+        color: 'white',
+        fontSize: 15,
+        fontWeight: 'bold'
+    },
+    triggerInput: {
+        width: 55,
+        height: 35,
+        backgroundColor: 'lightblue',
+        borderColor: 'lightgray',
+        borderWidth: 2,
+        borderRadius: 3,
+        fontSize: 25,
+        textAlign: 'center',
+        marginBottom: 5
     },
 });

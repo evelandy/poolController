@@ -6,7 +6,8 @@ import {
     TouchableOpacity,
     ImageBackground,
     StatusBar,
-    TextInput, KeyboardAvoidingView
+    TextInput, 
+    KeyboardAvoidingView
 } from 'react-native';
 import { encode as btoa } from 'base-64';
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';

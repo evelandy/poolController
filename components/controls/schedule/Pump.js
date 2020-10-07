@@ -91,7 +91,7 @@ export default class Pump extends React.Component{
             setSchMid: this.state.mid
         })
         fetch('http://127.0.0.1:5000/api/v1/add_p_time', {
-            method: 'PUT',
+            method: 'POST',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json'
