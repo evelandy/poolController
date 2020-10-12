@@ -25,20 +25,6 @@ export default class Logout extends React.Component{
 }
 
 const styles = StyleSheet.create({
-    // logoutBtn: {
-    //     top: 250,
-    //     padding: 15,
-    //     borderRadius: 10,
-    //     backgroundColor: 'navy',
-    //     alignItems: 'center',
-    //     margin: 10,
-    //     paddingRight: 100,
-    //     paddingLeft: 100,
-    //     borderWidth: 2,
-    //     borderStyle: 'solid',
-    //     borderColor: 'lightgray',
-    //     width: 340
-    // },
     logoutBtnTxt: {
         color: 'white',
         fontSize: 16,

@@ -35,7 +35,7 @@ export default class ControlDisp extends React.Component{
     }
 
     navControl = () => {
-        this.props.navigation.navigate('Dashboard');
+        this.props.navigation.navigate('Dashboard')
     }
 
     render() {
@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         fontSize: 27,
+        fontSize: (Platform.OS === 'ios') ? 27 : 34,
         textTransform: 'uppercase',
     },
     logBtn: {

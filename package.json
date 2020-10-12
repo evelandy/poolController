@@ -19,6 +19,7 @@
     "react-native-gesture-handler": "^1.8.0",
     "react-native-safe-area-context": "^3.1.7",
     "react-native-screens": "^2.10.1",
+    "react-native-webview": "^9.0.0",
     "react-navigation": "^4.4.0",
     "react-navigation-stack": "^2.8.2"
   },

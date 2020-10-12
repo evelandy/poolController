@@ -7,11 +7,13 @@ import {
     TouchableOpacity,
     ImageBackground,
     StatusBar,
-    ScrollView
+    ScrollView, Platform
 } from 'react-native';
 import Logout from './Logout';
 let jwtDecode = require('jwt-decode');
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
+
+let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
 
 export default class UserSettings extends React.Component{
     static navigationOptions = {
@@ -30,7 +32,8 @@ export default class UserSettings extends React.Component{
         sta: '',
         zipCode: '',
         phone: '',
-        userId: ''
+        userId: '',
+        text: ''
     }
 
     clearState = () => {
@@ -55,40 +58,242 @@ export default class UserSettings extends React.Component{
         });
     }
 
-    async changeUsername() {
+    async changeName() {
         let token = await AsyncStorage.getItem('x-access-token')
         let decoded = jwtDecode(token)
         // console.log(decoded.username)
         // alert(decoded.username)
         this.setState({
             userId: decoded.id
-        })
+        });
+        let newFname = this.state.fname;
+        let newLname = this.state.lname;
+        let userId = this.state.userId;
+        if(newFname === '' || newLname === ''){
+            alert('please make sure you filled out both entries.')
+        } else {
+            await fetch(`http://${ipAddr}:5000/api/v1/editname/${newFname}/${newLname}/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                }
+            })
+            .then((res) => {
+                let data = res.json();
+                return data;
+            })
+            .then((data) => {
+                alert(`new first name: ${this.state.fname} \nnew last name: ${this.state.lname}`)
+            })
+            .then(() => {
+                this.setState({
+                    fname: '',
+                    lname: ''
+                })
+            })
+            .catch((err) => {
+                alert(`name error: ${err}`)
+            })
+        }
+    }
+
+    async changeUsername() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        let decoded = jwtDecode(token)
+        this.setState({
+            userId: decoded.id
+        });
         let newUname = this.state.username
         let userId = this.state.userId
-        fetch(`http://127.0.0.1:5000/api/v1/${newUname}/${userId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-access-token': token,
-                withCredentials: true
-            }
-        })
-        .then((response) => {
-            let data = response.json()
-            return data
-        })
-        .then((data) => {
-            this.setState({
-                username: ''
+        if(newUname === ''){
+            alert('please make sure you filled out the username input')
+        } else {
+            fetch(`http://${ipAddr}:5000/api/v1/edituname/${newUname}/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                }
             })
+            .then((response) => {
+                let data = response.json()
+                return data
+            })
+            .then((data) => {
+                alert(`username updated to: ${this.state.username}`)
+            })
+            .then(() => {
+                this.setState({
+                    username: ''
+                })
+                // this.props.navigation.navigate('Dashboard')
+            })
+            .catch((error) => {
+                alert('username already exists! please try again with a different username.');
+            })
+        }
+    }
+
+    async changePassword() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        let decoded = jwtDecode(token)
+        this.setState({
+            userId: decoded.id
         })
-        .then((data) => {
-            alert('username updated!')
-            // this.props.navigation.navigate('Login')
-        })
-        .catch((error) => {
-            alert('username already exists! please try again with a different username.');
-        })
+        let newPass = this.state.password
+        let userId = this.state.userId
+        if(newPass === ''){
+            alert('please make sure you filled out the password input')
+        } else {
+            fetch(`http://${ipAddr}:5000/api/v1/editpass/${newPass}/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                }
+            })
+            .then((response) => {
+                let data = response.json()
+                return data
+            })
+            .then((data) => {
+                alert(`Password changed to: ${this.state.password}`)
+            })
+            .then((data) => {
+                this.setState({
+                    password: ''
+                })
+                // this.props.navigation.navigate('Dashboard')
+            })
+            .catch((error) => {
+                alert(`password edit error: ${error}`);
+            })
+        }
+    }
+
+    async changeEmail() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        let decoded = jwtDecode(token)
+        this.setState({
+            userId: decoded.id
+        });
+        let newEmail = this.state.email;
+        let userId = this.state.userId;
+        if(newEmail === ''){
+            alert('please make sure you filled out the email input')
+        } else {
+            fetch(`http://${ipAddr}:5000/api/v1/editemail/${newEmail}/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                }
+            })
+            .then((response) => {
+                let data = response.json()
+                return data
+            })
+            .then((data) => {
+                alert(`email changed to: ${this.state.email}`)
+            })
+            .then(() => {
+                this.setState({
+                    email: ''
+                })
+            })
+            .catch((error) => {
+                alert(`email error ${error}`);
+            })
+        }
+    }
+
+    async changeAddress() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        let decoded = jwtDecode(token)
+        this.setState({
+            userId: decoded.id
+        });
+        let addObj = {};
+        addObj.address = this.state.address;
+        addObj.add2 = this.state.add2;
+        addObj.city = this.state.city;
+        addObj.sta = this.state.sta;
+        addObj.zipCode = this.state.zipCode;
+        let userId = this.state.userId;
+        if(this.state.address === '' || this.state.city === '' || this.state.sta === '' || this.state.zipCode === ''){
+            alert('please fill out all address fields')
+        } else {
+            await fetch(`http://${ipAddr}:5000/api/v1/editaddress/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                },
+                body: JSON.stringify(addObj)
+            })
+            .then((res) => {
+                let data = res.json();
+                return data;
+            })
+            .then((data) => {
+                alert('address updated successfully')
+            })
+            .then(() => {
+                this.setState({
+                    address: '',
+                    add2: '',
+                    city: '',
+                    sta: '',
+                    zipCode: ''
+                })
+            })
+            .catch((err) => {
+                alert(`name error: ${err}`)
+            })
+        }
+    }
+
+    async changePhone() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        let decoded = jwtDecode(token)
+        this.setState({
+            userId: decoded.id
+        });
+        let newPhone = this.state.phone;
+        let userId = this.state.userId;
+        if(newPhone === ''){
+            alert('please make sure you filled out the phone input')
+        } else {
+            fetch(`http://${ipAddr}:5000/api/v1/editphone/${newPhone}/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                }
+            })
+            .then((response) => {
+                let data = response.json()
+                return data
+            })
+            .then((data) => {
+                alert(`phone changed to: ${this.state.phone}`)
+            })
+            .then(() => {
+                this.setState({
+                    phone: ''
+                })
+            })
+            .catch((error) => {
+                alert(`phone error ${error}`);
+            })
+        }
     }
 
     render() {
@@ -113,6 +318,7 @@ export default class UserSettings extends React.Component{
                                     autoCorrect={false}
                                     keyboardType='default'
                                     returnKeyType='next'
+                                    clearButtonMode='always'
                                     onChangeText={val => this.onChangeText('fname', val)}
                                     onSubmitEditing={() => this.lname.focus()}
                                 />
@@ -126,13 +332,14 @@ export default class UserSettings extends React.Component{
                                     autoCapitalize="none"
                                     autoCorrect={false}
                                     keyboardType='default'
-                                    returnKeyType='next'
+                                    returnKeyType='done'
+                                    clearButtonMode='always'
                                     onChangeText={val => this.onChangeText('lname', val)}
                                     ref={(input) => this.lname = input}
-                                    onSubmitEditing={() => this.username.focus()}
+                                    onSubmitEditing={() => this.changeName()}
                                 />
                             </View>
-                            <TouchableOpacity style={styles.setBtnName}>
+                            <TouchableOpacity style={styles.setBtnName} onPress={() => this.changeName()}>
                                 <Text style={styles.setBtnTxt}>
                                     update name
                                 </Text>
@@ -146,12 +353,17 @@ export default class UserSettings extends React.Component{
                                     autoCapitalize="none"
                                     autoCorrect={false}
                                     keyboardType='email-address'
-                                    returnKeyType='next'
+                                    returnKeyType='done'
+                                    clearButtonMode='always'
                                     onChangeText={val => this.onChangeText('username', val)}
-                                    ref={(input) => this.username = input}
-                                    onSubmitEditing={() => this.password.focus()}
+                                    onSubmitEditing={() => this.changeUsername()}
                                 />
                             </View>
+                            <TouchableOpacity style={styles.setBtnName} onPress={() => this.changeUsername()}>
+                                <Text style={styles.setBtnTxt}>
+                                    update username
+                                </Text>
+                            </TouchableOpacity>
                             <View>
                                 <Text style={styles.inputLabel}>
                                     Password
@@ -161,16 +373,16 @@ export default class UserSettings extends React.Component{
                                     autoCapitalize="none"
                                     autoCorrect={false}
                                     keyboardType='email-address'
-                                    returnKeyType='next'
+                                    returnKeyType='done'
+                                    clearButtonMode='always'
                                     secureTextEntry={true}
                                     onChangeText={val => this.onChangeText('password', val)}
-                                    ref={(input) => this.password = input}
-                                    onSubmitEditing={() => this.email.focus()}
+                                    onSubmitEditing={() => this.changePassword()}
                                 />
                             </View>
-                            <TouchableOpacity style={styles.setBtnName} onPress={() => this.changeUsername()}>
+                            <TouchableOpacity style={styles.setBtnName} onPress={() => this.changePassword()}>
                                 <Text style={styles.setBtnTxt}>
-                                    update username/password
+                                    update password
                                 </Text>
                             </TouchableOpacity>
                             <View>
@@ -182,13 +394,13 @@ export default class UserSettings extends React.Component{
                                     autoCapitalize="none"
                                     autoCorrect={false}
                                     keyboardType='email-address'
-                                    returnKeyType='next'
+                                    returnKeyType='done'
+                                    clearButtonMode='always'
                                     onChangeText={val => this.onChangeText('email', val)}
-                                    ref={(input) => this.email = input}
-                                    onSubmitEditing={() => this.address.focus()}
+                                    onSubmitEditing={() => this.changeEmail()}
                                 />
                             </View>
-                            <TouchableOpacity style={styles.setBtnName}>
+                            <TouchableOpacity style={styles.setBtnName} onPress={() => this.changeEmail()}>
                                 <Text style={styles.setBtnTxt}>
                                     update email
                                 </Text>
@@ -203,6 +415,7 @@ export default class UserSettings extends React.Component{
                                     autoCorrect={false}
                                     keyboardType='numbers-and-punctuation'
                                     returnKeyType='next'
+                                    clearButtonMode='always'
                                     onChangeText={val => this.onChangeText('address', val)}
                                     ref={(input) => this.address = input}
                                     onSubmitEditing={() => this.add2.focus()}
@@ -218,6 +431,7 @@ export default class UserSettings extends React.Component{
                                     autoCorrect={false}
                                     keyboardType='numbers-and-punctuation'
                                     returnKeyType='next'
+                                    clearButtonMode='always'
                                     onChangeText={val => this.onChangeText('add2', val)}
                                     ref={(input) => this.add2 = input}
                                     onSubmitEditing={() => this.city.focus()}
@@ -233,6 +447,7 @@ export default class UserSettings extends React.Component{
                                     autoCorrect={false}
                                     keyboardType='default'
                                     returnKeyType='next'
+                                    clearButtonMode='always'
                                     onChangeText={val => this.onChangeText('city', val)}
                                     ref={(input) => this.city = input}
                                     onSubmitEditing={() => this.sta.focus()}
@@ -248,6 +463,7 @@ export default class UserSettings extends React.Component{
                                     autoCorrect={false}
                                     keyboardType='default'
                                     returnKeyType='next'
+                                    clearButtonMode='always'
                                     onChangeText={val => this.onChangeText('sta', val)}
                                     ref={(input) => this.sta = input}
                                     onSubmitEditing={() => this.zipCode.focus()}
@@ -263,12 +479,13 @@ export default class UserSettings extends React.Component{
                                     autoCorrect={false}
                                     keyboardType='numbers-and-punctuation'
                                     returnKeyType='next'
+                                    clearButtonMode='always'
                                     onChangeText={val => this.onChangeText('zipCode', val)}
                                     ref={(input) => this.zipCode = input}
-                                    onSubmitEditing={() => this.phone.focus()}
+                                    onSubmitEditing={() => this.changeAddress()}
                                 />
                             </View>
-                            <TouchableOpacity style={styles.setBtnName}>
+                            <TouchableOpacity style={styles.setBtnName} onPress={() => this.changeAddress()}>
                                 <Text style={styles.setBtnTxt}>
                                     update address
                                 </Text>
@@ -283,23 +500,25 @@ export default class UserSettings extends React.Component{
                                     autoCorrect={false}
                                     keyboardType='numbers-and-punctuation'
                                     returnKeyType='done'
+                                    clearButtonMode='always'
                                     onChangeText={val => this.onChangeText('phone', val)}
-                                    ref={(input) => this.phone = input}
-                                    // onSubmitEditing={() => this.signUpUser()}
+                                    onSubmitEditing={() => this.changePhone()}
                                 />
                             </View>
-                            <TouchableOpacity style={styles.setBtnName}>
+                            <TouchableOpacity style={styles.setBtnName} onPress={() => this.changePhone()}>
                                 <Text style={styles.setBtnTxt}>
                                     update phone
                                 </Text>
                             </TouchableOpacity>
                         </View>
-                        <TouchableOpacity style={styles.setBtn} onPress={() => this.props.navigation.navigate('Dashboard')}>
-                            <Text style={styles.setBtnTxt}>
-                                Back
-                            </Text>
-                        </TouchableOpacity>
-                        <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn}/>
+                        <View style={styles.endBtnContainer}>
+                            <TouchableOpacity style={styles.setBtn} onPress={() => this.props.navigation.navigate('Dashboard')}>
+                                <Text style={styles.setBtnTxt}>
+                                    Back
+                                </Text>
+                            </TouchableOpacity>
+                            <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn}/>
+                        </View>
                     </ScrollView>
                 </ImageBackground>
             </View>
@@ -324,13 +543,13 @@ const styles = StyleSheet.create({
     },
     setHeader: {
         fontWeight: 'bold',
-        fontSize: 40,
+        fontSize: (Platform.OS === 'ios') ? 40 : 47,
         textTransform: 'uppercase',
         marginBottom: 25
     },
     txtInput: {
         height: 40,
-        width: 275,
+        width: (Platform.OS === 'ios') ? 275 : 325,
         borderColor: 'gray',
         borderWidth: 2,
         borderRadius: 3,
@@ -343,7 +562,8 @@ const styles = StyleSheet.create({
         marginTop: 15,
         fontWeight: 'bold',
         letterSpacing: 1,
-        textTransform: 'uppercase',  
+        textTransform: 'uppercase',
+        fontSize: (Platform.OS === 'ios') ? 0 : 18,
     },
     setBtnName: {
         padding: 10,
@@ -353,9 +573,11 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderStyle: 'solid',
         borderColor: 'lightgray',
-        width: 275,
-        top: 20,
+        width: (Platform.OS === 'ios') ? 275 : 325,
+        marginTop: 18,
+        // top: 20,
         marginBottom: 40,
+        zIndex: 1
     },
     setBtn: {
         padding: 10,
@@ -365,18 +587,19 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderStyle: 'solid',
         borderColor: 'lightgray',
-        width: 275,
-        left: 50,
-        top: 100,
+        width: (Platform.OS === 'ios') ? 275 : 325,
+        left: (Platform.OS === 'ios') ? 50 : 10,
+        top: (Platform.OS === 'ios') ? 110 : 130,
+        // marginTop: 150,
         zIndex: 1
     },
     setBtnTxt: {
         color: 'white',
-        fontSize: 16,
+        fontSize: (Platform.OS === 'ios') ? 16 : 19,
         fontWeight: 'bold',
     },
     logBtn: {
-        top: 110,
+        top: (Platform.OS === 'ios') ? 120 : 150,
         padding: 10,
         borderRadius: 10,
         backgroundColor: 'navy',
@@ -385,8 +608,11 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderStyle: 'solid',
         borderColor: 'lightgray',
-        width: 275,
-        left: 40,
-        marginBottom: 200
+        width: (Platform.OS === 'ios') ? 275 : 325,
+        left: (Platform.OS === 'ios') ? 40 : 0,
+        marginBottom: (Platform.OS === 'ios') ? 190 : 180,
+    },
+    endBtnContainer: {
+        marginLeft: (Platform.OS === 'ios') ? 0 : 33,
     },
 });

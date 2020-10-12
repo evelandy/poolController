@@ -6,7 +6,8 @@ import {
     ImageBackground,
     StatusBar,
     TouchableOpacity,
-    LogBox,
+    LogBox, 
+    Platform
 } from 'react-native';
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 let jwtDecode = require('jwt-decode');
@@ -168,7 +169,7 @@ export default class Dashboard extends React.Component{
                                 {this.state.greet}, {this.state.fname}
                             </Text>
                             <View style={styles.dispContainer}>
-                                <TempDisp/>
+                                <TempDisp />
                                 <WaterTemp />
                                 <CleanDisp running={this.state.crunning} />
                                 <PumpDisp running={this.state.prunning} />
@@ -205,7 +206,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     ctrlContainer: {
-        zIndex: 1
+        zIndex: 1,
+    },
+    dispContainer: {
+        alignItems: 'center'
     },
     image: {
         width: '100%',
@@ -213,14 +217,15 @@ const styles = StyleSheet.create({
         resizeMode: 'cover'
     },
     dashHeader: {
-        fontSize: 30,
+        fontSize: (Platform.OS === 'ios') ? 30 : 40,
         fontWeight: 'bold',
         letterSpacing: 1,
         paddingBottom: 20,
         color: 'lightblue'
     },
     ctrlBtn: {
-        top: 200,
+        top: (Platform.OS === 'ios') ? 200 : 0,
+        marginTop: (Platform.OS === 'ios') ? 0 : 90,
         padding: 15,
         borderRadius: 10,
         backgroundColor: 'navy',
@@ -239,7 +244,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     settingBtn: {
-        top: 205,
+        top: (Platform.OS === 'ios') ? 205 : 0,
+        marginTop: (Platform.OS === 'ios' ? 0 : 15),
         padding: 15,
         borderRadius: 10,
         backgroundColor: 'navy',
@@ -255,10 +261,11 @@ const styles = StyleSheet.create({
     settingBtnTxt: {
         color: 'white',
         fontSize: 16,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     logBtn: {
-        top: 210,
+        top: (Platform.OS === 'ios') ? 210 : 0,
+        marginTop: (Platform.OS === 'ios') ? 0 : 15,
         padding: 15,
         borderRadius: 10,
         backgroundColor: 'navy',

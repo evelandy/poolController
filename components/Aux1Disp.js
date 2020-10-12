@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
         paddingLeft: 40,
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 18,
+        fontSize: (Platform.OS === 'ios') ? 18 : 22,
         marginTop: 20
     },
 });

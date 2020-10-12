@@ -88,7 +88,8 @@ const styles = StyleSheet.create({
         marginTop: 5,
         left: 1,
         fontSize: 16,
-        marginTop: 25
+        marginTop: 25,
+        color: 'white'
     },
     emailInput: {
         height: 40,
@@ -96,8 +97,8 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         borderWidth: 2,
         borderRadius: 7,
-        marginTop: 5,
-        marginBottom: 14,
+        marginTop: 2,
+        marginBottom: 15,
         backgroundColor: 'lightblue',
         fontSize: 27
     },

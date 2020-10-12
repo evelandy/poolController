@@ -35,6 +35,7 @@ export default class SignUp extends React.Component{
     }
 
     signUpUser = () => {
+        let test = Platform.OS == "ios" ? "127.0.0.1" : "10.0.2.2" 
         let usrObj = {}
         usrObj.fname = this.state.fname
         usrObj.lname = this.state.lname
@@ -47,7 +48,7 @@ export default class SignUp extends React.Component{
         usrObj.sta = this.state.sta
         usrObj.zipCode = this.state.zipCode
         usrObj.phone = this.state.phone
-        fetch('http://127.0.0.1:5000/api/v1/user', {
+        fetch(`http://${test}:5000/api/v1/user`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -248,7 +249,7 @@ export default class SignUp extends React.Component{
                                             style={styles.txtInput}
                                             autoCapitalize="none"
                                             autoCorrect={false}
-                                            keyboardType='numbers-and-punctuation'
+                                            keyboardType={(Platform.OS === 'ios') ? 'numbers-and-punctuation' : 'numeric'}
                                             returnKeyType='next'
                                             onChangeText={val => this.onChangeText('zipCode', val)}
                                             ref={(input) => this.zipCode = input}
@@ -263,7 +264,7 @@ export default class SignUp extends React.Component{
                                             style={styles.txtInput}
                                             autoCapitalize="none"
                                             autoCorrect={false}
-                                            keyboardType='numbers-and-punctuation'
+                                            keyboardType={(Platform.OS === 'ios') ? 'numbers-and-punctuation' : 'numeric'}
                                             returnKeyType='done'
                                             onChangeText={val => this.onChangeText('phone', val)}
                                             ref={(input) => this.phone = input}

@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
         zIndex: 1
     },
     pmpHeader: {
-        marginTop: 25,
+        marginTop: (Platform.OS === 'ios') ? 25 : 15,
         color: 'white',
         fontWeight: 'bold',
         fontSize: 27,
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     manPmpBtn: {
-        top: 20,
+        top: (Platform.OS === 'ios') ? 20 : 10,
         padding: 15,
         borderRadius: 10,
         backgroundColor: 'navy',
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     schPmpBtn: {
-        top: 20,
+        top: (Platform.OS === 'ios') ? 20 : 10,
         padding: 15,
         borderRadius: 10,
         backgroundColor: 'navy',

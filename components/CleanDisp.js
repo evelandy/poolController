@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    Platform,
     StyleSheet,
     Text,
     View,
@@ -26,11 +27,13 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
-        paddingRight: 40,
-        paddingLeft: 40,
+        // paddingRight: 40,
+        // paddingLeft: 40,
+        width: (Platform.OS === 'ios') ? 355 : 395,
+        textAlign: 'center',
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 18,
+        fontSize: (Platform.OS === 'ios') ? 18 : 22,
         marginTop: 20
     },
 });

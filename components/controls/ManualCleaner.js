@@ -4,7 +4,7 @@ import {
     Text,
     View,
     ImageBackground,
-    TouchableOpacity
+    TouchableOpacity, Platform
 } from 'react-native';
 import CleanDisp from '../CleanDisp';
 import Logout from '../Logout';
@@ -121,7 +121,8 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     subContainer: {
-        top: 75,
+        // top: 75,
+        top: (Platform.OS === 'ios') ? 75 : 30,
         alignItems: 'center',
     },
     btnContainer: {
@@ -130,7 +131,8 @@ const styles = StyleSheet.create({
         zIndex: 1,
     },
     manClnHeader: {
-        fontSize: 30,
+        // fontSize: 30,
+        fontSize: (Platform.OS === 'ios') ? 30 : 35,
         fontWeight: 'bold',
         letterSpacing: 1,
     },
@@ -158,7 +160,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     logBtn: {
-        top: 300,
+        // top: 300,
+        top: (Platform.OS === 'ios') ? 300 : 250,
         padding: 15,
         borderRadius: 10,
         backgroundColor: 'navy',
@@ -170,7 +173,8 @@ const styles = StyleSheet.create({
         width: 340
     },
     backBtn: {
-        top: 320,
+        // top: 320,
+        top: (Platform.OS === 'ios') ? 320 : 270,
         padding: 15,
         borderRadius: 10,
         backgroundColor: 'navy',

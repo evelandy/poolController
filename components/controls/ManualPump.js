@@ -5,8 +5,10 @@ import {
     View,
     ImageBackground,
     TouchableOpacity,
-    TextInput
+    TextInput, 
+    Platform, Keyboard
 } from 'react-native';
+import DismissKeyboard from '../DismissKeyboard';
 import Logout from '../Logout';
 import PumpDisp from '../PumpDisp';
 import TempDisp from '../TempDisp';
@@ -20,12 +22,47 @@ export default class ManualPump extends React.Component{
     state = {
         running: false,
         triggerTemp: 0,
-        setTriggerTemp: '0'
+        setTriggerTemp: '0',
+        currentTemp: 0
     }
 
     componentDidMount() {
-        this.pumpDisplay()
-        this.showTriggerTemp()
+        this.pumpDisplay();
+        this.showTriggerTemp();
+        // this.weatherTrigger();       this and below two functions are to turn on pump and run for duration then off.
+    }
+
+    sleep = (ms) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    //                          need to find out what time every day to run triggerTemp(pump triggered by the weather)
+    triggerTemp(params) {
+        let temp = Math.round(params);
+        let timeToRun = temp / 10;
+        // this.manPmpOn();
+        // this.sleep(parseInt(timeToRun)).then(this.manPmpOff())
+        this.sleep(timeToRun * 1000).then(() => {console.log('click')})
+    }
+
+    weatherTrigger = () => {
+        const apiKey = '5490a59fae143d65082c3beeaeaf6982';
+        fetch(`http://api.openweathermap.org/data/2.5/weather?q=galveston&appid=${apiKey}&units=imperial`)
+        .then((res) => {
+            let data = res.json();
+            return data;
+        })
+        .then((data) => {
+            this.setState({
+                currentTemp: data.main.temp
+            })
+        })
+        .then((data) => {
+            this.triggerTemp(this.state.currentTemp)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
     }
 
     async pumpDisplay() {
@@ -154,10 +191,10 @@ export default class ManualPump extends React.Component{
                                 </Text>
                             </TouchableOpacity>
                         </View>
-
+                        <DismissKeyboard keyboard={Keyboard}>
                         <View style={styles.triggerContainer}>
                             <Text style={styles.triggerHeader}>Set Temperature Trigger</Text>
-                            <Text style={styles.tempHeader}>current temperature:  {this.state.setTriggerTemp} &deg;F</Text>
+                            <Text style={styles.tempHeader}>Set Temperature:  {this.state.setTriggerTemp} &deg;F</Text>
                             <TextInput 
                                 style={styles.triggerInput}
                                 autoCorrect={false}
@@ -174,10 +211,12 @@ export default class ManualPump extends React.Component{
                                 </Text>
                             </TouchableOpacity>
                         </View>
-
-                        <TempDisp />
-                        <WaterTemp />
-                        <PumpDisp running={this.state.running} />
+                        </DismissKeyboard>
+                        <View style={styles.infoHeader}>
+                            <TempDisp />
+                            <WaterTemp />
+                            <PumpDisp running={this.state.running} />
+                        </View>
                         <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn} />
                         <TouchableOpacity style={styles.backBtn} onPress={this.backToCtrl}>
                             <Text style={styles.backBtnTxt}>
@@ -198,22 +237,24 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     subContainer: {
-        top: 75,
+        top: (Platform.OS === 'ios') ? 75 : 40,
         alignItems: 'center'
     },
     triggerContainer: {
         position: "absolute",
-        top: 360,
+        // top: 360,
+        top: (Platform.OS === 'ios') ? 360 : 365,
         justifyContent: 'center',
         alignItems: 'center'
     },
     btnContainer: {
         flexDirection: 'row',
-        top: 240,
+        // top: 240,
+        top: (Platform.OS === 'ios') ? 240 : 230,
         zIndex: 1,
     },
     manPmpHeader: {
-        fontSize: 30,
+        fontSize: (Platform.OS === 'ios') ? 30 : 36,
         fontWeight: 'bold',
         letterSpacing: 1,
     },
@@ -224,14 +265,16 @@ const styles = StyleSheet.create({
     },
     manPmpBtn: {
         top: 20,
-        padding: 15,
+        // padding: 15,
+        padding: (Platform.OS === 'ios') ? 15 : 12,
         borderRadius: 10,
         backgroundColor: 'navy',
         alignItems: 'center',
         borderWidth: 2,
         borderStyle: 'solid',
         borderColor: 'lightgray',
-        width: 150,
+        // width: 150,
+        width: (Platform.OS === 'ios') ? 150 : 120,
         marginLeft: 10,
         marginRight: 12
     },
@@ -241,8 +284,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     logBtn: {
-        top: 300,
-        padding: 15,
+        // top: 300,
+        top: (Platform.OS === 'ios') ? 300 : 290,
+        // padding: 15,
+        padding: (Platform.OS === 'ios') ? 15 : 12,
         borderRadius: 10,
         backgroundColor: 'navy',
         alignItems: 'center',
@@ -250,18 +295,22 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderStyle: 'solid',
         borderColor: 'lightgray',
-        width: 340
+        // width: 340
+        width: (Platform.OS === 'ios') ? 340 : 300,
     },
     backBtn: {
-        top: 320,
-        padding: 15,
+        // top: 320,
+        top: (Platform.OS === 'ios') ? 320 : 295,
+        // padding: 15,
+        padding: (Platform.OS === 'ios') ? 15 : 12,
         borderRadius: 10,
         backgroundColor: 'navy',
         alignItems: 'center',
         borderWidth: 2,
         borderStyle: 'solid',
         borderColor: 'lightgray',
-        width: 150,
+        // width: 150,
+        width: (Platform.OS === 'ios') ? 150 : 120,
     },
     backBtnTxt: {
         color: 'white',
@@ -272,29 +321,39 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
-        paddingLeft: 15,
-        paddingRight: 15,
+        // paddingLeft: 15,
+        // paddingRight: 15,
+        width: 300,
+        textAlign: 'center',
         paddingTop: 3,
         paddingBottom: 3,
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 18,
+        // fontSize: 18,
+        fontSize: (Platform.OS === 'ios') ? 18 : 20,
         marginTop: 10,
-        marginBottom: 5
+        // marginBottom: 5
+        marginBottom: (Platform.OS === 'ios') ? 10 : 15,
+    },
+    infoHeader: {
+        alignItems: 'center',
     },
     triggerHeader: {
-        fontSize: 23,
+        // fontSize: 23,
+        fontSize: (Platform.OS === 'ios') ? 23 : 26,
         fontWeight: 'bold',
     },
     triggerBtn: {
-        padding: 15,
+        // padding: 15,
+        padding: (Platform.OS === 'ios') ? 15 : 12,
         borderRadius: 10,
         backgroundColor: 'navy',
         alignItems: 'center',
         borderWidth: 2,
         borderStyle: 'solid',
         borderColor: 'lightgray',
-        width: 150,
+        // width: 150,
+        width: (Platform.OS === 'ios') ? 150 : 120,
     },
     triggerBtnTxt: {
         color: 'white',
@@ -303,13 +362,16 @@ const styles = StyleSheet.create({
     },
     triggerInput: {
         width: 55,
-        height: 35,
+        // height: 35,
+        height: (Platform.OS === 'ios') ? 35 : 42,
         backgroundColor: 'lightblue',
         borderColor: 'lightgray',
         borderWidth: 2,
         borderRadius: 3,
-        fontSize: 25,
+        // fontSize: 25,
+        fontSize: (Platform.OS === 'ios') ? 25 : 18,
         textAlign: 'center',
-        marginBottom: 5
+        // marginBottom: 5
+        marginBottom: (Platform.OS === 'ios') ? 10 : 15,
     },
 });

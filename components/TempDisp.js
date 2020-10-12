@@ -11,16 +11,23 @@ let jwtDecode = require('jwt-decode');
 export default class TempDisp extends React.Component {
     state = {
         highTemp: 0,
-        currentTemp: 0
+        currentTemp: 0,
+        userId: '',
+        city: ''
     }
-    displayHighTemp = () => {
+
+    async displayHighTemp() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        let decoded = jwtDecode(token)
+        this.setState({
+            userId: decoded.id,
+            city: decoded.city
+        });
         const apiKey = '5490a59fae143d65082c3beeaeaf6982';
-        const tempData = fetch(`http://api.openweathermap.org/data/2.5/weather?q=galveston&appid=${apiKey}&units=imperial`, {
-            method: 'GET'
-        })
+        fetch(`http://api.openweathermap.org/data/2.5/weather?q=${this.state.city}&appid=${apiKey}&units=imperial`, {})
         .then((res) => {
-            let data = res.json()
-            return data
+            let data = res.json();
+            return data;
         })
         .then((data) => {
             this.setState({
@@ -32,9 +39,18 @@ export default class TempDisp extends React.Component {
             alert(err)
         })
     }
+
+    // triggerTemp(params) {
+    //     let temp = Math.round(params);
+    //     let timeToRun = temp / 10;
+    //     // let timeToRun = Math.round(10*temp) / 10;
+    //     // alert(timeToRun);
+    // }
+
     componentDidMount(){
         this.displayHighTemp();
     }
+
     render() {
         return (
             <View style={styles.tempContainer}>
@@ -56,7 +72,7 @@ const styles = StyleSheet.create({
         borderStyle: 'solid',
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 18,
+        fontSize: (Platform.OS === 'ios') ? 18 : 22,
         paddingLeft: 40,
         paddingRight: 40
     },
@@ -68,7 +84,7 @@ const styles = StyleSheet.create({
         paddingLeft: 40,
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 18,
+        fontSize: (Platform.OS === 'ios') ? 18 : 22,
         marginTop: 20
     },
 })

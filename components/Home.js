@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
         resizeMode: 'cover'
     },
     subContainer: {
-        top: 250,
+        top: 225,
         alignItems: 'center',
     },
     homeHeader: {

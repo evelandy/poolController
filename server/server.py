@@ -158,7 +158,7 @@ def add_user():
     hash_password = generate_password_hash(data['password'], method='sha256')
     new_user = User(fname=data['fname'], lname=data['lname'], username=data['username'], password=hash_password,
                     email=data['email'], address=data['address'], add2=data['add2'], city=data['city'],
-                    sta=data['sta'], zipCode=data['zipCode'], phone=data['phone'], admin=True)
+                    sta=data['sta'], zipCode=data['zipCode'], phone=data['phone'], admin=False)
     db.session.add(new_user)
     db.session.commit()
     return jsonify({"message": "new user added"}), 201
@@ -190,14 +190,70 @@ def user(user_id):
     return jsonify(user_data)
 
 
-@app.route('/api/v1/<username>/<user_id>', methods=['PUT'])
+@app.route('/api/v1/edituname/<username>/<user_id>', methods=['PUT'])
 def edit_username(username, user_id):
     user = User.query.filter_by(id=user_id).first()
     if not user:
         return jsonify({'message': 'user does not exist'}), 404
     user.username = username
     db.session.commit()
-    return jsonify({'message': 'username updated!'}), 202
+    return jsonify({'message': 'username updated'}), 202
+
+
+@app.route('/api/v1/editpass/<password>/<user_id>', methods=['PUT'])
+def edit_password(password, user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'user does not exist'}), 404
+    user.password = generate_password_hash(password, method='sha256')
+    db.session.commit()
+    return jsonify({'message': 'password updated'}), 202
+
+
+@app.route('/api/v1/editname/<fname>/<lname>/<user_id>', methods=['PUT'])
+def edit_name(fname, lname, user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'user does not exist'}), 404
+    user.fname = fname
+    user.lname = lname
+    db.session.commit()
+    return jsonify({'message': 'name updated'}), 202
+
+
+@app.route('/api/v1/editemail/<email>/<user_id>', methods=['PUT'])
+def edit_email(email, user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'user does not exist'}), 404
+    user.email = email
+    db.session.commit()
+    return jsonify({'message': 'email changed'}), 202
+
+
+@app.route('/api/v1/editaddress/<user_id>', methods=['PUT'])
+def edit_address(user_id):
+    user = User.query.filter_by(id=user_id).first()
+    data = request.get_json()
+    if not user:
+        return jsonify({"message": 'user does not exist'}), 404
+    user.address = data['address']
+    user.add2 = data['add2']
+    user.city = data['city']
+    user.sta = data['sta']
+    user.zipCode = data['zipCode']
+    db.session.commit()
+    return jsonify({'message': 'address changed'}), 202
+
+
+@app.route('/api/v1/editphone/<phone>/<user_id>', methods=['PUT'])
+def edit_phone(phone, user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'user does not exist'}), 404
+    user.phone = phone
+    db.session.commit()
+    return jsonify({'message': 'phone number changed'}), 202
 
 
 # logout

@@ -7,10 +7,14 @@ import {
     ImageBackground,
     StatusBar,
     TextInput, 
-    KeyboardAvoidingView
+    KeyboardAvoidingView,
+    TouchableWithoutFeedback, 
+    Keyboard
 } from 'react-native';
 import { encode as btoa } from 'base-64';
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
+import DismissKeyboard from '../DismissKeyboard';
+
 
 export default class Login extends React.Component{
     static navigationOptions = {
@@ -29,6 +33,7 @@ export default class Login extends React.Component{
     }
 
     loginUser(){
+        let test = Platform.OS == "ios" ? "127.0.0.1" : "10.0.2.2" 
         let collection = {}
         collection.username = this.state.username
         collection.password = this.state.password
@@ -37,7 +42,7 @@ export default class Login extends React.Component{
         let headers = new Headers()
         headers.append('Content-Type', 'text/json')
         headers.append('Authorization', 'Basic ' + btoa(username + ':' + password))
-        fetch('http://127.0.0.1:5000/api/v1/login', {
+        fetch(`http://${test}:5000/api/v1/login`, {
             method: 'POST',
             headers: headers
         })
@@ -64,6 +69,7 @@ export default class Login extends React.Component{
             }
         })
     }
+    // 10.0.2.2 45457
 
     updateValue(text, field){
         if (field == 'username'){
@@ -84,7 +90,7 @@ export default class Login extends React.Component{
                 <ImageBackground
                     style={styles.image}
                     source={require('../img/landingPage.jpg')}>
-                        <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"}>
+                        <DismissKeyboard keyboard={Keyboard}>
                             <View style={styles.subContainer}>
                                 <Text style={styles.loginHeader}>
                                     Login
@@ -106,7 +112,7 @@ export default class Login extends React.Component{
                                     secureTextEntry
                                     onChangeText={(text) => this.updateValue(text, 'password')}
                                     value={this.state.password}
-                                    returnKeyType='go'
+                                    returnKeyType='done'
                                     ref={(input) => this.passwordInput = input}
                                     onSubmitEditing={() => this.loginUser()}
                                 />
@@ -128,7 +134,7 @@ export default class Login extends React.Component{
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                        </KeyboardAvoidingView>
+                        </DismissKeyboard>
                 </ImageBackground>
             </View>
         );
@@ -142,7 +148,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     subContainer: {
-        top: 200,
+        top: 180,
         alignItems: 'center'
     },
     loginHeader: {
@@ -153,17 +159,17 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase'
     },
     loginName: {
-        height: 40,
+        height: 45,
         width: 275,
         borderColor: 'gray',
         borderWidth: 2,
         borderRadius: 3,
         marginTop: 15,
         backgroundColor: 'lightblue',
-        fontSize: 27,
+        fontSize: 20,
     },
     loginPass: {
-        height: 40,
+        height: 45,
         width: 275,
         borderColor: 'gray',
         borderWidth: 2,
@@ -171,7 +177,7 @@ const styles = StyleSheet.create({
         marginTop: 15,
         marginBottom: 35,
         backgroundColor: 'lightblue',
-        fontSize: 27
+        fontSize: 20
     },
     loginBtn: {
         padding: 10,
@@ -182,12 +188,12 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderStyle: 'solid',
         borderColor: 'lightgray',
-        width: 275
+        width: 275,
     },
     loginBtnText: {
         color: 'white',
         fontSize: 18,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     image: {
         width: '100%',
@@ -196,7 +202,7 @@ const styles = StyleSheet.create({
     },
     forgotContainer: {
         left: 40,
-        marginTop: 25
+        marginTop: 25,
     },
     forgotBtn: {
         
