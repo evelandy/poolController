@@ -9,6 +9,9 @@ import {
 } from 'react-native';
 import Logout from '../Logout';
 import BtnCard from './BtnCard';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
+
+let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
 
 export default class ControlDisp extends React.Component{
     static navigationOptions = {
@@ -19,7 +22,7 @@ export default class ControlDisp extends React.Component{
     }
 
     pumpState = () => {
-        fetch('http://127.0.0.1:5000/api/v1/pump_status')
+        fetch(`http://${ipAddr}:5000/api/v1/pump_status`)
         .then((response) => {
             let data = response.json()
             return data

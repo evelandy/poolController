@@ -5,6 +5,7 @@ import {
     View,
     TouchableOpacity
 } from 'react-native';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 
 export default class BtnCard extends React.Component{
     static navigationOptions = {

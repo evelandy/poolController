@@ -10,29 +10,51 @@ import LightDisp from '../LightDisp';
 import Logout from '../Logout';
 import TempDisp from '../TempDisp';
 import WaterTemp from '../WaterTemp';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
+
+let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
 
 export default class ManualLights extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
 
-    state = {
-        running: false
+    constructor(props){
+        super(props);
+        this.state = {
+            running: false
+        }
+        this.lightDisplay = this.lightDisplay.bind(this);
+        this.manLgtOn = this.manLgtOn.bind(this);
+        this.manLgtOff = this.manLgtOff.bind(this);
     }
+
+    // state = {
+    //     running: false
+    // }
 
     componentDidMount() {
         this.lightDisplay()
     }
 
     async lightDisplay() {
-        await fetch('http://127.0.0.1:5000/api/v1/light_status')
+        let token = await AsyncStorage.getItem('x-access-token');
+        await fetch(`http://${ipAddr}:5000/api/v1/light_status`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
         .then((res) => {
             let data = res.json();
             return data;
         })
         .then((data) => {
             this.setState({
-                running: data.lswitch
+                running: data.lswitch,
             })
         })
         .catch((err) => {
@@ -40,11 +62,21 @@ export default class ManualLights extends React.Component{
         })
     }
     
-    manLgtOn = () => {
-        fetch('http://127.0.0.1:5000/api/v1/light_on')
+    async manLgtOn() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/light_on`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            },
+            body: JSON.stringify(token)
+        })
         .then((response) => {
-            let data = response.json()
-            return data
+            let data = response.json();
+            return data;
         })
         .then((data) => {
             this.setState({
@@ -56,8 +88,18 @@ export default class ManualLights extends React.Component{
         })
     }
 
-    manLgtOff = () => {
-        fetch('http://127.0.0.1:5000/api/v1/light_off')
+    async manLgtOff() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/light_off`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            },
+            body: JSON.stringify(token)
+        })
         .then((response) => {
             let data = response.json()
             return data

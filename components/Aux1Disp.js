@@ -3,7 +3,9 @@ import {
     StyleSheet,
     Text,
     View,
+    Platform
 } from 'react-native';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 
 export default class Aux1Disp extends React.Component{
     state = {
@@ -21,14 +23,15 @@ export default class Aux1Disp extends React.Component{
     }
 }
 
-
 const styles = StyleSheet.create({
     aux1Header: {
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
-        paddingRight: 40,
-        paddingLeft: 40,
+        // paddingRight: 40,
+        // paddingLeft: 40,
+        width: (Platform.OS === 'ios') ? 355 : 395,
+        textAlign: 'center',
         color: 'white',
         fontWeight: 'bold',
         fontSize: (Platform.OS === 'ios') ? 18 : 22,

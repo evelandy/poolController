@@ -10,29 +10,51 @@ import Aux1Disp from '../Aux1Disp';
 import Logout from '../Logout';
 import TempDisp from '../TempDisp';
 import WaterTemp from '../WaterTemp';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
+
+let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
 
 export default class ManualAux1 extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
 
-    state = {
-        running: false
+    constructor(props){
+        super(props);
+        this.state = {
+            running: false
+        }
+        this.aux1Display = this.aux1Display.bind(this);
+        this.manAux1On = this.manAux1On.bind(this);
+        this.manAux1Off = this.manAux1Off.bind(this);
     }
+
+    // state = {
+    //     running: false
+    // }
 
     componentDidMount() {
         this.aux1Display()
     }
 
     async aux1Display() {
-        await fetch('http://127.0.0.1:5000/api/v1/aux1_status')
+        let token = await AsyncStorage.getItem('x-access-token');
+        await fetch(`http://${ipAddr}:5000/api/v1/aux1_status`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
         .then((res) => {
             let data = res.json();
             return data;
         })
         .then((data) => {
             this.setState({
-                running: data.a1switch
+                running: data.a1switch,
             })
         })
         .catch((err) => {
@@ -40,11 +62,21 @@ export default class ManualAux1 extends React.Component{
         })
     }
 
-    manAux1On = () => {
-        fetch('http://127.0.0.1:5000/api/v1/aux_1_on')
+    async manAux1On() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/aux1_on`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            },
+            body: JSON.stringify(token)
+        })
         .then((response) => {
-            let data = response.json()
-            return data
+            let data = response.json();
+            return data;
         })
         .then((data) => {
             this.setState({
@@ -56,8 +88,18 @@ export default class ManualAux1 extends React.Component{
         })
     }
 
-    manAux1Off = () => {
-        fetch('http://127.0.0.1:5000/api/v1/aux_1_off')
+    async manAux1Off() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/aux1_off`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            },
+            body: JSON.stringify(token)
+        })
         .then((response) => {
             let data = response.json()
             return data

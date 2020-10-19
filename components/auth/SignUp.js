@@ -10,6 +10,10 @@ import {
     ScrollView, 
     KeyboardAvoidingView
 } from 'react-native';
+import { encode as btoa } from 'base-64';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
+
+let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
 
 export default class SignUp extends React.Component{
     static navigationOptions = {
@@ -27,7 +31,9 @@ export default class SignUp extends React.Component{
         city: '',
         sta: '',
         zipCode: '',
-        phone: ''
+        phone: '',
+        secretQuestion1: '',
+        secretQuestion2: ''
     }
 
     nav_to_login = () => {
@@ -35,7 +41,6 @@ export default class SignUp extends React.Component{
     }
 
     signUpUser = () => {
-        let test = Platform.OS == "ios" ? "127.0.0.1" : "10.0.2.2" 
         let usrObj = {}
         usrObj.fname = this.state.fname
         usrObj.lname = this.state.lname
@@ -48,7 +53,7 @@ export default class SignUp extends React.Component{
         usrObj.sta = this.state.sta
         usrObj.zipCode = this.state.zipCode
         usrObj.phone = this.state.phone
-        fetch(`http://${test}:5000/api/v1/user`, {
+        fetch(`http://${ipAddr}:5000/api/v1/user`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -256,7 +261,7 @@ export default class SignUp extends React.Component{
                                             onSubmitEditing={() => this.phone.focus()}
                                         />
                                     </View>
-                                    <View style={styles.finalInput}>
+                                    <View>
                                         <Text style={styles.inputLabel}>
                                             Phone Number
                                         </Text>
@@ -268,6 +273,36 @@ export default class SignUp extends React.Component{
                                             returnKeyType='done'
                                             onChangeText={val => this.onChangeText('phone', val)}
                                             ref={(input) => this.phone = input}
+                                            onSubmitEditing={() => this.secretQuestion1.focus()}
+                                        />
+                                    </View>
+                                    <View>
+                                        <Text style={styles.inputLabel}>
+                                            secret Question #1
+                                        </Text>
+                                        <TextInput
+                                            style={styles.txtInput}
+                                            autoCapitalize="none"
+                                            autoCorrect={false}
+                                            keyboardType='default'
+                                            returnKeyType='done'
+                                            onChangeText={val => this.onChangeText('secretQuestion1', val)}
+                                            ref={(input) => this.secretQuestion1 = input}
+                                            onSubmitEditing={() => this.secretQuestion2.focus()}
+                                        />
+                                    </View>
+                                    <View style={styles.finalInput}>
+                                        <Text style={styles.inputLabel}>
+                                            Secret Question #2
+                                        </Text>
+                                        <TextInput
+                                            style={styles.txtInput}
+                                            autoCapitalize="none"
+                                            autoCorrect={false}
+                                            keyboardType='default'
+                                            returnKeyType='done'
+                                            onChangeText={val => this.onChangeText('secretQuestion2', val)}
+                                            ref={(input) => this.secretQuestion2 = input}
                                             onSubmitEditing={() => this.signUpUser()}
                                         />
                                     </View>
@@ -327,7 +362,7 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',  
     },
     finalInput: {
-        marginBottom: 15
+        marginBottom: 25
     },
     signUpBtn: {
         padding: 10,

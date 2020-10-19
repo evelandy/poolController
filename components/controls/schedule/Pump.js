@@ -12,55 +12,62 @@ import Logout from '../../Logout';
 import PumpDisp from '../../PumpDisp';
 import TempDisp from '../../TempDisp';
 import WaterTemp from '../../WaterTemp';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
+
+let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
 
 export default class Pump extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
-    state = {
-        running: false,
-        hour: 10,
-        minute: 30,
-        mid: 'AM',
-        setSchHr: '12',
-        setSchMin: '00',
-        setSchMid: 'PM'
+    
+    constructor(props){
+        super(props);
+        this.state = {
+            running: false,
+            hour: 10,
+            minute: 30,
+            mid: 'AM',
+            setSchHr: '12',
+            setSchMin: '00',
+            setSchMid: 'PM',
+            data: '',
+            pTime: '10:01AM',
+            format_hour: 10,
+            format_minute: 30
+        }
+        this.pumpState = this.pumpState.bind(this);
+        this.schPmpOn = this.schPmpOn.bind(this);
+        this.schPmpOff = this.schPmpOff.bind(this);
     }
 
-    pumpState = () => {
-        fetch('http://127.0.0.1:5000/api/v1/pump_status')
-        .then((response) => {
-            let data = response.json()
-            return data
+    async pumpState() {
+        let token = await AsyncStorage.getItem('x-access-token');
+        await fetch(`http://${ipAddr}:5000/api/v1/pump_status`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json();
+            return data;
         })
         .then((data) => {
             this.setState({
-                running: data.pswitch
-            });
+                running: data.pswitch,
+            })
         })
         .catch((err) => {
             console.log(err)
-        });
-    }
-    
-    schPmpOn = (tm=4) => {
-        // fetch(`http://127.0.0.1:5000/api/v1/sch_p_on/${tm}`)
-        // .then((response) => {
-        //     let data = response.json()
-        //     return data
-        // })
-        // .then((data) => {
-        //     this.setState({
-        //         running: data.msg
-        //     })
-        // })
-        // .catch((error) => {
-        //     console.warn(error)
-        // })
+        })
     }
 
     schPmpOff = (tm=4) => {
-        fetch(`http://127.0.0.1:5000/api/v1/sch_p_off/${tm}`)
+        fetch(`http://${ipAddr}:5000/api/v1/sch_p_off/${tm}`)
         .then((response) => {
             let data = response.json()
             return data
@@ -81,8 +88,20 @@ export default class Pump extends React.Component{
         });
     }
 
-    setSchTime = () => {
+    async setSchTime() {
+        let token = await AsyncStorage.getItem('x-access-token');
+        let am_pm_arr = [`AM`, `PM`];
         let collectTime = {}
+        if(this.state.hour > 12 || this.state.hour < 1 || this.state.hour == ''){
+            alert('please make sure your hour format is the proper 12 hour time format')
+            return null
+        } else if(this.state.minute > 59 || this.state.minute < 1 || this.state.minute == ''){
+            alert('please make sure your minute format is the proper time format')
+            return null
+        } else if(! am_pm_arr.includes(this.state.mid)){
+            alert(`please make sure you enter either 'AM' or 'PM'`)
+            return null
+        }
         collectTime.pHr = this.state.hour
         collectTime.pMin = this.state.minute
         collectTime.pMid = this.state.mid
@@ -91,27 +110,108 @@ export default class Pump extends React.Component{
             setSchMin: this.state.minute,
             setSchMid: this.state.mid
         })
-        fetch('http://127.0.0.1:5000/api/v1/add_p_time', {
+        fetch(`http://${ipAddr}:5000/api/v1/add_p_time`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
             },
             body: JSON.stringify(collectTime)
         })
     }
 
-    showSchTime = () => {
-        fetch('http://127.0.0.1:5000/api/v1/show_p_time')
+    async schPmpOn() {
+        let token = await AsyncStorage.getItem('x-access-token');
+        fetch(`http://${ipAddr}:5000/api/v1/show_p_time`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json();
+            return data;
+        })
+        .then((data) => {
+            let hour = data.ptime[0].pHr;
+            let minute = data.ptime[0].pMin;
+            let am_pm = data.ptime[0].pMid;
+            // let unformated = `${hour}:${(minute < 10) ? `0${minute}` : minute}`
+            if(am_pm === 'AM' && hour === parseInt(12) && (minute >= parseInt('00', 8) && minute <= parseInt(59))){
+                hour -= 12
+                let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                let tm = {format_hr, format_min}
+                return tm
+                // let formated = `${(hour < 10) ? `0${hour}` : hour}:${(minute < 10) ? `0${minute}` : minute}`
+                // alert(formated)
+            } else if(am_pm == 'PM'){
+                if(hour != 12){
+                    hour += 12
+                    let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                    let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                    let tm = {format_hr, format_min}
+                    return tm
+                } else {
+                    let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                    let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                    let tm = {format_hr, format_min}
+                    return tm
+                }
+            } else {
+                let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                let tm = {format_hr, format_min}
+                return tm
+            }
+        })
+        .then(async(tm) => {
+            let token = await AsyncStorage.getItem('x-access-token');
+            fetch(`http://${ipAddr}:5000/api/v1/sch_p_on/${tm.format_hr}/${tm.format_min}`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                }
+            })
+        })
+        .catch((error) => {
+            console.log(error)
+        })
+    }
+
+    async showSchTime() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/show_p_time`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
         .then((res) => {
             let data = res.json()
             return data
         })
         .then((data) => {
             this.setState({
-                setSchHr: data.message.pHr,
-                setSchMin: data.message.pMin,
-                setSchMid: data.message.pMid
+                data: data.ptime
+            })
+        })
+        .then((data) => {
+            this.setState({
+                setSchHr: this.state.data[0].pHr,
+                setSchMin: (this.state.data[0].pMin < 10) ? `0${this.state.data[0].pMin}` : this.state.data[0].pMin,
+                setSchMid: this.state.data[0].pMid                
             })
         })
         .catch((err) => {
@@ -146,6 +246,7 @@ export default class Pump extends React.Component{
 
                         <View style={styles.currSchContainer}>
                             <Text style={styles.currSchHeader}>
+                                {/* Current Schedule: &nbsp; {this.state.pTime} */}
                                 Current Schedule: &nbsp; {this.state.setSchHr}:{this.state.setSchMin} {this.state.setSchMid}
                             </Text>
                         </View>
@@ -190,9 +291,9 @@ export default class Pump extends React.Component{
                                     set
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.schPmpBtn} onPress={() => {this.schPmpOff(2)}}>
+                            <TouchableOpacity style={styles.schPmpBtn} onPress={() => this.schPmpOn()}>
                                 <Text style={styles.schPmpBtnTxt}>
-                                    run
+                                    {this.state.running === true ? 'off' : 'run'}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -237,8 +338,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
-        paddingRight: 40,
-        paddingLeft: 40,
+        textAlign: 'center',
+        width: (Platform.OS === 'ios') ? 355 : 395,
         color: 'white',
         fontWeight: 'bold',
         fontSize: (Platform.OS === 'ios') ? 18 : 22,
@@ -249,8 +350,7 @@ const styles = StyleSheet.create({
         marginTop: (Platform.OS === 'ios') ? 30 : 25,
     },
     schInput: {
-        width: 42,
-        width: (Platform.OS === 'ios') ? 42 : 45,
+        width: (Platform.OS === 'ios') ? 43 : 45,
         height: (Platform.OS === 'ios') ? 35 : 45,
         backgroundColor: 'lightblue',
         borderColor: 'lightgray',

@@ -13,30 +13,48 @@ import Logout from '../Logout';
 import PumpDisp from '../PumpDisp';
 import TempDisp from '../TempDisp';
 import WaterTemp from '../WaterTemp';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
+
+let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
 
 export default class ManualPump extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
 
-    state = {
-        running: false,
-        triggerTemp: 0,
-        setTriggerTemp: '0',
-        currentTemp: 0
+    constructor(props){
+        super(props);
+        this.state = {
+            running: false,
+            triggerTemp: 0,
+            setTriggerTemp: '0',
+            currentTemp: 0,
+            test: ''
+        }
+        this.pumpDisplay = this.pumpDisplay.bind(this);
+        this.manPmpOn = this.manPmpOn.bind(this);
+        this.manPmpOff = this.manPmpOff.bind(this);
     }
+
+    // state = {
+    //     running: false,
+    //     triggerTemp: 0,
+    //     setTriggerTemp: '0',
+    //     currentTemp: 0,
+    //     test: ''
+    // }
 
     componentDidMount() {
         this.pumpDisplay();
         this.showTriggerTemp();
-        // this.weatherTrigger();       this and below two functions are to turn on pump and run for duration then off.
+        // this.weatherTrigger();       <<<<<<<<<<<<<<<<<<<<<<           this and below two functions are to turn on pump and run for duration then off.
     }
 
     sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    //                          need to find out what time every day to run triggerTemp(pump triggered by the weather)
+    //             <<<<<<<<<<<<<<<<<<<<<<             need to find out what time every day to run triggerTemp(pump triggered by the weather)
     triggerTemp(params) {
         let temp = Math.round(params);
         let timeToRun = temp / 10;
@@ -66,14 +84,23 @@ export default class ManualPump extends React.Component{
     }
 
     async pumpDisplay() {
-        await fetch('http://127.0.0.1:5000/api/v1/pump_status')
+        let token = await AsyncStorage.getItem('x-access-token');
+        await fetch(`http://${ipAddr}:5000/api/v1/pump_status`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
         .then((res) => {
             let data = res.json();
             return data;
         })
         .then((data) => {
             this.setState({
-                running: data.pswitch
+                running: data.pswitch,
             })
         })
         .catch((err) => {
@@ -81,11 +108,21 @@ export default class ManualPump extends React.Component{
         })
     }
 
-    manPmpOn = () => {
-        fetch('http://127.0.0.1:5000/api/v1/pump_on')
+    async manPmpOn() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/pump_on`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            },
+            body: JSON.stringify(token)
+        })
         .then((response) => {
-            let data = response.json()
-            return data
+            let data = response.json();
+            return data;
         })
         .then((data) => {
             this.setState({
@@ -97,8 +134,18 @@ export default class ManualPump extends React.Component{
         })
     }
 
-    manPmpOff = () => {
-        fetch('http://127.0.0.1:5000/api/v1/pump_off')
+    async manPmpOff() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/pump_off`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            },
+            body: JSON.stringify(token)
+        })
         .then((response) => {
             let data = response.json()
             return data
@@ -122,7 +169,7 @@ export default class ManualPump extends React.Component{
             this.setState({
                 setTriggerTemp: this.state.triggerTemp
             })
-            fetch('http://127.0.0.1:5000/api/v1/temp/trigger_temp', {
+            fetch(`http://${ipAddr}:5000/api/v1/temp/trigger_temp`, {
                 method: 'PUT',
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
@@ -144,7 +191,7 @@ export default class ManualPump extends React.Component{
     }
 
     showTriggerTemp = () => {
-        fetch('http://127.0.0.1:5000/api/v1/show_trigger_temp')
+        fetch(`http://${ipAddr}:5000/api/v1/show_trigger_temp`)
         .then((res) => {
             let data = res.json()
             return data

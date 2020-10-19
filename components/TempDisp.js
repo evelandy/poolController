@@ -66,13 +66,17 @@ export default class TempDisp extends React.Component {
 }
 
 const styles = StyleSheet.create({
+    tempContainer: {
+        width: (Platform.OS === 'ios') ? 355 : 395,
+        textAlign: 'center'
+    },
     currTemp: {
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
         color: 'white',
         fontWeight: 'bold',
-        fontSize: (Platform.OS === 'ios') ? 18 : 22,
+        fontSize: (Platform.OS === 'ios') ? 17 : 21,
         paddingLeft: 40,
         paddingRight: 40
     },
@@ -84,7 +88,7 @@ const styles = StyleSheet.create({
         paddingLeft: 40,
         color: 'white',
         fontWeight: 'bold',
-        fontSize: (Platform.OS === 'ios') ? 18 : 22,
+        fontSize: (Platform.OS === 'ios') ? 17 : 21,
         marginTop: 20
     },
 })

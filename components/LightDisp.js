@@ -5,6 +5,7 @@ import {
     Text,
     View,
 } from 'react-native';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 
 export default class LightDisp extends React.Component{
     state = {

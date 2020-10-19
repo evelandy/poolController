@@ -9,7 +9,7 @@ import {
     TextInput, 
     KeyboardAvoidingView
 } from 'react-native';
-
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 
 export default class Forgot extends React.Component {
     static navigationOptions = {

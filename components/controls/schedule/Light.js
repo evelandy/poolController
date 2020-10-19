@@ -12,39 +12,69 @@ import Logout from '../../Logout';
 import LightDisp from '../../LightDisp';
 import TempDisp from '../../TempDisp';
 import WaterTemp from '../../WaterTemp';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
+
+let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
 
 export default class Light extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
-    state = {
-        running: false,
-        hour: 10,
-        minute: 30,
-        mid: 'AM',
-        setSchHr: '12',
-        setSchMin: '00',
-        setSchMid: 'PM'
+
+    constructor(props){
+        super(props);
+        this.state = {
+            running: false,
+            hour: 10,
+            minute: 30,
+            mid: 'AM',
+            setSchHr: '12',
+            setSchMin: '00',
+            setSchMid: 'PM',
+            data: '',
+            lTime: '10:01AM'
+        }
+        this.lightState = this.lightState.bind(this)
+
     }
 
-    lightState = () => {
-        fetch('http://127.0.0.1:5000/api/v1/light_status')
-        .then((response) => {
-            let data = response.json()
-            return data
+    // state = {
+    //     running: false,
+    //     hour: 10,
+    //     minute: 30,
+    //     mid: 'AM',
+    //     setSchHr: '12',
+    //     setSchMin: '00',
+    //     setSchMid: 'PM'
+    // }
+
+    async lightState() {
+        let token = await AsyncStorage.getItem('x-access-token');
+        await fetch(`http://${ipAddr}:5000/api/v1/light_status`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json();
+            return data;
         })
         .then((data) => {
             this.setState({
-                running: data.lswitch
-            });
+                running: data.lswitch,
+            })
         })
         .catch((err) => {
             console.log(err)
-        });
+        })
     }
     
     schLgtOn = (tm=4) => {
-        // fetch(`http://127.0.0.1:5000/api/v1/sch_l_on/${tm}`)
+        // fetch(`http://${ipAddr}:5000/api/v1/sch_l_on/${tm}`)
         // .then((response) => {
         //     let data = response.json()
         //     return data
@@ -60,7 +90,7 @@ export default class Light extends React.Component{
     }
 
     schLgtOff = (tm=4) => {
-        fetch(`http://127.0.0.1:5000/api/v1/sch_l_off/${tm}`)
+        fetch(`http://${ipAddr}:5000/api/v1/sch_l_off/${tm}`)
         .then((response) => {
             let data = response.json()
             return data
@@ -81,7 +111,8 @@ export default class Light extends React.Component{
         });
     }
 
-    setSchTime = () => {
+    async setSchTime() {
+        let token = await AsyncStorage.getItem('x-access-token');
         let collectTime = {}
         collectTime.lHr = this.state.hour
         collectTime.lMin = this.state.minute
@@ -91,27 +122,43 @@ export default class Light extends React.Component{
             setSchMin: this.state.minute,
             setSchMid: this.state.mid
         })
-        fetch('http://127.0.0.1:5000/api/v1/add_l_time', {
-            method: 'PUT',
+        fetch(`http://${ipAddr}:5000/api/v1/add_l_time`, {
+            method: 'POST',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
             },
             body: JSON.stringify(collectTime)
         })
     }
 
-    showSchTime = () => {
-        fetch('http://127.0.0.1:5000/api/v1/show_l_time')
+    async showSchTime() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/show_l_time`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
         .then((res) => {
             let data = res.json()
             return data
         })
         .then((data) => {
             this.setState({
-                setSchHr: data.message.lHr,
-                setSchMin: data.message.lMin,
-                setSchMid: data.message.lMid
+                data: data.ltime
+            })
+        })
+        .then((data) => {
+            this.setState({
+                setSchHr: this.state.data[0].lHr,
+                setSchMin: this.state.data[0].lMin,
+                setSchMid: this.state.data[0].lMid
             })
         })
         .catch((err) => {
@@ -236,8 +283,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
-        paddingRight: 40,
-        paddingLeft: 40,
+        textAlign: 'center',
+        width: (Platform.OS === 'ios') ? 355 : 395,
         color: 'white',
         fontWeight: 'bold',
         fontSize: (Platform.OS === 'ios') ? 18 : 22,

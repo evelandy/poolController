@@ -10,29 +10,51 @@ import CleanDisp from '../CleanDisp';
 import Logout from '../Logout';
 import TempDisp from '../TempDisp';
 import WaterTemp from '../WaterTemp';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
+
+let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
 
 export default class ManualCleaner extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
 
-    state = {
-        running: false
+    constructor(props){
+        super(props);
+        this.state = {
+            running: false
+        }
+        this.cleanDisplay = this.cleanDisplay.bind(this);
+        this.manClnOn = this.manClnOn.bind(this);
+        this.manClnOff = this.manClnOff.bind(this);
     }
+
+    // state = {
+    //     running: false
+    // }
 
     componentDidMount() {
         this.cleanDisplay()
     }
 
     async cleanDisplay() {
-        await fetch('http://127.0.0.1:5000/api/v1/clean_status')
+        let token = await AsyncStorage.getItem('x-access-token');
+        await fetch(`http://${ipAddr}:5000/api/v1/clean_status`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
         .then((res) => {
             let data = res.json();
             return data;
         })
         .then((data) => {
             this.setState({
-                running: data.cswitch
+                running: data.cswitch,
             })
         })
         .catch((err) => {
@@ -40,11 +62,21 @@ export default class ManualCleaner extends React.Component{
         })
     }
 
-    manClnOn = () => {
-        fetch('http://127.0.0.1:5000/api/v1/clean_on')
+    async manClnOn() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/clean_on`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            },
+            body: JSON.stringify(token)
+        })
         .then((response) => {
-            let data = response.json()
-            return data
+            let data = response.json();
+            return data;
         })
         .then((data) => {
             this.setState({
@@ -55,9 +87,19 @@ export default class ManualCleaner extends React.Component{
             console.log(error)
         })
     }
-
-    manClnOff = () => {
-        fetch('http://127.0.0.1:5000/api/v1/clean_off')
+    
+    async manClnOff() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/clean_off`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            },
+            body: JSON.stringify(token)
+        })
         .then((response) => {
             let data = response.json()
             return data

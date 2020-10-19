@@ -8,6 +8,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 
 export default class Home extends React.Component{
     static navigationOptions = {

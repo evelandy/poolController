@@ -12,39 +12,69 @@ import Logout from '../../Logout';
 import PumpDisp from '../../PumpDisp';
 import TempDisp from '../../TempDisp';
 import WaterTemp from '../../WaterTemp';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
+import Aux1Disp from '../../Aux1Disp';
+
+let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
 
 export default class Aux1 extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
-    state = {
-        running: false,
-        hour: 10,
-        minute: 30,
-        mid: 'AM',
-        setSchHr: '12',
-        setSchMin: '00',
-        setSchMid: 'PM'
+
+    constructor(props){
+        super(props);
+        this.state = {
+            running: false,
+            hour: 10,
+            minute: 30,
+            mid: 'AM',
+            setSchHr: '12',
+            setSchMin: '00',
+            setSchMid: 'PM',
+            data: '',
+            a1Time: '10:01AM'
+        }
+        this.aux1State = this.aux1State.bind(this)
     }
 
-    aux1State = () => {
-        fetch('http://127.0.0.1:5000/api/v1/aux1_status')
-        .then((response) => {
-            let data = response.json()
-            return data
+    // state = {
+    //     running: false,
+    //     hour: 10,
+    //     minute: 30,
+    //     mid: 'AM',
+    //     setSchHr: '12',
+    //     setSchMin: '00',
+    //     setSchMid: 'PM'
+    // }
+
+    async aux1State() {
+        let token = await AsyncStorage.getItem('x-access-token');
+        await fetch(`http://${ipAddr}:5000/api/v1/aux1_status`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json();
+            return data;
         })
         .then((data) => {
             this.setState({
-                running: data.a1switch
-            });
+                running: data.a1switch,
+            })
         })
         .catch((err) => {
             console.log(err)
-        });
+        })
     }
     
     schAux1On = (tm=4) => {
-        // fetch(`http://127.0.0.1:5000/api/v1/sch_a1_on/${tm}`)
+        // fetch(`http://${ipAddr}:5000/api/v1/sch_a1_on/${tm}`)
         // .then((response) => {
         //     let data = response.json()
         //     return data
@@ -60,7 +90,7 @@ export default class Aux1 extends React.Component{
     }
 
     schAux1Off = (tm=4) => {
-        fetch(`http://127.0.0.1:5000/api/v1/sch_a1_off/${tm}`)
+        fetch(`http://${ipAddr}:5000/api/v1/sch_a1_off/${tm}`)
         .then((response) => {
             let data = response.json()
             return data
@@ -81,7 +111,8 @@ export default class Aux1 extends React.Component{
         });
     }
 
-    setSchTime = () => {
+    async setSchTime() {
+        let token = await AsyncStorage.getItem('x-access-token');
         let collectTime = {}
         collectTime.a1Hr = this.state.hour
         collectTime.a1Min = this.state.minute
@@ -91,27 +122,43 @@ export default class Aux1 extends React.Component{
             setSchMin: this.state.minute,
             setSchMid: this.state.mid
         })
-        fetch('http://127.0.0.1:5000/api/v1/add_a1_time', {
-            method: 'PUT',
+        fetch(`http://${ipAddr}:5000/api/v1/add_a1_time`, {
+            method: 'POST',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
             },
             body: JSON.stringify(collectTime)
         })
     }
 
-    showSchTime = () => {
-        fetch('http://127.0.0.1:5000/api/v1/show_a1_time')
+    async showSchTime() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/show_a1_time`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
         .then((res) => {
             let data = res.json()
             return data
         })
         .then((data) => {
             this.setState({
-                setSchHr: data.message.a1Hr,
-                setSchMin: data.message.a1Min,
-                setSchMid: data.message.a1Mid
+                data: data.a1time
+            })
+        })
+        .then((data) => {
+            this.setState({
+                setSchHr: this.state.data[0].a1Hr,
+                setSchMin: this.state.data[0].a1Min,
+                setSchMid: this.state.data[0].a1Mid
             })
         })
         .catch((err) => {
@@ -120,7 +167,7 @@ export default class Aux1 extends React.Component{
     }
 
     runSchTime = () => {
-        fetch('http://127.0.0.1:5000/api/v1/run_a1_time', {
+        fetch(`http://${ipAddr}:5000/api/v1/run_a1_time`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -162,7 +209,8 @@ export default class Aux1 extends React.Component{
 
                         <TempDisp />
                         <WaterTemp />
-                        <PumpDisp running={this.state.running} />
+                        <Aux1Disp running={this.state.running} />
+                        {/* <PumpDisp running={this.state.running} /> */}
 
                         <View style={styles.currSchContainer}>
                             <Text style={styles.currSchHeader}>
@@ -256,11 +304,12 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
-        paddingRight: 40,
-        paddingLeft: 40,
+        textAlign: 'center',
+        width: (Platform.OS === 'ios') ? 355 : 395,
         color: 'white',
         fontWeight: 'bold',
         fontSize: (Platform.OS === 'ios') ? 18 : 22,
+        width: (Platform.OS === 'ios') ? 355 : 395,
         marginTop: 20
     },
     inputContainer: {

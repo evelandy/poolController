@@ -5,6 +5,7 @@ import {
     Text,
     View,
 } from 'react-native';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 
 export default class PumpDisp extends React.Component{
     state = {

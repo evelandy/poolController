@@ -12,39 +12,67 @@ import Logout from '../../Logout';
 import CleanDisp from '../../CleanDisp';
 import TempDisp from '../../TempDisp';
 import WaterTemp from '../../WaterTemp';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
+
+let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
 
 export default class Clean extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
-    state = {
-        running: false,
-        hour: 10,
-        minute: 30,
-        mid: 'AM',
-        setSchHr: '12',
-        setSchMin: '00',
-        setSchMid: 'PM'
+    constructor(props){
+        super(props);
+        this.state = {
+            running: false,
+            hour: 10,
+            minute: 30,
+            mid: 'AM',
+            setSchHr: '12',
+            setSchMin: '00',
+            setSchMid: 'PM',
+            data: '',
+            cTime: '10:01AM'
+        }
+        this.cleanState = this.cleanState.bind(this);
     }
 
-    cleanState = () => {
-        fetch('http://127.0.0.1:5000/api/v1/clean_status')
-        .then((response) => {
-            let data = response.json()
-            return data
+    // state = {
+    //     running: false,
+    //     hour: 10,
+    //     minute: 30,
+    //     mid: 'AM',
+    //     setSchHr: '12',
+    //     setSchMin: '00',
+    //     setSchMid: 'PM'
+    // }
+
+    async cleanState() {
+        let token = await AsyncStorage.getItem('x-access-token');
+        await fetch(`http://${ipAddr}:5000/api/v1/clean_status`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json();
+            return data;
         })
         .then((data) => {
             this.setState({
-                running: data.cswitch
-            });
+                running: data.cswitch,
+            })
         })
         .catch((err) => {
             console.log(err)
-        });
+        })
     }
     
     schClnOn = (tm=4) => {
-        // fetch(`http://127.0.0.1:5000/api/v1/sch_c_on/${tm}`)
+        // fetch(`http://${ipAddr}:5000/api/v1/sch_c_on/${tm}`)
         // .then((response) => {
         //     let data = response.json()
         //     return data
@@ -60,7 +88,7 @@ export default class Clean extends React.Component{
     }
 
     schClnOff = (tm=4) => {
-        fetch(`http://127.0.0.1:5000/api/v1/sch_c_off/${tm}`)
+        fetch(`http://${ipAddr}:5000/api/v1/sch_c_off/${tm}`)
         .then((response) => {
             let data = response.json()
             return data
@@ -81,7 +109,8 @@ export default class Clean extends React.Component{
         });
     }
 
-    setSchTime = () => {
+    async setSchTime() {
+        let token = await AsyncStorage.getItem('x-access-token');
         let collectTime = {}
         collectTime.cHr = this.state.hour
         collectTime.cMin = this.state.minute
@@ -91,27 +120,43 @@ export default class Clean extends React.Component{
             setSchMin: this.state.minute,
             setSchMid: this.state.mid
         })
-        fetch('http://127.0.0.1:5000/api/v1/add_c_time', {
-            method: 'PUT',
+        fetch(`http://${ipAddr}:5000/api/v1/add_c_time`, {
+            method: 'POST',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
             },
             body: JSON.stringify(collectTime)
         })
     }
 
-    showSchTime = () => {
-        fetch('http://127.0.0.1:5000/api/v1/show_c_time')
+    async showSchTime() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/show_c_time`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
         .then((res) => {
             let data = res.json()
             return data
         })
         .then((data) => {
             this.setState({
-                setSchHr: data.message.cHr,
-                setSchMin: data.message.cMin,
-                setSchMid: data.message.cMid
+                data: data.ctime
+            })
+        })
+        .then((data) => {
+            this.setState({
+                setSchHr: this.state.data[0].cHr,
+                setSchMin: this.state.data[0].cMin,
+                setSchMid: this.state.data[0].cMid
             })
         })
         .catch((err) => {
@@ -166,7 +211,6 @@ export default class Clean extends React.Component{
                                 style={styles.schInput}
                                 autoCorrect={false}
                                 onChangeText={val => this.onChangeText('minute', val)}
-                                // keyboardType={'numeric'}
                                 keyboardType={(Platform.OS === 'ios') ? 'numbers-and-punctuation' : 'numeric'}
                                 maxLength={2}
                                 returnKeyType='next'
@@ -191,7 +235,7 @@ export default class Clean extends React.Component{
                                     set
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.schClnBtn} onPress={() => {this.schClnOff(2)}}>
+                            <TouchableOpacity style={styles.schClnBtn} onPress={() => alert('run')}>
                                 <Text style={styles.schClnBtnTxt}>
                                     run
                                 </Text>
@@ -237,8 +281,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
-        paddingRight: 40,
-        paddingLeft: 40,
+        textAlign: 'center',
+        width: (Platform.OS === 'ios') ? 355 : 395,
         color: 'white',
         fontWeight: 'bold',
         fontSize: (Platform.OS === 'ios') ? 18 : 22,

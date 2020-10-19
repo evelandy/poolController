@@ -5,14 +5,27 @@ import {
     Text,
     View,
 } from 'react-native';
+import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 
+let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
 
 export default class WaterTemp extends React.Component{
     state = {
         temp: 0
     }
-    tempCheck = () => {
-        fetch('http://127.0.0.1:5000/api/v1/temp')
+
+    async tempCheck() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/temp`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            },
+            body: JSON.stringify(token)
+        })
         .then((res) => {
             let data = res.json();
             return data;
@@ -44,8 +57,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
-        // paddingRight: 40,
-        // paddingLeft: 40,
         width: (Platform.OS === 'ios') ? 355 : 395,
         textAlign: 'center',
         color: 'white',

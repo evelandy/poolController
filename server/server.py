@@ -146,8 +146,10 @@ def login():
                             'city': user.city, 'sta': user.sta, 'zipCode': user.zipCode, 'phone': user.phone,
                             'admin': user.admin, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=120)},
                            app.config['SECRET_KEY'])
-        return jsonify({"token": token.decode('UTF-8'), 'name': user.username, 'password': user.password, 'id': user.id,
-                        'admin': user.admin})
+        return jsonify({"token": token.decode('UTF-8'), 'fname': user.fname, 'lname': user.lname,
+                        'username': user.username, 'password': user.password, 'email': user.email,
+                        'address': user.address, 'add2': user.add2, 'city': user.city, 'sta': user.sta,
+                        'zipCode': user.zipCode, 'phone': user.phone, 'id': user.id, 'admin': user.admin})
     return make_response('Could not verify password', 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})
 
 
@@ -291,7 +293,8 @@ def temp():
 
 # add time for schedule pump
 @app.route('/api/v1/add_p_time', methods=['POST'])
-def add_p_time():
+@token_req
+def add_p_time(current_user):
     # ptime = p_ctrl.query.filter_by(id=1).first()
     ptime = p_ctrl.query.all()
     if ptime:
@@ -302,13 +305,13 @@ def add_p_time():
         conn.commit()
 
         data = request.get_json()
-        new_p_time = p_ctrl(pHr=data['pHr'], pMin=data['pMin'], pMid=data['pMid'])
+        new_p_time = p_ctrl(pHr=data['pHr'], pMin=data['pMin'], pMid=data['pMid'], user_id=current_user.id)
         db.session.add(new_p_time)
         db.session.commit()
         return jsonify({'message': 'pump time schedule saved'}), 201
     else:
         data = request.get_json()
-        new_p_time = p_ctrl(pHr=data['pHr'], pMin=data['pMin'], pMid=data['pMid'])
+        new_p_time = p_ctrl(pHr=data['pHr'], pMin=data['pMin'], pMid=data['pMid'], user_id=current_user.id)
         db.session.add(new_p_time)
         db.session.commit()
         return jsonify({'message': 'pump time schedule saved'}), 201
@@ -316,9 +319,11 @@ def add_p_time():
 
 # show saved pump time
 @app.route('/api/v1/show_p_time', methods=['GET'])
-def show_p_time():
-    ptime = p_ctrl.query.all()
+@token_req
+def show_p_time(current_user):
+    # ptime = p_ctrl.query.all()
 
+    ptime = p_ctrl.query.filter_by(user_id=current_user.id).first()
     pdata = {}
     pdata['pHr'] = ptime[0].pHr
     pdata['pMin'] = ptime[0].pMin

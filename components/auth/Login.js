@@ -9,21 +9,35 @@ import {
     TextInput, 
     KeyboardAvoidingView,
     TouchableWithoutFeedback, 
-    Keyboard
+    Keyboard,
+    // YellowBox
 } from 'react-native';
 import { encode as btoa } from 'base-64';
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 import DismissKeyboard from '../DismissKeyboard';
+// YellowBox.ignoreWarnings([
+//     'Require cycle:',
+// ]);
 
+let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
+
+ // 10.0.2.2 45457 default ip/port for android emulator
 
 export default class Login extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
-    state = {
-        username: '',
-        password: ''
+    constructor(props){
+        super(props);
+        this.state = {
+            username: '',
+            password: ''
+        };
     }
+    // state = {
+    //     username: '',
+    //     password: ''
+    // }
 
     nav_to_signUp = () => {
         this.props.navigation.navigate('SignUp')
@@ -33,7 +47,6 @@ export default class Login extends React.Component{
     }
 
     loginUser(){
-        let test = Platform.OS == "ios" ? "127.0.0.1" : "10.0.2.2" 
         let collection = {}
         collection.username = this.state.username
         collection.password = this.state.password
@@ -42,7 +55,7 @@ export default class Login extends React.Component{
         let headers = new Headers()
         headers.append('Content-Type', 'text/json')
         headers.append('Authorization', 'Basic ' + btoa(username + ':' + password))
-        fetch(`http://${test}:5000/api/v1/login`, {
+        fetch(`http://${ipAddr}:5000/api/v1/login`, {
             method: 'POST',
             headers: headers
         })
@@ -69,7 +82,6 @@ export default class Login extends React.Component{
             }
         })
     }
-    // 10.0.2.2 45457
 
     updateValue(text, field){
         if (field == 'username'){

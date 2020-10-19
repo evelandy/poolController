@@ -19,21 +19,40 @@ import CleanDisp from './CleanDisp';
 import LightDisp from './LightDisp';
 import WaterTemp from './WaterTemp';
 import Logout from './Logout';
+import Aux1Disp from './Aux1Disp';
 
+let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
 
 export default class Dashboard extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
 
-    state = {
-        greet: 'Hey',
-        fname: '',
-        username: '',
-        prunning: false,
-        crunning: false,
-        lrunning: false,
+    constructor(props){
+        super(props);
+        this.state = { 
+            greet: 'Hey',
+            fname: '',
+            username: '',
+            prunning: false,
+            crunning: false,
+            lrunning: false,
+            a1running: false
+        }
+        this.pumpState = this.pumpState.bind(this);
+        this.cleanState = this.cleanState.bind(this);
+        this.lightState = this.lightState.bind(this);
+        this.aux1State = this.aux1State.bind(this);
     }
+
+    // state = {
+    //     greet: 'Hey',
+    //     fname: '',
+    //     username: '',
+    //     prunning: false,
+    //     crunning: false,
+    //     lrunning: false,
+    // }
 
     greet_lst = [
         'Welcome',
@@ -44,6 +63,7 @@ export default class Dashboard extends React.Component{
     ];
 
     componentDidMount(){
+        // console.log(AsyncStorage.getItem('x-access-token'))
         this.displayFname()
         this.disp_greet_lst()
         this.pumpState()
@@ -51,52 +71,104 @@ export default class Dashboard extends React.Component{
         this.lightState()
     }
 
-    pumpState = () => {
-        fetch('http://127.0.0.1:5000/api/v1/pump_status')
-        .then((response) => {
-            let data = response.json()
-            return data
+    async pumpState() {
+        let token = await AsyncStorage.getItem('x-access-token');
+        await fetch(`http://${ipAddr}:5000/api/v1/pump_status`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json();
+            return data;
         })
         .then((data) => {
             this.setState({
-                prunning: data.pswitch
-            });
+                prunning: data.pswitch,
+            })
         })
         .catch((err) => {
             console.log(err)
-        });
+        })
     }
 
-    cleanState = () => {
-        fetch('http://127.0.0.1:5000/api/v1/clean_status')
-        .then((response) => {
-            let data = response.json()
-            return data
+    async cleanState() {
+        let token = await AsyncStorage.getItem('x-access-token');
+        await fetch(`http://${ipAddr}:5000/api/v1/clean_status`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json();
+            return data;
         })
         .then((data) => {
             this.setState({
-                crunning: data.cswitch
-            });
+                crunning: data.cswitch,
+            })
         })
         .catch((err) => {
             console.log(err)
-        });
+        })
     }
 
-    lightState = () => {
-        fetch('http://127.0.0.1:5000/api/v1/light_status')
-        .then((response) => {
-            let data = response.json()
-            return data
+    async lightState() {
+        let token = await AsyncStorage.getItem('x-access-token');
+        await fetch(`http://${ipAddr}:5000/api/v1/light_status`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json();
+            return data;
         })
         .then((data) => {
             this.setState({
-                running: data.lswitch
-            });
+                lrunning: data.lswitch,
+            })
         })
         .catch((err) => {
             console.log(err)
-        });
+        })
+    }
+
+    async aux1State() {
+        let token = await AsyncStorage.getItem('x-access-token');
+        await fetch(`http://${ipAddr}:5000/api/v1/aux1_status`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json();
+            return data;
+        })
+        .then((data) => {
+            this.setState({
+                a1running: data.a1switch,
+            })
+        })
+        .catch((err) => {
+            console.log(err)
+        })
     }
 
     disp_greet_lst = () => {
@@ -174,6 +246,7 @@ export default class Dashboard extends React.Component{
                                 <CleanDisp running={this.state.crunning} />
                                 <PumpDisp running={this.state.prunning} />
                                 <LightDisp running={this.state.lrunning} />
+                                <Aux1Disp running={this.state.a1running} />
                             </View>
                             <View style={styles.ctrlContainer}>
                                 <TouchableOpacity style={styles.ctrlBtn} onPress={() => this.props.navigation.navigate('ControlDisp')}>

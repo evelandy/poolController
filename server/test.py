@@ -18,7 +18,19 @@ conn.execute("""CREATE TABLE IF NOT EXISTS user(
              phone INTEGER UNIQUE,
              admin BOOL);""")
 print('Table created!')
+# conn.close()
+
+# conn = sqlite3.connect('data.db')
+print('db opened!')
+conn.execute("""CREATE TABLE IF NOT EXISTS p_ctrl(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            pHr INTEGER,
+            pMin INTEGER,
+            pMid CHAR(2),
+            user_id INTEGER);""")
+print('Table created!')
 conn.close()
+
 
 
 # conn = sqlite3.connect('data.db')
@@ -42,18 +54,6 @@ conn.close()
 #             a2Mid CHAR(2));""")
 # print('Table created!')
 # conn.close()
-
-
-# conn = sqlite3.connect('data.db')
-# print('db opened!')
-# conn.execute("""CREATE TABLE IF NOT EXISTS p_ctrl(
-#             id INTEGER PRIMARY KEY AUTOINCREMENT,
-#             pHr INTEGER,
-#             pMin INTEGER,
-#             pMid CHAR(2));""")
-# print('Table created!')
-# conn.close()
-
 
 # conn = sqlite3.connect('data.db')
 # print('db opened!')
@@ -108,15 +108,15 @@ scheduler.start()
 
 """
 
-null = ['[', ']']
-y = []
-x = ["[3, 18, 'PM']"]
-for item in x:
-    for thing in item:
-        if thing in null:
-            pass
-        else:
-            y.append(thing)
-print(''.join(y))
-
-numLst = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+# null = ['[', ']']
+# y = []
+# x = ["[3, 18, 'PM']"]
+# for item in x:
+#     for thing in item:
+#         if thing in null:
+#             pass
+#         else:
+#             y.append(thing)
+# print(''.join(y))
+#
+# numLst = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
