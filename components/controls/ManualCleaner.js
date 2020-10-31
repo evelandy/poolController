@@ -4,7 +4,8 @@ import {
     Text,
     View,
     ImageBackground,
-    TouchableOpacity, Platform
+    TouchableOpacity, 
+    Platform
 } from 'react-native';
 import CleanDisp from '../CleanDisp';
 import Logout from '../Logout';

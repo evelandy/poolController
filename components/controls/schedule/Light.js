@@ -32,21 +32,14 @@ export default class Light extends React.Component{
             setSchMin: '00',
             setSchMid: 'PM',
             data: '',
-            lTime: '10:01AM'
+            lTime: '10:01AM',
+            format_hour: 10,
+            format_minute: 30
         }
-        this.lightState = this.lightState.bind(this)
-
+        this.lightState = this.lightState.bind(this);
+        this.schLgtOn = this.schLgtOn.bind(this);
+        this.schLgtOff = this.schLgtOff.bind(this);
     }
-
-    // state = {
-    //     running: false,
-    //     hour: 10,
-    //     minute: 30,
-    //     mid: 'AM',
-    //     setSchHr: '12',
-    //     setSchMin: '00',
-    //     setSchMid: 'PM'
-    // }
 
     async lightState() {
         let token = await AsyncStorage.getItem('x-access-token');
@@ -71,22 +64,6 @@ export default class Light extends React.Component{
         .catch((err) => {
             console.log(err)
         })
-    }
-    
-    schLgtOn = (tm=4) => {
-        // fetch(`http://${ipAddr}:5000/api/v1/sch_l_on/${tm}`)
-        // .then((response) => {
-        //     let data = response.json()
-        //     return data
-        // })
-        // .then((data) => {
-        //     this.setState({
-        //         running: data.msg
-        //     })
-        // })
-        // .catch((error) => {
-        //     console.warn(error)
-        // })
     }
 
     schLgtOff = (tm=4) => {
@@ -113,7 +90,18 @@ export default class Light extends React.Component{
 
     async setSchTime() {
         let token = await AsyncStorage.getItem('x-access-token');
+        let am_pm_arr = [`AM`, `PM`];
         let collectTime = {}
+        if(this.state.hour > 12 || this.state.hour < 1 || this.state.hour == ''){
+            alert('please make sure your hour format is the proper 12 hour time format')
+            return null
+        } else if(this.state.minute > 59 || this.state.minute < 1 || this.state.minute == ''){
+            alert('please make sure your minute format is the proper time format')
+            return null
+        } else if(! am_pm_arr.includes(this.state.mid)){
+            alert(`please make sure you enter either 'AM' or 'PM'`)
+            return null
+        }
         collectTime.lHr = this.state.hour
         collectTime.lMin = this.state.minute
         collectTime.lMid = this.state.mid
@@ -131,6 +119,68 @@ export default class Light extends React.Component{
                 withCredentials: true
             },
             body: JSON.stringify(collectTime)
+        })
+    }
+
+    async schLgtOn() {
+        let token = await AsyncStorage.getItem('x-access-token');
+        fetch(`http://${ipAddr}:5000/api/v1/show_l_time`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json();
+            return data;
+        })
+        .then((data) => {
+            let hour = data.ltime[0].lHr;
+            let minute = data.ltime[0].lMin;
+            let am_pm = data.ltime[0].lMid;
+            if(am_pm === 'AM' && hour === parseInt(12) && (minute >= parseInt('00', 8) && minute <= parseInt(59))){
+                hour -= 12
+                let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                let tm = {format_hr, format_min}
+                return tm
+            } else if(am_pm == 'PM'){
+                if(hour != 12){
+                    hour += 12
+                    let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                    let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                    let tm = {format_hr, format_min}
+                    return tm
+                } else {
+                    let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                    let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                    let tm = {format_hr, format_min}
+                    return tm
+                }
+            } else {
+                let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                let tm = {format_hr, format_min}
+                return tm
+            }
+        })
+        .then(async(tm) => {
+            let token = await AsyncStorage.getItem('x-access-token');
+            fetch(`http://${ipAddr}:5000/api/v1/sch_l_on/${tm.format_hr}/${tm.format_min}`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                }
+            })
+        })
+        .catch((error) => {
+            console.log(error)
         })
     }
 
@@ -157,7 +207,7 @@ export default class Light extends React.Component{
         .then((data) => {
             this.setState({
                 setSchHr: this.state.data[0].lHr,
-                setSchMin: this.state.data[0].lMin,
+                setSchMin: (this.state.data[0].lMin < 10) ? `0${this.state.data[0].lMin}` : this.state.data[0].lMin,
                 setSchMid: this.state.data[0].lMid
             })
         })
@@ -237,9 +287,9 @@ export default class Light extends React.Component{
                                     set
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.schLgtBtn} onPress={() => {this.schLgtOff(2)}}>
+                            <TouchableOpacity style={styles.schLgtBtn} onPress={() => this.schLgtOn()}>
                                 <Text style={styles.schLgtBtnTxt}>
-                                    run
+                                    {this.state.running === true ? 'off' : 'run'}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -288,7 +338,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         fontSize: (Platform.OS === 'ios') ? 18 : 22,
-        marginTop: 20
+        marginTop: (Platform.OS === 'ios') ? 15 : 10
     },
     inputContainer: {
         flexDirection: 'row',

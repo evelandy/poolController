@@ -20,6 +20,7 @@ export default class Clean extends React.Component{
     static navigationOptions = {
         headerShown: false
     };
+
     constructor(props){
         super(props);
         this.state = {
@@ -31,20 +32,14 @@ export default class Clean extends React.Component{
             setSchMin: '00',
             setSchMid: 'PM',
             data: '',
-            cTime: '10:01AM'
+            cTime: '10:01AM',
+            format_hour: 10,
+            format_minute: 30
         }
         this.cleanState = this.cleanState.bind(this);
+        this.schClnOn = this.schClnOn.bind(this);
+        this.schClnOff = this.schClnOff.bind(this);
     }
-
-    // state = {
-    //     running: false,
-    //     hour: 10,
-    //     minute: 30,
-    //     mid: 'AM',
-    //     setSchHr: '12',
-    //     setSchMin: '00',
-    //     setSchMid: 'PM'
-    // }
 
     async cleanState() {
         let token = await AsyncStorage.getItem('x-access-token');
@@ -71,22 +66,6 @@ export default class Clean extends React.Component{
         })
     }
     
-    schClnOn = (tm=4) => {
-        // fetch(`http://${ipAddr}:5000/api/v1/sch_c_on/${tm}`)
-        // .then((response) => {
-        //     let data = response.json()
-        //     return data
-        // })
-        // .then((data) => {
-        //     this.setState({
-        //         running: data.msg
-        //     })
-        // })
-        // .catch((error) => {
-        //     console.warn(error)
-        // })
-    }
-
     schClnOff = (tm=4) => {
         fetch(`http://${ipAddr}:5000/api/v1/sch_c_off/${tm}`)
         .then((response) => {
@@ -111,7 +90,18 @@ export default class Clean extends React.Component{
 
     async setSchTime() {
         let token = await AsyncStorage.getItem('x-access-token');
+        let am_pm_arr = [`AM`, `PM`];
         let collectTime = {}
+        if(this.state.hour > 12 || this.state.hour < 1 || this.state.hour == ''){
+            alert('please make sure your hour format is the proper 12 hour time format')
+            return null
+        } else if(this.state.minute > 59 || this.state.minute < 1 || this.state.minute == ''){
+            alert('please make sure your minute format is the proper time format')
+            return null
+        } else if(! am_pm_arr.includes(this.state.mid)){
+            alert(`please make sure you enter either 'AM' or 'PM'`)
+            return null
+        }
         collectTime.cHr = this.state.hour
         collectTime.cMin = this.state.minute
         collectTime.cMid = this.state.mid
@@ -129,6 +119,68 @@ export default class Clean extends React.Component{
                 withCredentials: true
             },
             body: JSON.stringify(collectTime)
+        })
+    }
+
+    async schClnOn() {
+        let token = await AsyncStorage.getItem('x-access-token');
+        fetch(`http://${ipAddr}:5000/api/v1/show_c_time`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json();
+            return data;
+        })
+        .then((data) => {
+            let hour = data.ctime[0].cHr;
+            let minute = data.ctime[0].cMin;
+            let am_pm = data.ctime[0].cMid;
+            if(am_pm === 'AM' && hour === parseInt(12) && (minute >= parseInt('00', 8) && minute <= parseInt(59))){
+                hour -= 12
+                let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                let tm = {format_hr, format_min}
+                return tm
+            } else if(am_pm == 'PM'){
+                if(hour != 12){
+                    hour += 12
+                    let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                    let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                    let tm = {format_hr, format_min}
+                    return tm
+                } else {
+                    let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                    let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                    let tm = {format_hr, format_min}
+                    return tm
+                }
+            } else {
+                let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                let tm = {format_hr, format_min}
+                return tm
+            }
+        })
+        .then(async(tm) => {
+            let token = await AsyncStorage.getItem('x-access-token');
+            fetch(`http://${ipAddr}:5000/api/v1/sch_c_on/${tm.format_hr}/${tm.format_min}`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                }
+            })
+        })
+        .catch((error) => {
+            console.log(error)
         })
     }
 
@@ -155,7 +207,7 @@ export default class Clean extends React.Component{
         .then((data) => {
             this.setState({
                 setSchHr: this.state.data[0].cHr,
-                setSchMin: this.state.data[0].cMin,
+                setSchMin: (this.state.data[0].cMin < 10) ? `0${this.state.data[0].cMin}` : this.state.data[0].cMin,
                 setSchMid: this.state.data[0].cMid
             })
         })
@@ -235,9 +287,9 @@ export default class Clean extends React.Component{
                                     set
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.schClnBtn} onPress={() => alert('run')}>
+                            <TouchableOpacity style={styles.schClnBtn} onPress={() => this.schClnOn()}>
                                 <Text style={styles.schClnBtnTxt}>
-                                    run
+                                    {this.state.running === true ? 'off' : 'run'}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -286,7 +338,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         fontSize: (Platform.OS === 'ios') ? 18 : 22,
-        marginTop: 20
+        marginTop: (Platform.OS === 'ios') ? 15 : 10
     },
     inputContainer: {
         flexDirection: 'row',

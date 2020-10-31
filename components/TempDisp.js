@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    Platform,
     StyleSheet,
     Text,
     View,
@@ -12,6 +13,7 @@ export default class TempDisp extends React.Component {
     state = {
         highTemp: 0,
         currentTemp: 0,
+        forecastData: 0,
         userId: '',
         city: ''
     }
@@ -35,17 +37,22 @@ export default class TempDisp extends React.Component {
                 currentTemp: data.main.temp
             })
         })
+        .then(() => {
+            console.log('testing this function for forecast data in the TempDisp.js component')
+            // const apiKey = '5490a59fae143d65082c3beeaeaf6982';
+            // fetch(`api.openweathermap.org/data/2.5/onecall?q=${this.state.city}&appid=${apiKey}&units=imperial`, {})
+            // .then((res) => {
+            //     let data = res.json();
+            //     return data
+            // })
+            // .then((data) => {
+            //     console.log('testing this function in the TempDisp.js component')
+            // })
+        })
         .catch((err) => {
             alert(err)
         })
     }
-
-    // triggerTemp(params) {
-    //     let temp = Math.round(params);
-    //     let timeToRun = temp / 10;
-    //     // let timeToRun = Math.round(10*temp) / 10;
-    //     // alert(timeToRun);
-    // }
 
     componentDidMount(){
         this.displayHighTemp();
@@ -89,6 +96,6 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         fontSize: (Platform.OS === 'ios') ? 17 : 21,
-        marginTop: 20
+        marginTop: (Platform.OS === 'ios') ? 15 : 10
     },
 })

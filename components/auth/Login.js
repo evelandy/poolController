@@ -138,13 +138,13 @@ export default class Login extends React.Component{
                                         SignUp
                                     </Text>
                                 </TouchableOpacity>
-                                <View style={styles.forgotContainer}>
+                                {/* <View style={styles.forgotContainer}>
                                     <TouchableOpacity style={styles.forgotBtn} onPress={() => {this.nav_to_forgot()}}>
                                         <Text style={styles.forgotBtnText}>
                                             Forgot Username/Password?
                                         </Text>
                                     </TouchableOpacity>
-                                </View>
+                                </View> */}
                             </View>
                         </DismissKeyboard>
                 </ImageBackground>

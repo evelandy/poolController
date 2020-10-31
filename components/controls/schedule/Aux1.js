@@ -9,7 +9,6 @@ import {
     Platform
 } from 'react-native';
 import Logout from '../../Logout';
-import PumpDisp from '../../PumpDisp';
 import TempDisp from '../../TempDisp';
 import WaterTemp from '../../WaterTemp';
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
@@ -33,20 +32,14 @@ export default class Aux1 extends React.Component{
             setSchMin: '00',
             setSchMid: 'PM',
             data: '',
-            a1Time: '10:01AM'
+            a1Time: '10:01AM',
+            format_hour: 10,
+            format_minute: 30
         }
-        this.aux1State = this.aux1State.bind(this)
+        this.aux1State = this.aux1State.bind(this);
+        this.schAux1On = this.schAux1On.bind(this);
+        this.schAux1Off = this.schAux1Off.bind(this);
     }
-
-    // state = {
-    //     running: false,
-    //     hour: 10,
-    //     minute: 30,
-    //     mid: 'AM',
-    //     setSchHr: '12',
-    //     setSchMin: '00',
-    //     setSchMid: 'PM'
-    // }
 
     async aux1State() {
         let token = await AsyncStorage.getItem('x-access-token');
@@ -71,22 +64,6 @@ export default class Aux1 extends React.Component{
         .catch((err) => {
             console.log(err)
         })
-    }
-    
-    schAux1On = (tm=4) => {
-        // fetch(`http://${ipAddr}:5000/api/v1/sch_a1_on/${tm}`)
-        // .then((response) => {
-        //     let data = response.json()
-        //     return data
-        // })
-        // .then((data) => {
-        //     this.setState({
-        //         running: data.msg
-        //     })
-        // })
-        // .catch((error) => {
-        //     console.warn(error)
-        // })
     }
 
     schAux1Off = (tm=4) => {
@@ -113,7 +90,18 @@ export default class Aux1 extends React.Component{
 
     async setSchTime() {
         let token = await AsyncStorage.getItem('x-access-token');
+        let am_pm_arr = [`AM`, `PM`];
         let collectTime = {}
+        if(this.state.hour > 12 || this.state.hour < 1 || this.state.hour == ''){
+            alert('please make sure your hour format is the proper 12 hour time format')
+            return null
+        } else if(this.state.minute > 59 || this.state.minute < 1 || this.state.minute == ''){
+            alert('please make sure your minute format is the proper time format')
+            return null
+        } else if(! am_pm_arr.includes(this.state.mid)){
+            alert(`please make sure you enter either 'AM' or 'PM'`)
+            return null
+        }
         collectTime.a1Hr = this.state.hour
         collectTime.a1Min = this.state.minute
         collectTime.a1Mid = this.state.mid
@@ -131,6 +119,68 @@ export default class Aux1 extends React.Component{
                 withCredentials: true
             },
             body: JSON.stringify(collectTime)
+        })
+    }
+
+    async schAux1On() {
+        let token = await AsyncStorage.getItem('x-access-token');
+        fetch(`http://${ipAddr}:5000/api/v1/show_a1_time`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json();
+            return data;
+        })
+        .then((data) => {
+            let hour = data.a1time[0].a1Hr;
+            let minute = data.a1time[0].a1Min;
+            let am_pm = data.a1time[0].a1Mid;
+            if(am_pm === 'AM' && hour === parseInt(12) && (minute >= parseInt('00', 8) && minute <= parseInt(59))){
+                hour -= 12
+                let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                let tm = {format_hr, format_min}
+                return tm
+            } else if(am_pm == 'PM'){
+                if(hour != 12){
+                    hour += 12
+                    let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                    let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                    let tm = {format_hr, format_min}
+                    return tm
+                } else {
+                    let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                    let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                    let tm = {format_hr, format_min}
+                    return tm
+                }
+            } else {
+                let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                let tm = {format_hr, format_min}
+                return tm
+            }
+        })
+        .then(async(tm) => {
+            let token = await AsyncStorage.getItem('x-access-token');
+            fetch(`http://${ipAddr}:5000/api/v1/sch_a1_on/${tm.format_hr}/${tm.format_min}`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                }
+            })
+        })
+        .catch((error) => {
+            console.log(error)
         })
     }
 
@@ -157,7 +207,7 @@ export default class Aux1 extends React.Component{
         .then((data) => {
             this.setState({
                 setSchHr: this.state.data[0].a1Hr,
-                setSchMin: this.state.data[0].a1Min,
+                setSchMin: (this.state.data[0].a1Min < 10) ? `0${this.state.data[0].a1Min}` : this.state.data[0].a1Min,
                 setSchMid: this.state.data[0].a1Mid
             })
         })
@@ -166,25 +216,25 @@ export default class Aux1 extends React.Component{
         })
     }
 
-    runSchTime = () => {
-        fetch(`http://${ipAddr}:5000/api/v1/run_a1_time`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then((res) => {
-            let data = res.json()
-            return data
-        })
-        .then((data) => {
-            console.log(data)
-        })
-        .catch((err) => {
-            console.log(err)
-        })
-    }
+    // runSchTime = () => {
+    //     fetch(`http://${ipAddr}:5000/api/v1/run_a1_time`, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Accept': 'application/json, text/plain, */*',
+    //             'Content-Type': 'application/json'
+    //         }
+    //     })
+    //     .then((res) => {
+    //         let data = res.json()
+    //         return data
+    //     })
+    //     .then((data) => {
+    //         console.log(data)
+    //     })
+    //     .catch((err) => {
+    //         console.log(err)
+    //     })
+    // }
 
     componentDidMount(){
         this.showSchTime()
@@ -210,7 +260,6 @@ export default class Aux1 extends React.Component{
                         <TempDisp />
                         <WaterTemp />
                         <Aux1Disp running={this.state.running} />
-                        {/* <PumpDisp running={this.state.running} /> */}
 
                         <View style={styles.currSchContainer}>
                             <Text style={styles.currSchHeader}>
@@ -258,9 +307,9 @@ export default class Aux1 extends React.Component{
                                     set
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.schAux1Btn} onPress={() => this.runSchTime()}>
+                            <TouchableOpacity style={styles.schAux1Btn} onPress={() => this.schAux1On()}>
                                 <Text style={styles.schAux1BtnTxt}>
-                                    run
+                                    {this.state.running === true ? 'off' : 'run'}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -310,7 +359,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: (Platform.OS === 'ios') ? 18 : 22,
         width: (Platform.OS === 'ios') ? 355 : 395,
-        marginTop: 20
+        marginTop: (Platform.OS === 'ios') ? 15 : 10
     },
     inputContainer: {
         flexDirection: 'row',

@@ -6,7 +6,8 @@ import {
     ImageBackground,
     TouchableOpacity,
     TextInput, 
-    Platform, Keyboard
+    Platform, 
+    Keyboard
 } from 'react-native';
 import DismissKeyboard from '../DismissKeyboard';
 import Logout from '../Logout';
@@ -46,15 +47,13 @@ export default class ManualPump extends React.Component{
 
     componentDidMount() {
         this.pumpDisplay();
-        this.showTriggerTemp();
-        // this.weatherTrigger();       <<<<<<<<<<<<<<<<<<<<<<           this and below two functions are to turn on pump and run for duration then off.
+        // this.showTriggerTemp();
     }
 
     sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    //             <<<<<<<<<<<<<<<<<<<<<<             need to find out what time every day to run triggerTemp(pump triggered by the weather)
     triggerTemp(params) {
         let temp = Math.round(params);
         let timeToRun = temp / 10;
@@ -160,51 +159,51 @@ export default class ManualPump extends React.Component{
         })
     }
 
-    setTriggerTemp = () => {
-        let collectTemp = {}
-        collectTemp.triggerTemp = this.state.triggerTemp
-        if(collectTemp.triggerTemp == 0){
-            alert('please make sure you enter a value in the temperature input box')
-        } else {
-            this.setState({
-                setTriggerTemp: this.state.triggerTemp
-            })
-            fetch(`http://${ipAddr}:5000/api/v1/temp/trigger_temp`, {
-                method: 'PUT',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(collectTemp)
-            })
-            .then((res) => {
-                let data = res.json()
-                return data
-            })
-            .then((data) => {
-                console.log(data)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-        }
-    }
+    // setTriggerTemp = () => {
+    //     let collectTemp = {}
+    //     collectTemp.triggerTemp = this.state.triggerTemp
+    //     if(collectTemp.triggerTemp == 0){
+    //         alert('please make sure you enter a value in the temperature input box')
+    //     } else {
+    //         this.setState({
+    //             setTriggerTemp: this.state.triggerTemp
+    //         })
+    //         fetch(`http://${ipAddr}:5000/api/v1/temp/trigger_temp`, {
+    //             method: 'PUT',
+    //             headers: {
+    //                 'Accept': 'application/json, text/plain, */*',
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify(collectTemp)
+    //         })
+    //         .then((res) => {
+    //             let data = res.json()
+    //             return data
+    //         })
+    //         .then((data) => {
+    //             console.log(data)
+    //         })
+    //         .catch((err) => {
+    //             console.log(err)
+    //         })
+    //     }
+    // }
 
-    showTriggerTemp = () => {
-        fetch(`http://${ipAddr}:5000/api/v1/show_trigger_temp`)
-        .then((res) => {
-            let data = res.json()
-            return data
-        })
-        .then((data) => {
-            this.setState({
-                setTriggerTemp: data.triggerTemp
-            })
-        })
-        .catch((err) => {
-            console.log(err)
-        })
-    }
+    // showTriggerTemp = () => {
+    //     fetch(`http://${ipAddr}:5000/api/v1/show_trigger_temp`)
+    //     .then((res) => {
+    //         let data = res.json()
+    //         return data
+    //     })
+    //     .then((data) => {
+    //         this.setState({
+    //             setTriggerTemp: data.triggerTemp
+    //         })
+    //     })
+    //     .catch((err) => {
+    //         console.log(err)
+    //     })
+    // }
 
     backToCtrl = () => {
         this.props.navigation.navigate('ControlDisp')
@@ -238,7 +237,10 @@ export default class ManualPump extends React.Component{
                                 </Text>
                             </TouchableOpacity>
                         </View>
-                        <DismissKeyboard keyboard={Keyboard}>
+
+                        {/* code below is functionality for a trigger to turn on pump if water temp set by customer is met */}
+
+                        {/* <DismissKeyboard keyboard={Keyboard}>
                         <View style={styles.triggerContainer}>
                             <Text style={styles.triggerHeader}>Set Temperature Trigger</Text>
                             <Text style={styles.tempHeader}>Set Temperature:  {this.state.setTriggerTemp} &deg;F</Text>
@@ -258,7 +260,9 @@ export default class ManualPump extends React.Component{
                                 </Text>
                             </TouchableOpacity>
                         </View>
-                        </DismissKeyboard>
+                        </DismissKeyboard> */}
+
+
                         <View style={styles.infoHeader}>
                             <TempDisp />
                             <WaterTemp />

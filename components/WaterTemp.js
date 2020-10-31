@@ -62,6 +62,6 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         fontSize: (Platform.OS === 'ios') ? 18 : 22,
-        marginTop: 20
+        marginTop: (Platform.OS === 'ios') ? 15 : 10
     },
 })

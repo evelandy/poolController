@@ -33,7 +33,9 @@ export default class SignUp extends React.Component{
         zipCode: '',
         phone: '',
         secretQuestion1: '',
-        secretQuestion2: ''
+        secretQuestion2: '',
+        secretAnswer1: '',
+        secretAnswer2: ''
     }
 
     nav_to_login = () => {
@@ -261,7 +263,7 @@ export default class SignUp extends React.Component{
                                             onSubmitEditing={() => this.phone.focus()}
                                         />
                                     </View>
-                                    <View>
+                                    <View style={styles.finalInput}>
                                         <Text style={styles.inputLabel}>
                                             Phone Number
                                         </Text>
@@ -273,39 +275,73 @@ export default class SignUp extends React.Component{
                                             returnKeyType='done'
                                             onChangeText={val => this.onChangeText('phone', val)}
                                             ref={(input) => this.phone = input}
-                                            onSubmitEditing={() => this.secretQuestion1.focus()}
+                                            onSubmitEditing={() => this.signUpUser()}
                                         />
                                     </View>
-                                    <View>
+                                    {/* <View>
                                         <Text style={styles.inputLabel}>
                                             secret Question #1
                                         </Text>
                                         <TextInput
                                             style={styles.txtInput}
+                                            placeholder='Secret Question'
                                             autoCapitalize="none"
                                             autoCorrect={false}
                                             keyboardType='default'
                                             returnKeyType='done'
                                             onChangeText={val => this.onChangeText('secretQuestion1', val)}
                                             ref={(input) => this.secretQuestion1 = input}
+                                            onSubmitEditing={() => this.secretAnswer1.focus()}
+                                        />
+                                    </View>
+                                    <View>
+                                        <Text style={styles.inputLabel}>
+                                            secret Answer #1
+                                        </Text>
+                                        <TextInput
+                                            style={styles.txtInput}
+                                            placeholder='Secret Answer'
+                                            autoCapitalize="none"
+                                            autoCorrect={false}
+                                            keyboardType='default'
+                                            returnKeyType='done'
+                                            onChangeText={val => this.onChangeText('secretAnswer1', val)}
+                                            ref={(input) => this.secretAnswer1 = input}
                                             onSubmitEditing={() => this.secretQuestion2.focus()}
                                         />
                                     </View>
-                                    <View style={styles.finalInput}>
+                                    <View>
                                         <Text style={styles.inputLabel}>
                                             Secret Question #2
                                         </Text>
                                         <TextInput
                                             style={styles.txtInput}
+                                            placeholder='Secret Question'
                                             autoCapitalize="none"
                                             autoCorrect={false}
                                             keyboardType='default'
                                             returnKeyType='done'
                                             onChangeText={val => this.onChangeText('secretQuestion2', val)}
                                             ref={(input) => this.secretQuestion2 = input}
-                                            onSubmitEditing={() => this.signUpUser()}
+                                            onSubmitEditing={() => this.secretAnswer2.focus()}
                                         />
                                     </View>
+                                    <View style={styles.finalInput}>
+                                        <Text style={styles.inputLabel}>
+                                            Secret Answer #2
+                                        </Text>
+                                        <TextInput
+                                            style={styles.txtInput}
+                                            placeholder='Secret Answer'
+                                            autoCapitalize="none"
+                                            autoCorrect={false}
+                                            keyboardType='default'
+                                            returnKeyType='done'
+                                            onChangeText={val => this.onChangeText('secretAnswer2', val)}
+                                            ref={(input) => this.secretAnswer2 = input}
+                                            onSubmitEditing={() => this.signUpUser()}
+                                        />
+                                    </View> */}
                                     
                                     <TouchableOpacity style={styles.signUpBtn} onPress={() => {this.nav_to_login()}}>
                                         <Text style={styles.signUpBtnText}>
@@ -345,14 +381,14 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase'
     },
     txtInput: {
-        height: 40,
+        height: 45,
         width: 275,
         borderColor: 'gray',
         borderWidth: 2,
         borderRadius: 3,
         marginTop: 2,
         backgroundColor: 'lightblue',
-        fontSize: 27,
+        fontSize: 22,
     },
     inputLabel: {
         color: 'white',
@@ -384,5 +420,5 @@ const styles = StyleSheet.create({
         width: '100%',
         flex: 1,
         resizeMode: 'cover',
-    },
+    }
 });

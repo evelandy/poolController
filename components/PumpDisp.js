@@ -28,13 +28,11 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
-        // paddingRight: 40,
-        // paddingLeft: 40,
         width: (Platform.OS === 'ios') ? 355 : 395,
         textAlign: 'center',
         color: 'white',
         fontWeight: 'bold',
         fontSize: (Platform.OS === 'ios') ? 18 : 22,
-        marginTop: 20
+        marginTop: (Platform.OS === 'ios') ? 15 : 10
     },
 });

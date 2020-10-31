@@ -13,6 +13,7 @@ import PumpDisp from '../../PumpDisp';
 import TempDisp from '../../TempDisp';
 import WaterTemp from '../../WaterTemp';
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
+import TempTriggerTime from './TempTriggerTime';
 
 let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
 
@@ -121,7 +122,7 @@ export default class Pump extends React.Component{
             body: JSON.stringify(collectTime)
         })
     }
-
+    
     async schPmpOn() {
         let token = await AsyncStorage.getItem('x-access-token');
         fetch(`http://${ipAddr}:5000/api/v1/show_p_time`, {
@@ -250,6 +251,7 @@ export default class Pump extends React.Component{
                                 Current Schedule: &nbsp; {this.state.setSchHr}:{this.state.setSchMin} {this.state.setSchMid}
                             </Text>
                         </View>
+                        <Text style={styles.schHeader}>Set a time to run schedule</Text>
                         <View style={styles.inputContainer}>
                             <TextInput 
                                 style={styles.schInput}
@@ -298,6 +300,8 @@ export default class Pump extends React.Component{
                             </TouchableOpacity>
                         </View>
 
+                        <TempTriggerTime />
+
                         <Logout navigation={this.props.navigation.navigate} logBtn={styles.logBtn} />
                         <TouchableOpacity style={styles.backBtn} onPress={this.navControl}>
                             <Text style={styles.backBtnTxt}>
@@ -332,7 +336,13 @@ const styles = StyleSheet.create({
         fontSize: (Platform.OS === 'ios') ? 30 : 35,
         fontWeight: 'bold',
         letterSpacing: 1,
-        marginBottom: 40
+        marginBottom: (Platform.OS === 'ios') ? 20 : 10
+    },
+    schHeader: {
+        color: 'white',
+        fontSize: 19,
+        fontWeight: 'bold',
+        marginTop: (Platform.OS === 'ios') ? 15 : 10
     },
     currSchHeader: {
         borderWidth: 1,
@@ -343,11 +353,11 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         fontSize: (Platform.OS === 'ios') ? 18 : 22,
-        marginTop: 20
+        marginTop: (Platform.OS === 'ios') ? 15 : 10
     },
     inputContainer: {
         flexDirection: 'row',
-        marginTop: (Platform.OS === 'ios') ? 30 : 25,
+        marginTop: (Platform.OS === 'ios') ? 10 : 5,
     },
     schInput: {
         width: (Platform.OS === 'ios') ? 43 : 45,
@@ -370,7 +380,7 @@ const styles = StyleSheet.create({
     btnContainer: {
         flexDirection: 'row',
         fontSize: 25,
-        marginTop: 25,
+        marginTop: (Platform.OS === 'ios') ? 15 : 10,
         zIndex: 1,
     },
     schPmpBtn: {
@@ -391,7 +401,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     logBtn: {
-        top: (Platform.OS === 'ios') ? 130 : 70,
+        top: (Platform.OS === 'ios') ? 30 : 10,
         padding: 15,
         borderRadius: 10,
         backgroundColor: 'navy',
@@ -403,7 +413,7 @@ const styles = StyleSheet.create({
         width: 340
     },
     backBtn: {
-        top: (Platform.OS === 'ios') ? 150 : 90,
+        top: (Platform.OS === 'ios') ? 40 : 20,
         padding: 15,
         borderRadius: 10,
         backgroundColor: 'navy',
