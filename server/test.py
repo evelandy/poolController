@@ -1,35 +1,35 @@
-import sqlite3
-
-
-conn = sqlite3.connect('data.db')
-print('db opened!')
-conn.execute("""CREATE TABLE IF NOT EXISTS user(
-             id INTEGER PRIMARY KEY AUTOINCREMENT,
-             fname CHAR(80),
-             lname CHAR(80),
-             username CHAR(80) UNIQUE,
-             password CHAR(120),
-             email CHAR(80) UNIQUE,
-             address CHAR(80),
-             add2 CHAR(10),
-             city CHAR(40),
-             sta CHAR(4),
-             zipCode INTEGER,
-             phone INTEGER UNIQUE,
-             admin BOOL);""")
-print('Table created!')
-# conn.close()
-
+# import sqlite3
+#
+#
 # conn = sqlite3.connect('data.db')
-print('db opened!')
-conn.execute("""CREATE TABLE IF NOT EXISTS p_ctrl(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            pHr INTEGER,
-            pMin INTEGER,
-            pMid CHAR(2),
-            user_id INTEGER);""")
-print('Table created!')
-conn.close()
+# print('db opened!')
+# conn.execute("""CREATE TABLE IF NOT EXISTS user(
+#              id INTEGER PRIMARY KEY AUTOINCREMENT,
+#              fname CHAR(80),
+#              lname CHAR(80),
+#              username CHAR(80) UNIQUE,
+#              password CHAR(120),
+#              email CHAR(80) UNIQUE,
+#              address CHAR(80),
+#              add2 CHAR(10),
+#              city CHAR(40),
+#              sta CHAR(4),
+#              zipCode INTEGER,
+#              phone INTEGER UNIQUE,
+#              admin BOOL);""")
+# print('Table created!')
+# # conn.close()
+#
+# # conn = sqlite3.connect('data.db')
+# print('db opened!')
+# conn.execute("""CREATE TABLE IF NOT EXISTS p_ctrl(
+#             id INTEGER PRIMARY KEY AUTOINCREMENT,
+#             pHr INTEGER,
+#             pMin INTEGER,
+#             pMid CHAR(2),
+#             user_id INTEGER);""")
+# print('Table created!')
+# conn.close()
 
 
 
@@ -120,3 +120,14 @@ scheduler.start()
 # print(''.join(y))
 #
 # numLst = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+
+
+from datetime import datetime
+
+now = datetime.now()
+
+current_time = now.strftime("%H:%M")
+curr_hr = now.strftime('%H')
+curr_min = now.strftime('%M')
+print(curr_hr)
+print(curr_min)

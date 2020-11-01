@@ -39,7 +39,7 @@ export default class TempTriggerTime extends React.Component {
         if(this.state.hour > 12 || this.state.hour < 1 || this.state.hour == ''){
             alert('please make sure your hour format is the proper 12 hour time format')
             return null
-        } else if(this.state.minute > 59 || this.state.minute < 1 || this.state.minute == ''){
+        } else if(this.state.minute > 59 || this.state.minute < parseInt('00', 8) || this.state.minute == ''){
             alert('please make sure your minute format is the proper time format')
             return null
         } else if(! am_pm_arr.includes(this.state.mid)){

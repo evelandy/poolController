@@ -222,28 +222,55 @@ def weather_trigger():
     else:
         temp_round = round(temp)
         run_time = temp_round / 10
-        trigger_pmp_on(run_time)
+        trigger_pmp_on(run_time, temp)
         return run_time
 
 
-def trigger_pmp_on(run_time):
+def trigger_pmp_on(run_time, temp):
+    now = datetime.datetime.now()
+    curr_hr = now.strftime("%H")
+    curr_min = now.strftime("%M")
+    timeHold = 0
     GPIO.setmode(GPIO.BCM)
 
     GPIO.setup(TP, GPIO.OUT)
     GPIO.output(TP, GPIO.HIGH)
 
     hour_to_sec = run_time * 3600
-    sleep(hour_to_sec)
-
-    GPIO.output(TP, GPIO.LOW)
-
-    return jsonify({"msg": "trigger pump off"}), 200
+    timeHold += hour_to_sec
+    for sec in timeHold:
+        if timeHold == 0:
+            GPIO.output(TP, GPIO.LOW)
+            return jsonify({'msg': 'trigger pump off'}), 200
+        else:
+            timeHold -= 1
+            if timeHold == 7200:
+                user_info = User.query.filter_by(id=1).first()
+                user_city = user_info.city
+                api_key = '5490a59fae143d65082c3beeaeaf6982'
+                res = requests.get(
+                    url='http://api.openweathermap.org/data/2.5/weather?q={}&appid={}&units=imperial'
+                        .format(user_city, api_key))
+                data = json.loads(res.content)
+                updated_temp = data['main']['temp']
+                if round(updated_temp) >= round(temp) - 5 and round(updated_temp) <= round(temp) + 5:
+                    sleep(1)
+                else:
+                    if round(updated_temp) - round(temp) > 0:
+                        timeHold += round(updated_temp) - round(temp)
+                        sleep(1)
+                    else:
+                        timeHold += round(temp) - round(updated_temp)
+                        sleep(1)
+            else:
+                sleep(1)
 
 
 @app.route('/api/v1/temp_time_on/<hr>/<mn>', methods=['GET'])
 def temp_time_on(hr, mn):
     with app.app_context():
         schedule.CancelJob
+        schedule.clear()
         run_time = "{}:{}".format(hr, mn)
         pmp_off()
         schedule.every().day.at(run_time).do(weather_trigger)

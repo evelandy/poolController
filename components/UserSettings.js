@@ -20,8 +20,10 @@ export default class UserSettings extends React.Component{
         headerShown: false
     };
 
-    state = {
-        fname: '',
+    constructor(props){
+        super(props);
+        this.state = {
+            fname: '',
         lname: '',
         username: '',
         password: '',
@@ -34,7 +36,25 @@ export default class UserSettings extends React.Component{
         phone: '',
         userId: '',
         text: ''
+        }
+        this.changeUsername = this.changeUsername.bind(this)
     }
+
+    // state = {
+    //     fname: '',
+    //     lname: '',
+    //     username: '',
+    //     password: '',
+    //     email: '',
+    //     address: '',
+    //     add2: '',
+    //     city: '',
+    //     sta: '',
+    //     zipCode: '',
+    //     phone: '',
+    //     userId: '',
+    //     text: ''
+    // }
 
     clearState = () => {
         this.setState({
@@ -110,7 +130,7 @@ export default class UserSettings extends React.Component{
         if(newUname === ''){
             alert('please make sure you filled out the username input')
         } else {
-            fetch(`http://${ipAddr}:5000/api/v1/edituname/${newUname}/${userId}`, {
+            fetch(`http://${ipAddr}:5000/api/v1/user/edituname/${newUname}/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -148,7 +168,7 @@ export default class UserSettings extends React.Component{
         if(newPass === ''){
             alert('please make sure you filled out the password input')
         } else {
-            fetch(`http://${ipAddr}:5000/api/v1/editpass/${newPass}/${userId}`, {
+            fetch(`http://${ipAddr}:5000/api/v1/user/editpass/${newPass}/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

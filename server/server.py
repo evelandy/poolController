@@ -397,9 +397,9 @@ def show_t_time(current_user):
 
     output = []
     ttime_dict = {}
-    ttime_dict['pHr'] = ttime[0].tHr
-    ttime_dict['pMin'] = ttime[0].tMin
-    ttime_dict['pMid'] = ttime[0].tMid
+    ttime_dict['tHr'] = ttime[0].tHr
+    ttime_dict['tMin'] = ttime[0].tMin
+    ttime_dict['tMid'] = ttime[0].tMid
     output.append(ttime_dict)
     return jsonify({'ttime': output}), 200
 
@@ -413,7 +413,7 @@ def sch_t_on(current_user, hr, mn):
 
 ###################################################################################################################pump
 # sets time for pump scheduler
-@app.route('/api/v1/add_p_time', methods=['GET'])
+@app.route('/api/v1/add_p_time', methods=['POST'])
 @token_req
 def add_p_time(current_user):
     ptime = p_ctrl.query.all()
