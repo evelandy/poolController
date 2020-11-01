@@ -32,7 +32,6 @@ export default class TempTriggerTime extends React.Component {
         });
     }
     
-
     async setTempTriggerTime() {
         let token = await AsyncStorage.getItem('x-access-token');
         let am_pm_arr = [`AM`, `PM`];
