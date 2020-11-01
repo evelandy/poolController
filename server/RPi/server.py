@@ -215,15 +215,34 @@ def weather_trigger():
             .format(user_city, api_key))
     data = json.loads(res.content)
     temp = data['main']['temp']
-    if temp <= 32:
-        run_time = 10
-        trigger_pmp_on(run_time)
-        return run_time
+    lat = data['coord']['lat']
+    lon = data['coord']['lon']
+
+    forecastRes = requests.get(
+        url='http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&appid={}'.format(lat, lon, api_key))
+    forecastData = json.loads(forecastRes.content)
+    forecastTemp = forecastData ['daily'][0]['temp']['day']
+    if temp > forecastTemp - 459.67:
+        if temp <= 32:
+            run_time = 10
+            trigger_pmp_on(run_time, temp)
+            return run_time
+        else:
+            temp_round = round(temp)
+            run_time = temp_round // 10
+            trigger_pmp_on(run_time, temp)
+            return run_time
     else:
-        temp_round = round(temp)
-        run_time = temp_round / 10
-        trigger_pmp_on(run_time, temp)
-        return run_time
+        if forecastTemp - 459.67 <= 32:
+            run_time = 10
+            trigger_pmp_on(run_time, forecastTemp)
+            return run_time
+        else:
+            forecastTemp -= 459.67
+            temp_round = round(forecastTemp)
+            run_time = temp_round // 10
+            trigger_pmp_on(run_time, forecastTemp)
+            return run_time
 
 
 def trigger_pmp_on(run_time, temp):
@@ -238,7 +257,7 @@ def trigger_pmp_on(run_time, temp):
 
     hour_to_sec = run_time * 3600
     timeHold += hour_to_sec
-    for sec in timeHold:
+    for sec in range(timeHold):
         if timeHold == 0:
             GPIO.output(TP, GPIO.LOW)
             return jsonify({'msg': 'trigger pump off'}), 200
@@ -277,15 +296,6 @@ def temp_time_on(hr, mn):
         w = Thread(target=weather_trigger_runner)
         w.start()
         return jsonify({"msg": "true"}), 200
-
-
-#@app.route('/api/v1/sch_t_on/<hr>/<mn>', methods=['GET'])
-#def sch_t_on(hr, mn):
-#    with app.app_context():
-#        run_time = "{}:{}".format(hr, mn)
-#        schedule.clear()
-#        pmp_off()
-#        pass
 
 
 def weather_trigger_runner():
