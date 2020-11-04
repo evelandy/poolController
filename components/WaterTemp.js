@@ -35,6 +35,9 @@ export default class WaterTemp extends React.Component{
                 temp: data.message
             })
         })
+        .catch((err) => {
+            console.log('tempCheck err' + err)
+        })
     }
     
     componentDidMount(){

@@ -274,7 +274,7 @@ export default class UserSettings extends React.Component{
                 })
             })
             .catch((err) => {
-                alert(`name error: ${err}`)
+                alert(`address error: ${err}`)
             })
         }
     }

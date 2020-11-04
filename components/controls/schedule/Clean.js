@@ -179,6 +179,11 @@ export default class Clean extends React.Component{
                 }
             })
         })
+        .then((data) => {
+            this.setState({
+                running: data.cswitch
+            })
+        })
         .catch((error) => {
             console.log(error)
         })
@@ -186,7 +191,7 @@ export default class Clean extends React.Component{
 
     async showSchTime() {
         let token = await AsyncStorage.getItem('x-access-token')
-        fetch(`http://${ipAddr}:5000/api/v1/show_c_time`, {
+        fetch(`http://${ipAddr}:5000/api/v1/display_c_schedule`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json, text/plain, */*',

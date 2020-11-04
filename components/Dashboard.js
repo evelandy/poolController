@@ -92,7 +92,7 @@ export default class Dashboard extends React.Component{
             })
         })
         .catch((err) => {
-            console.log(err)
+            console.log('pump state' + err)
         })
     }
 
@@ -117,7 +117,7 @@ export default class Dashboard extends React.Component{
             })
         })
         .catch((err) => {
-            console.log(err)
+            console.log('clean state' + err)
         })
     }
 
@@ -142,7 +142,7 @@ export default class Dashboard extends React.Component{
             })
         })
         .catch((err) => {
-            console.log(err)
+            console.log('light state' + err)
         })
     }
 
@@ -167,7 +167,7 @@ export default class Dashboard extends React.Component{
             })
         })
         .catch((err) => {
-            console.log(err)
+            console.log('aux1 state' + err)
         })
     }
 

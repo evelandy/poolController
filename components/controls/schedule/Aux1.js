@@ -179,6 +179,11 @@ export default class Aux1 extends React.Component{
                 }
             })
         })
+        .then((data) => {
+            this.setState({
+                running: data.a1switch
+            })
+        })
         .catch((error) => {
             console.log(error)
         })
@@ -186,7 +191,7 @@ export default class Aux1 extends React.Component{
 
     async showSchTime() {
         let token = await AsyncStorage.getItem('x-access-token')
-        fetch(`http://${ipAddr}:5000/api/v1/show_a1_time`, {
+        fetch(`http://${ipAddr}:5000/api/v1/display_a1_schedule`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json, text/plain, */*',

@@ -58,7 +58,7 @@ export default class ManualAux1 extends React.Component{
             })
         })
         .catch((err) => {
-            console.log(err)
+            console.log('aux1 status error = ' + err)
         })
     }
 

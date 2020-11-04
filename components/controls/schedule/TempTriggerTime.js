@@ -39,7 +39,7 @@ export default class TempTriggerTime extends React.Component {
         if(this.state.hour > 12 || this.state.hour < 1 || this.state.hour == ''){
             alert('please make sure your hour format is the proper 12 hour time format')
             return null
-        } else if(this.state.minute > 59 || this.state.minute < parseInt('00', 8) || this.state.minute == ''){
+        } else if(this.state.minute > 59 || this.state.minute < 1 || this.state.minute == ''){
             alert('please make sure your minute format is the proper time format')
             return null
         } else if(! am_pm_arr.includes(this.state.mid)){
@@ -65,6 +65,30 @@ export default class TempTriggerTime extends React.Component {
             body: JSON.stringify(collectTime)
         })
     }
+
+    // async testRunner() {
+    //     let token = await AsyncStorage.getItem('x-access-token')
+    //     fetch(`http://${ipAddr}:5000/api/v1/temp/switchStatus`, {
+    //         method: 'PUT',
+    //         headers: {
+    //             'Accept': 'application/json, text/plain, */*',
+    //             'Content-Type': 'application/json',
+    //             'x-access-token': token,
+    //             withCredentials: true
+    //         }
+    //     })
+    //     .then((res) => {
+    //         let data = res.json()
+    //         return data
+    //     })
+    //     .then((data) => {
+    //         console.log(data)
+    //     })
+    //     .catch((err) => {
+    //         console.log('test runner ' + err)
+    //     })
+    // }
+
 
     async showTempTriggerTime() {
         let token = await AsyncStorage.getItem('x-access-token')
@@ -98,6 +122,34 @@ export default class TempTriggerTime extends React.Component {
         })
     }
 
+    async manPmpOff() {
+        if(this.state.running === true){
+            let token = await AsyncStorage.getItem('x-access-token')
+            fetch(`http://${ipAddr}:5000/api/v1/temp_pump_off`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                },
+                body: JSON.stringify(token)
+            })
+            .then((response) => {
+                let data = response.json()
+                return data
+            })
+            .then((data) => {
+                this.setState({
+                    running: data.pswitch
+                })
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+        }
+    }
+
     async schTempTriggerOn() {
         let token = await AsyncStorage.getItem('x-access-token');
         fetch(`http://${ipAddr}:5000/api/v1/show_t_time`, {
@@ -117,6 +169,9 @@ export default class TempTriggerTime extends React.Component {
             let hour = data.ttime[0].tHr;
             let minute = data.ttime[0].tMin;
             let am_pm = data.ttime[0].tMid;
+            this.setState({
+                running: data.ttime[0].tswitch
+            })
             // let unformated = `${hour}:${(minute < 10) ? `0${minute}` : minute}`
             if(am_pm === 'AM' && hour === parseInt(12) && (minute >= parseInt('00', 8) && minute <= parseInt(59))){
                 hour -= 12
@@ -208,7 +263,7 @@ export default class TempTriggerTime extends React.Component {
                         set
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.tempTriggerTimeBtn} onPress={() => this.schTempTriggerOn()}>
+                <TouchableOpacity style={styles.tempTriggerTimeBtn} onPress={(this.state.running === false) ? this.schTempTriggerOn : () => this.manPmpOff()}>
                     <Text style={styles.tempTriggerTimeBtnTxt}>
                         {this.state.running === true ? 'off' : 'run'}
                     </Text>

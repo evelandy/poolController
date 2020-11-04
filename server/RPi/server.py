@@ -10,20 +10,19 @@ import schedule
 import requests
 import json
 import jwt
+import os
 
 from urllib.parse import unquote
 
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler, BlockingScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-# from apscheduler.schedulers.blocking import BlockingScheduler
 scheduler = BlockingScheduler()
 from threading import Timer, Event, Thread
 
 
 import tempRun
 from tempChk import filter, get_fahrenheit_val, run
-
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
@@ -38,6 +37,10 @@ PORT = '5000'
 DEBUG = True
 
 TP = 21 # Test pin
+PUMP_PIN = 16
+CLEANER_PIN = 18
+LIGHT_PIN = 23
+AUX1_PIN = 11
 
 
 # login user info
@@ -56,7 +59,7 @@ class User(db.Model):
     phone = db.Column(db.Integer, unique=True)
     admin = db.Column(db.Boolean)
 
-    def __init__(self, fname, lname, username, password, email, address, 
+    def __init__(self, fname, lname, username, password, email, address,
                 add2, city, sta, zipCode, phone, admin):
         self.fname = fname
         self.lname = lname
@@ -81,12 +84,14 @@ class p_ctrl(db.Model):
     user_id = db.Column(db.Integer)
 
 
+# pump switch status
 class p_status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     pswitch = db.Column(db.Boolean)
     user_id = db.Column(db.Integer)
 
 
+# cleaner timer
 class c_ctrl(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cHr = db.Column(db.Integer)
@@ -95,12 +100,14 @@ class c_ctrl(db.Model):
     user_id = db.Column(db.Integer)
 
 
+# cleaner switch status
 class c_status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cswitch = db.Column(db.Boolean)
     user_id = db.Column(db.Integer)
 
 
+# lights timer
 class l_ctrl(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     lHr = db.Column(db.Integer)
@@ -109,12 +116,14 @@ class l_ctrl(db.Model):
     user_id = db.Column(db.Integer)
 
 
+# lights switch status
 class l_status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     lswitch = db.Column(db.Boolean)
     user_id = db.Column(db.Integer)
 
 
+# a1 timer
 class a1_ctrl(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     a1Hr = db.Column(db.Integer)
@@ -123,16 +132,27 @@ class a1_ctrl(db.Model):
     user_id = db.Column(db.Integer)
 
 
+# a1 switch status
 class a1_status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     a1switch = db.Column(db.Boolean)
     user_id = db.Column(db.Integer)
 
 
+# temp trigger and switch
 class temp_trigger(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     triggerTemp = db.Column(db.Integer)
     triggerSwitch = db.Column(db.Boolean)
+    user_id = db.Column(db.Integer)
+
+
+# temp timer
+class t_ctrl(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tHr = db.Column(db.Integer)
+    tMin = db.Column(db.Integer)
+    tMid = db.Column(db.String(2))
     user_id = db.Column(db.Integer)
 
 
@@ -165,25 +185,32 @@ def server_check():
 def login():
     auth = request.authorization
     if not auth or not auth.username or not auth.password:
-        return make_response("Could not authenticate", 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})
+        return make_response('Could not verify auth', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
     user = User.query.filter_by(username=auth.username).first()
     if not user:
-        return make_response("Could not verify username", 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})
+        return make_response('Could not verify user', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
     if check_password_hash(user.password, auth.password):
-        token = jwt.encode({'id': user.id, 'username': user.username, 'password': user.password,
-                            'admin': user.admin, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=120)},
+        token = jwt.encode({'id': user.id, 'fname': user.fname, 'lname': user.lname, 'username': user.username,
+                            'password': user.password, 'email': user.email, 'address': user.address,
+                            'add2': user.add2, 'city': user.city, 'sta': user.sta, 'zipCode': user.zipCode,
+                            'phone': user.phone, 'admin': user.admin,
+                            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=120)},
                            app.config['SECRET_KEY'])
-        return jsonify({"token": token.decode('UTF-8'), 'name': user.username, 'password': user.password, 'id': user.id,
-                        'admin': user.admin})
-    return make_response('Could not verify password', 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})
+        return jsonify({'token': token.decode('UTF-8'), 'fname': user.fname, 'lname': user.lname,
+                        'username': user.username, 'password': user.password, 'email': user.email,
+                        'address': user.address, 'add2': user.add2, 'city': user.city, 'sta': user.sta,
+                        'zipCode': user.zipCode, 'phone': user.phone, 'id': user.id, 'admin': user.admin})
+    return make_response('Could not verify password', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
 
-# add/create users
+# add/create users fix on test update                                                                                              
 @app.route('/api/v1/user', methods=['POST'])
 def add_user():
     data = request.get_json()
     hash_password = generate_password_hash(data['password'], method='sha256')
-    new_user = User(username=data['username'], password=hash_password, admin=False)
+    new_user = User(fname=data['fname'],lname=data['lname'], username=data['username'], password=hash_password,
+        email=data['email'], address=data['address'], add2=data['add2'], city=data['city'], sta=data['sta'],
+            zipCode=data['zipCode'], phone=data['phone'],  admin=False)
     db.session.add(new_user)
     db.session.commit()
     return jsonify({"message": "new user added"}), 201
@@ -191,19 +218,110 @@ def add_user():
 
 # view user
 @app.route('/api/v1/user/<user_id>', methods=['GET'])
-def user(user_id):
-    user = User.query.filter_by(id=user_id).first()
+@token_req
+def user(current_user):
+    user_list = User.query.filter_by(user_id= current_user.id).first()
 
     if not user:
         return jsonify({"message": "that username does not exist"}), 404
 
-    user_data = {}
-    user_data['id'] = user.id
-    user_data['username'] = user.username
-    user_data['password'] = user.password
-    user_data['admin'] = user.admin
+    output = []
+    
+    for user in user_list:
+        user_data = {}
+        user_data['id'] = user.id
+        user_data['fname'] = user.fname
+        user_data['lname'] = user.lname
+        user_data['username'] = user.username
+        user_data['password'] = user.password
+        user_data['email'] = user.email
+        user_data['address'] = user.address
+        user_data['add2'] = user.add2
+        user_data['city'] = user.city
+        user_data['sta'] = user.sta
+        user_data['zipCode'] = user.zipCode
+        user_data['phone'] = user.phone
+        user_data['admin'] = user.admin
 
     return jsonify(user_data)
+
+
+#edit username
+@app.route('/api/v1/user/edituname/<username>/<user_id>', methods=['PUT'])
+@token_req
+def edit_username(current_user, username, user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'user does not exist'}), 404
+    user.username = username
+    db.session.commit()
+    return jsonify({'message': 'username updated!'}), 202
+
+
+# edits users' password
+@app.route('/api/v1/user/editpass/<password>/<user_id>', methods=['PUT'])
+@token_req
+def edit_password(current_user, password, user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'user does not exist'}), 404
+    user.password = generate_password_hash(password, method='sha256')
+    db.session.commit()
+    return jsonify({'message': 'password updated!'}), 202
+
+
+# edits users' first name + last name
+@app.route('/api/v1/editname/<fname>/<lname>/<user_id>', methods=['PUT'])
+@token_req
+def edit_name(current_user, fname, lname, user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'user does not exist'}), 404
+    user.fname = fname
+    user.lname = lname
+    db.session.commit()
+    return jsonify({'message': 'name updated!'}), 202
+
+
+# edits users' email
+@app.route('/api/v1/editemail/<email>/<user_id>', methods=['PUT'])
+@token_req
+def edit_email(current_user, email, user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'user does not exist'}), 404
+    user.email = email
+    db.session.commit()
+    return jsonify({'message': 'email updated!'}), 202
+
+
+# edits users' address
+@app.route('/api/v1/editaddress/<user_id>', methods=['PUT'])
+@token_req
+def edit_address(current_user, user_id):
+    user = User.query.filter_by(id=user_id).first()
+    data = request.get_json()
+    if not user:
+        return jsonify({'message': 'user does not exist'}), 404
+    user.address = data['address']
+    user.add2 = data['add2']
+    user.city = data['city']
+    user.sta = data['sta']
+    user.zipCode = data['zipCode']
+    db.session.commit()
+    return jsonify({'message': 'address updated!'}), 202
+
+
+# edits users' phone
+@app.route('/api/v1/editphone/<phone>/<user_id>', methods=['PUT'])
+@token_req
+def edit_phone(current_user, phone, user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'user does not exist'}), 404
+    user.phone = phone
+    db.session.commit()
+    return jsonify({'message': 'phone number updated!'}), 202
 
 
 def weather_trigger():
@@ -285,8 +403,9 @@ def trigger_pmp_on(run_time, temp):
                 sleep(1)
 
 
-@app.route('/api/v1/temp_time_on/<hr>/<mn>', methods=['GET'])
-def temp_time_on(hr, mn):
+@app.route('/api/v1/sch_t_on/<hr>/<mn>', methods=['GET'])
+@token_req
+def sch_t_on(current_user, hr, mn):
     with app.app_context():
         schedule.CancelJob
         schedule.clear()
@@ -302,6 +421,96 @@ def weather_trigger_runner():
     while True:
         schedule.run_pending()
         sleep(1)
+
+
+@app.route('/api/v1/trigger_temp/<tmp>', methods=['GET'])
+@token_req
+def trigger_temp(current_user, tmp):
+    ttemp = temp_trigger.query.all()
+    if ttemp:
+        conn = sqlite3.connect('data.db')
+        sql = "DELETE FROM temp_trigger"
+        cur = conn.cursor()
+        cur.execute(sql)
+        conn.commit()
+
+        data = request.get_json()
+        new_trigger_temp = temp_trigger(triggerTemp=data['triggerTemp'], triggerSwitch=False, user_id=current_user.id)
+        db.session.add(new_trigger_temp)
+        db.session.commit()
+        ttemp = temp_trigger.query.all()
+        tmp = ttemp[0].triggerTemp
+        tempRun.run(tmp)
+        return jsonify({'msg': tmp}), 200
+    else:
+        data = request.get_json()
+        new_trigger_temp = temp_trigger(triggerTemp=data['triggerTemp'], triggerSwitch=False, user_id=current_user.id)
+        db.session.add(new_trigger_temp)
+        db.session.commit()
+        ttemp = temp_trigger.query.all()
+        tmp = ttemp[0].triggerTemp
+        tempRun.run(tmp)
+        return jsonify({'msg': tmp}), 200
+
+
+# show saved trigger time
+@app.route('/api/v1/show_trigger_temp', methods=['GET'])
+@token_req
+def show_trigger_temp(current_user):
+    ttemp = temp_trigger.query.all()
+
+    tdata = {}
+    tdata['triggerTemp'] = ttemp[0].triggerTemp
+
+    return jsonify(tdata), 200
+
+
+@app.route('/api/v1/set_trigger_time', methods=['POST'])
+@token_req
+def set_trigger_time(current_user):
+    ttime = t_ctrl.query.all()
+    if ttime:
+        conn = sqlite3.connect('data.db')
+        sql = "DELETE FROM t_ctrl where user_id={}".format(current_user.id)
+        cur = conn.cursor()
+        cur.execute(sql)
+        conn.commit()
+
+        data = request.get_json()
+        new_t_time = t_ctrl(tHr=data['tHr'], tMin=data['tMin'], tMid=data['tMid'], user_id=current_user.id)
+        db.session.add(new_t_time)
+        db.session.commit()
+        return jsonify({'message': 'temp time trigger saved'}), 201
+    else:
+        data = request.get_json()
+        new_t_time = t_ctrl(tHr=data['tHr'], tMin=data['tMin'], tMid=data['tMid'], user_id=current_user.id)
+        db.session.add(new_t_time)
+        db.session.commit()
+        return jsonify({'message': 'temp time trigger saved'}), 201
+
+
+@app.route('/api/v1/show_t_time')
+@token_req
+def show_t_time(current_user):
+    ttime = t_ctrl.query.filter_by(user_id=current_user.id).all()
+
+    defaultOutput = []
+    defaultTtime = {}
+    defaultTtime['tHr'] = 10
+    defaultTtime['tMin'] = 10
+    defaultTtime['tMid'] = 'AM'
+    defaultOutput.append(defaultTtime)
+
+    if not ttime:
+        return jsonify({'ttime': defaultOutput}), 200
+
+    output = []
+    ttime_dict = {}
+    ttime_dict['tHr'] = ttime[0].tHr
+    ttime_dict['tMin'] = ttime[0].tMin
+    ttime_dict['tMid'] = ttime[0].tMid
+    output.append(ttime_dict)
+    return jsonify({'ttime': output}), 200
 
 
 @app.route('/api/v1/temp', methods=['GET'])
@@ -458,24 +667,6 @@ def sch_p_on(hr, mn):
 #        schedule.clear()
         pmp_off()
         return({"msg": "true"}), 200
-
-
-"""
-@app.route('/api/v1/sch_p_off/<tm>', methods=['GET'])
-def sch_p_off(tm=4):
-    t = Event()
-    WAIT_TIME = int(tm)
-    while not t.wait(WAIT_TIME):
-        pmp_off()
-        break
-    return ({'msg': 'false'}), 200
-"""
-
-
-@app.route('/api/v1/trigger_temp/<tmp>', methods=['GET'])
-def trigger_temp(tmp):
-    tempRun.run(tmp)
-    return jsonify({'msg': tmp}), 200
 
 
 # manual cleaner controls
@@ -927,7 +1118,7 @@ def logout():
 if __name__ == '__main__':
     default = Thread(target=weather_trigger_runner, daemon=True)
     default.start()
-    temp_time_on('08', '00')
+    sch_t_on('08', '00')
 #    schedule.every().day.at("12:00").do(weather_trigger) # scheduler for weather temp trigger to run every day at certain time
 #    x = Thread(target=weather_trigger_runner) # starts a new thread for weather temp trigger
 #    x.start() # starts new thread for weather temp trigger

@@ -122,6 +122,35 @@ export default class Pump extends React.Component{
             body: JSON.stringify(collectTime)
         })
     }
+
+    async manPmpOff() {
+        if(this.state.running === true){
+            let token = await AsyncStorage.getItem('x-access-token')
+            fetch(`http://${ipAddr}:5000/api/v1/pump_off`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                },
+                body: JSON.stringify(token)
+            })
+            .then((response) => {
+                let data = response.json()
+                return data
+            })
+            .then((data) => {
+                this.setState({
+                    running: data.pswitch
+                })
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+        }
+        else;
+    }
     
     async schPmpOn() {
         let token = await AsyncStorage.getItem('x-access-token');
@@ -142,15 +171,12 @@ export default class Pump extends React.Component{
             let hour = data.ptime[0].pHr;
             let minute = data.ptime[0].pMin;
             let am_pm = data.ptime[0].pMid;
-            // let unformated = `${hour}:${(minute < 10) ? `0${minute}` : minute}`
             if(am_pm === 'AM' && hour === parseInt(12) && (minute >= parseInt('00', 8) && minute <= parseInt(59))){
                 hour -= 12
                 let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
                 let format_min = `${(minute < 10) ? `0${minute}` : minute}`
                 let tm = {format_hr, format_min}
                 return tm
-                // let formated = `${(hour < 10) ? `0${hour}` : hour}:${(minute < 10) ? `0${minute}` : minute}`
-                // alert(formated)
             } else if(am_pm == 'PM'){
                 if(hour != 12){
                     hour += 12
@@ -183,6 +209,11 @@ export default class Pump extends React.Component{
                 }
             })
         })
+        .then((data) => {
+            this.setState({
+                running: data.pswitch
+            })
+        })
         .catch((error) => {
             console.log(error)
         })
@@ -190,7 +221,7 @@ export default class Pump extends React.Component{
 
     async showSchTime() {
         let token = await AsyncStorage.getItem('x-access-token')
-        fetch(`http://${ipAddr}:5000/api/v1/show_p_time`, {
+        fetch(`http://${ipAddr}:5000/api/v1/display_p_schedule`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -293,7 +324,7 @@ export default class Pump extends React.Component{
                                     set
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.schPmpBtn} onPress={() => this.schPmpOn()}>
+                            <TouchableOpacity style={styles.schPmpBtn} onPress={(this.state.running === false) ? () => this.schPmpOn() : () => this.manPmpOff()}>
                                 <Text style={styles.schPmpBtnTxt}>
                                     {this.state.running === true ? 'off' : 'run'}
                                 </Text>

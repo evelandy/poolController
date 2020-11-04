@@ -37,20 +37,20 @@ export default class TempDisp extends React.Component {
                 currentTemp: data.main.temp
             })
         })
-        .then(() => {
-            // console.log('testing this function for forecast data in the TempDisp.js component')
-            const apiKey = '5490a59fae143d65082c3beeaeaf6982';
-            fetch(`api.openweathermap.org/data/2.5/onecall?q=${this.state.city}&appid=${apiKey}&units=imperial`, {})
-            .then((res) => {
-                let data = res.json();
-                return data
-            })
-            .then((data) => {
-                console.log('testing this function in the TempDisp.js component')
-            })
-        })
+        // .then(() => {
+        //     // console.log('testing this function for forecast data in the TempDisp.js component')
+        //     const apiKey = '5490a59fae143d65082c3beeaeaf6982';
+        //     fetch(`api.openweathermap.org/data/2.5/onecall?q=${this.state.city}&appid=${apiKey}&units=imperial`, {})
+        //     .then((res) => {
+        //         let data = res.json();
+        //         return data
+        //     })
+        //     .then((data) => {
+        //         console.log('testing this function in the TempDisp.js component')
+        //     })
+        // })
         .catch((err) => {
-            alert(err)
+            alert('temp disp' + err)
         })
     }
 

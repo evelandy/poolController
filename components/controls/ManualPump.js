@@ -30,20 +30,26 @@ export default class ManualPump extends React.Component{
             triggerTemp: 0,
             setTriggerTemp: '0',
             currentTemp: 0,
-            test: ''
+            test: '',
+            tStatus: false,
+            sStatus: false,
+            schHr: '',
+            schMin: '',
+            schMid: '',
+            tempHr: '',
+            tempMin: '',
+            tempMid: '',
+            schRestart: '',
+            tempRestart: '',
+            restartHr: '',
+            restartMin: ''
         }
         this.pumpDisplay = this.pumpDisplay.bind(this);
         this.manPmpOn = this.manPmpOn.bind(this);
         this.manPmpOff = this.manPmpOff.bind(this);
+        this.getSchTime = this.getSchTime.bind(this);
+        this.getTempTriggerTime = this.getTempTriggerTime.bind(this);
     }
-
-    // state = {
-    //     running: false,
-    //     triggerTemp: 0,
-    //     setTriggerTemp: '0',
-    //     currentTemp: 0,
-    //     test: ''
-    // }
 
     componentDidMount() {
         this.pumpDisplay();
@@ -108,32 +114,119 @@ export default class ManualPump extends React.Component{
     }
 
     async manPmpOn() {
+        if (this.state.tempRestart === true){
+            //call function taht turns on pump for one time with new time in it
+            this.restartTriggerTimer()
+        } else {
+            let token = await AsyncStorage.getItem('x-access-token')
+            fetch(`http://${ipAddr}:5000/api/v1/pump_on`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                },
+                body: JSON.stringify(token)
+            })
+            .then((response) => {
+                let data = response.json();
+                return data;
+            })
+            .then((data) => {
+                this.setState({
+                    running: data.pswitch
+                })
+            })
+            .then(() => {
+                this.state.tempRestart = false
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+        }
+    }
+
+
+    async restartSchTimer() {
         let token = await AsyncStorage.getItem('x-access-token')
-        fetch(`http://${ipAddr}:5000/api/v1/pump_on`, {
+        fetch(`http://${ipAddr}:5000/api/v1/getHoldTime`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json',
                 'x-access-token': token,
                 withCredentials: true
-            },
-            body: JSON.stringify(token)
+            }
         })
-        .then((response) => {
-            let data = response.json();
-            return data;
+        .then((res) => {
+            let data = res.json()
+            return data
         })
         .then((data) => {
             this.setState({
-                running: data.pswitch
+                restartHr: data.hour,
+                restartMin: data.minute
             })
         })
-        .catch((error) => {
-            console.log(error)
+        .then(async() => {
+            let rtime = {}
+            rtime['hour'] = this.state.restartHr
+            rtime['min'] = this.state.restartMin
+            let token = await AsyncStorage.getItem('x-access-token')
+            fetch(`http://${ipAddr}:5000/api/v1/sch/restartSchTime`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                },
+                body: JSON.stringify(rtime)
+            })
+        })
+    }
+
+    async restartTriggerTimer() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/getHoldTime`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json()
+            return data
+        })
+        .then((data) => {
+            this.setState({
+                restartHr: data.hour,
+                restartMin: data.minute
+            })
+        })
+        .then(async() => {
+            let token = await AsyncStorage.getItem('x-access-token')
+            fetch(`http://${ipAddr}:5000/api/v1/temp/restartTriggerTime/${this.state.restartHr}/${this.state.restartMin}`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                }
+            })
+        })
+        .then((data) => {
+            console.log(data)
         })
     }
 
     async manPmpOff() {
+        this.triggerOnCheck();
         let token = await AsyncStorage.getItem('x-access-token')
         fetch(`http://${ipAddr}:5000/api/v1/pump_off`, {
             method: 'POST',
@@ -157,6 +250,258 @@ export default class ManualPump extends React.Component{
         .catch((error) => {
             console.log(error)
         })
+    }
+
+    async triggerOnCheck() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/temp/tStatus`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json()
+            return data
+        })
+        .then((data) => {
+            if (data.msg === true) {
+                this.getTempTriggerTime()
+                this.setState({
+                    tempRestart: true
+                })
+            }
+        })
+        .then(async() => {
+            let token = await AsyncStorage.getItem('x-access-token')
+            fetch(`http://${ipAddr}:5000/api/v1/temp/trigger_temp_off`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                }
+            })  
+        })
+        .catch((error) => {
+            console.log("triggerOnCheck error: " + error)
+        })
+    }
+
+    // async scheduleOnCheck() {
+    //     let token = await AsyncStorage.getItem('x-access-token')
+    //     fetch(`http://${ipAddr}:5000/api/v1/sch/sStatus`, {
+    //         method: 'GET',
+    //         headers: {
+    //             'Accept': 'application/json, text/plain, */*',
+    //             'Content-Type': 'application/json',
+    //             'x-access-token': token,
+    //             withCredentials: true
+    //         }
+    //     })
+    //     .then((res) => {
+    //         let data = res.json()
+    //         return data
+    //     })
+    //     .then((data) => {
+    //         if (data.msg === true){
+    //             this.getSchTime()
+    //             this.setState({
+    //                 schRestart: true,
+    //                 tempRestart: false
+    //             })
+    //         }
+    //         this.getSchTime();
+    //     })
+    //     .catch((error) => {
+    //         console.log("triggerOnCheck error: " + error)
+    //     })
+    // }
+
+    async getSchTime() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/sch/getSchTime`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json()
+            return data
+        })
+        .then((data) => {
+            this.setState({
+                schHr: data.hour,
+                schMin: data.minute,
+                schMid: data.mid
+            })
+        })
+        .then((data) => {
+            let hour = this.state.schHr;
+            let minute = this.state.schMin;
+            let am_pm = this.state.schMid;
+            if(am_pm === 'AM' && hour === parseInt(12) && (minute >= parseInt('00', 8) && minute <= parseInt(59))){
+                hour -= 12
+                let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                let tm = {format_hr, format_min}
+                return tm
+            } else if(am_pm == 'PM'){
+                if(hour != 12){
+                    hour += 12
+                    let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                    let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                    let tm = {format_hr, format_min}
+                    return tm
+                } else {
+                    let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                    let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                    let tm = {format_hr, format_min}
+                    return tm
+                }
+            } else {
+                let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                let tm = {format_hr, format_min}
+                return tm
+            }
+        })
+        .then(async(tm) => {
+            var d = new Date();
+            current_hour = d.getHours();
+            current_minute = d.getMinutes();
+            sch_hour = tm.format_hr;
+            sch_minite = tm.format_min;
+            let makeup_hour;
+            let makeup_min;
+            if (sch_hour - current_hour < 0){
+                makeup_hour = sch_hour - current_hour + 24;
+            } else {
+                makeup_hour = sch_hour - current_hour - 1 ;
+            }
+
+            if (current_minute - 60 < 0){
+                makeup_min = 60 - current_minute;
+            } else {
+                makeup_min = current_minute - 60;
+            }
+            let holdTime = {}
+            holdTime['holdHour'] = makeup_hour;
+            holdTime['holdMin'] = makeup_min;
+            let token = await AsyncStorage.getItem('x-access-token')
+            fetch(`http://${ipAddr}:5000/api/v1/sch/holdTime`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                },
+                body: JSON.stringify(holdTime)
+            })
+        })
+        // .then((error) => {
+        //     console.log('getSchTime error: ' + error)
+        // })
+    }
+
+    async getTempTriggerTime() {
+        let token = await AsyncStorage.getItem('x-access-token')
+        fetch(`http://${ipAddr}:5000/api/v1/temp/getTriggerTime`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                withCredentials: true
+            }
+        })
+        .then((res) => {
+            let data = res.json()
+            return data
+        })
+        .then((data) => {
+            this.setState({
+                tempHr: data.hour,
+                tempMin: data.minute,
+                tempMid: data.mid
+            })
+        })
+        .then((data) => {
+            let hour = this.state.tempHr;
+            let minute = this.state.tempMin;
+            let am_pm = this.state.tempMid;
+            if(am_pm === 'AM' && hour === parseInt(12) && (minute >= parseInt('00', 8) && minute <= parseInt(59))){
+                hour -= 12
+                let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                let tm = {format_hr, format_min}
+                return tm
+            } else if(am_pm == 'PM'){
+                if(hour != 12){
+                    hour += 12
+                    let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                    let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                    let tm = {format_hr, format_min}
+                    return tm
+                } else {
+                    let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                    let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                    let tm = {format_hr, format_min}
+                    return tm
+                }
+            } else {
+                let format_hr = `${(hour < 10) ? `0${hour}` : hour}`
+                let format_min = `${(minute < 10) ? `0${minute}` : minute}`
+                let tm = {format_hr, format_min}
+                return tm
+            }
+        })
+        .then(async(tm) => {
+            var d = new Date();
+            current_hour = d.getHours();
+            current_minute = d.getMinutes();
+            temp_hour = tm.format_hr;
+            temp_minite = tm.format_min;
+            let makeup_hour;
+            let makeup_min;
+            if (temp_hour - current_hour < 0){
+                makeup_hour = temp_hour - current_hour + 24;
+            } else {
+                makeup_hour = temp_hour - current_hour - 1 ;
+            }
+
+            if (current_minute - 60 < 0){
+                makeup_min = 60 - current_minute;
+            } else {
+                makeup_min = current_minute - 60;
+            }
+            let holdTime = {}
+            holdTime['holdHour'] = makeup_hour;
+            holdTime['holdMin'] = makeup_min;
+            let token = await AsyncStorage.getItem('x-access-token')
+            fetch(`http://${ipAddr}:5000/api/v1/temp/holdTriggerTime`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'x-access-token': token,
+                    withCredentials: true
+                },
+                body: JSON.stringify(holdTime)
+            })
+        })
+        // .then((error) => {
+        //     console.log('getSchTime error: ' + error)
+        // })
     }
 
     // setTriggerTemp = () => {
@@ -226,12 +571,13 @@ export default class ManualPump extends React.Component{
                             Manual Pump Controls
                         </Text>
                         <View style={styles.btnContainer}>
-                            <TouchableOpacity style={styles.manPmpBtn} onPress={this.manPmpOn}>
+                            <TouchableOpacity style={styles.manPmpBtn} onPress={() => this.manPmpOn()}>
                                 <Text style={styles.manPmpBtnTxt}>
+                                    {/* {(this.state.tempRestart === true) ? 're-engage' : 'on'} */}
                                     on
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.manPmpBtn} onPress={this.manPmpOff}>
+                            <TouchableOpacity style={styles.manPmpBtn} onPress={() => this.manPmpOff()}>
                                 <Text style={styles.manPmpBtnTxt}>
                                     off
                                 </Text>
@@ -293,14 +639,12 @@ const styles = StyleSheet.create({
     },
     triggerContainer: {
         position: "absolute",
-        // top: 360,
         top: (Platform.OS === 'ios') ? 360 : 365,
         justifyContent: 'center',
         alignItems: 'center'
     },
     btnContainer: {
         flexDirection: 'row',
-        // top: 240,
         top: (Platform.OS === 'ios') ? 240 : 230,
         zIndex: 1,
     },
@@ -316,7 +660,6 @@ const styles = StyleSheet.create({
     },
     manPmpBtn: {
         top: 20,
-        // padding: 15,
         padding: (Platform.OS === 'ios') ? 15 : 12,
         borderRadius: 10,
         backgroundColor: 'navy',
@@ -324,7 +667,6 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderStyle: 'solid',
         borderColor: 'lightgray',
-        // width: 150,
         width: (Platform.OS === 'ios') ? 150 : 120,
         marginLeft: 10,
         marginRight: 12
@@ -335,9 +677,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     logBtn: {
-        // top: 300,
         top: (Platform.OS === 'ios') ? 300 : 290,
-        // padding: 15,
         padding: (Platform.OS === 'ios') ? 15 : 12,
         borderRadius: 10,
         backgroundColor: 'navy',
@@ -346,13 +686,10 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderStyle: 'solid',
         borderColor: 'lightgray',
-        // width: 340
         width: (Platform.OS === 'ios') ? 340 : 300,
     },
     backBtn: {
-        // top: 320,
         top: (Platform.OS === 'ios') ? 320 : 295,
-        // padding: 15,
         padding: (Platform.OS === 'ios') ? 15 : 12,
         borderRadius: 10,
         backgroundColor: 'navy',
@@ -360,7 +697,6 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderStyle: 'solid',
         borderColor: 'lightgray',
-        // width: 150,
         width: (Platform.OS === 'ios') ? 150 : 120,
     },
     backBtnTxt: {
@@ -372,30 +708,24 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
-        // paddingLeft: 15,
-        // paddingRight: 15,
         width: 300,
         textAlign: 'center',
         paddingTop: 3,
         paddingBottom: 3,
         color: 'white',
         fontWeight: 'bold',
-        // fontSize: 18,
         fontSize: (Platform.OS === 'ios') ? 18 : 20,
         marginTop: 10,
-        // marginBottom: 5
         marginBottom: (Platform.OS === 'ios') ? 10 : 15,
     },
     infoHeader: {
         alignItems: 'center',
     },
     triggerHeader: {
-        // fontSize: 23,
         fontSize: (Platform.OS === 'ios') ? 23 : 26,
         fontWeight: 'bold',
     },
     triggerBtn: {
-        // padding: 15,
         padding: (Platform.OS === 'ios') ? 15 : 12,
         borderRadius: 10,
         backgroundColor: 'navy',
@@ -403,7 +733,6 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderStyle: 'solid',
         borderColor: 'lightgray',
-        // width: 150,
         width: (Platform.OS === 'ios') ? 150 : 120,
     },
     triggerBtnTxt: {
@@ -413,16 +742,13 @@ const styles = StyleSheet.create({
     },
     triggerInput: {
         width: 55,
-        // height: 35,
         height: (Platform.OS === 'ios') ? 35 : 42,
         backgroundColor: 'lightblue',
         borderColor: 'lightgray',
         borderWidth: 2,
         borderRadius: 3,
-        // fontSize: 25,
         fontSize: (Platform.OS === 'ios') ? 25 : 18,
         textAlign: 'center',
-        // marginBottom: 5
         marginBottom: (Platform.OS === 'ios') ? 10 : 15,
     },
 });
