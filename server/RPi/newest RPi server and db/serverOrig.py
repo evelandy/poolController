@@ -366,7 +366,6 @@ def temp(current_user):
     # res = requests.get(url='http://{}:{}/api/v1/temp'.format(RPI_IP_ADDR, RPI_PORT),
     #                    headers={'x-access-token': '{}'.format(data)})
     curr_temp = run()
-    print(curr_temp)
     return jsonify(curr_temp), 200
 
 
@@ -443,8 +442,6 @@ def restartTriggerTime(current_user, hr, mn):
 
     GPIO.output(TP, GPIO.LOW)
     GPIO.cleanup()
-    # return jsonify({'msg': 'ok'}), 200
-    # res = requests.get(url='http://{}:{}/api/v1/sch/makeupTriggerTime/{}/{}'.format(RPI_IP_ADDR, RPI_PORT, hr, mn))
     return jsonify({'message': 'time restarted'}), 200
 
 
@@ -1881,7 +1878,7 @@ def logout():
 if __name__ == '__main__':
     default = Thread(target=weather_trigger_runner, daemon=True)
     default.start()
-#    sch_t_on('08', '00')
+    sch_t_on('08', '00')
 #    schedule.every().day.at("12:00").do(weather_trigger) # scheduler for weather temp trigger to run every day at certain time
 #    x = Thread(target=weather_trigger_runner) # starts a new thread for weather temp trigger
 #    x.start() # starts new thread for weather temp trigger

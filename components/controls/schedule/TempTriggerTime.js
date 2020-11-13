@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 
-let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
+// let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
+let ipAddr = '192.168.1.142';
 
 export default class TempTriggerTime extends React.Component {
     constructor(props){
@@ -265,7 +266,8 @@ export default class TempTriggerTime extends React.Component {
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.tempTriggerTimeBtn} onPress={(this.state.running === false) ? this.schTempTriggerOn : () => this.manPmpOff()}>
                     <Text style={styles.tempTriggerTimeBtnTxt}>
-                        {this.state.running === true ? 'off' : 'run'}
+                        {/* {this.state.running === true ? 'off' : 'run'} */}
+                        run
                     </Text>
                 </TouchableOpacity>
             </View>

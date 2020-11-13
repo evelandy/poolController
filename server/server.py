@@ -438,7 +438,7 @@ def add_p_time(current_user):
 
 
 # displays set time for pump scheduler if no time set, displays default time
-@app.route('/api/v1/show_p_time')
+@app.route('/api/v1/show_p_time', methods=['GET'])
 @token_req
 def show_p_time(current_user):
     ptime = p_ctrl.query.filter_by(user_id=current_user.id).all()
@@ -478,16 +478,6 @@ def sch_p_on(current_user, hr, mn):
     return jsonify({'message': 'true'}), 200
 
 
-"""
-# sends time to RPi scheduler to turn pump off
-@app.route('/api/v1/sch_p_off/<tm>', methods=['GET'])
-@token_req
-def sch_p_off(current_user, tm=5):
-    res = requests.get(url='http://{}:{}/api/v1/sch_p_off/{}'.format(RPI_IP_ADDR, RPI_PORT, tm))
-    return jsonify({'message': 'false'}), 200
-"""
-
-
 # displays the status of the pump switch
 @app.route('/api/v1/pump_status', methods=['GET'])
 @token_req
@@ -522,7 +512,6 @@ def pump_on(current_user):
         db.session.commit()
         pdata['pswitch'] = pstatus.pswitch
     return jsonify(pdata), 200
-
 
 
 # pump off control from server to RPi

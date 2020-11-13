@@ -13,7 +13,8 @@ import Logout from './Logout';
 let jwtDecode = require('jwt-decode');
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 
-let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
+// let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
+let ipAddr = '192.168.1.142';
 
 export default class UserSettings extends React.Component{
     static navigationOptions = {

@@ -14,7 +14,8 @@ import TempDisp from '../../TempDisp';
 import WaterTemp from '../../WaterTemp';
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 
-let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
+// let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
+let ipAddr = '192.168.1.142';
 
 export default class Clean extends React.Component{
     static navigationOptions = {
@@ -294,7 +295,8 @@ export default class Clean extends React.Component{
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.schClnBtn} onPress={() => this.schClnOn()}>
                                 <Text style={styles.schClnBtnTxt}>
-                                    {this.state.running === true ? 'off' : 'run'}
+                                    {/* {this.state.running === true ? 'off' : 'run'} */}
+                                    run
                                 </Text>
                             </TouchableOpacity>
                         </View>

@@ -19,7 +19,8 @@ import DismissKeyboard from '../DismissKeyboard';
 //     'Require cycle:',
 // ]);
 
-let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
+// let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
+let ipAddr = '192.168.1.142';
 
  // 10.0.2.2 45457 default ip/port for android emulator
 

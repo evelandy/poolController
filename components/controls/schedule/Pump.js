@@ -15,7 +15,8 @@ import WaterTemp from '../../WaterTemp';
 import AsyncStorage, { AsyncStorageStatic } from '@react-native-community/async-storage';
 import TempTriggerTime from './TempTriggerTime';
 
-let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
+// let ipAddr = (Platform.OS === 'ios') ? '127.0.0.1' : '10.0.2.2';
+let ipAddr = '192.168.1.142';
 
 export default class Pump extends React.Component{
     static navigationOptions = {
@@ -326,7 +327,8 @@ export default class Pump extends React.Component{
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.schPmpBtn} onPress={(this.state.running === false) ? () => this.schPmpOn() : () => this.manPmpOff()}>
                                 <Text style={styles.schPmpBtnTxt}>
-                                    {this.state.running === true ? 'off' : 'run'}
+                                    {/* {this.state.running === true ? 'off' : 'run'} */}
+                                    run
                                 </Text>
                             </TouchableOpacity>
                         </View>
